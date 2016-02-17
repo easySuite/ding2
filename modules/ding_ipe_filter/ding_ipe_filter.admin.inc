@@ -76,10 +76,11 @@ function ding_ipe_filter_default_settings_form() {
   // Unset anonymous and authenticated roles.
   unset($roles[1], $roles[2]);
 
+  $role_names = array_values($roles);
   $ipe_roles = variable_get('ding_ipe_filter_roles', array());
   $form['filter_fieldset']['ding_ipe_filter_roles'] = array(
     '#type' => 'checkboxes',
-    '#options' => $roles,
+    '#options' => array_combine($role_names, $role_names),
     '#default_value' => $ipe_roles,
   );
 
