@@ -223,10 +223,11 @@ function ding_ting_frontend_field_default_field_instances() {
         'weight' => 8,
       ),
       'search_result' => array(
-        'label' => 'above',
+        'label' => 'hidden',
+        'module' => 'ding_entity',
         'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 37,
+        'type' => 'ding_entity_buttons_ajax',
+        'weight' => 20,
       ),
       'teaser' => array(
         'label' => 'above',

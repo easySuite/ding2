@@ -420,6 +420,7 @@ function ding_ting_frontend_field_group_info() {
       1 => 'ting_series',
       2 => 'ting_abstract',
       3 => 'ting_author',
+      4 => 'ding_entity_buttons',
     ),
     'format_type' => 'div',
     'format_settings' => array(
