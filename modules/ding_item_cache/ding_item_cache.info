@@ -1,0 +1,7 @@
+name = easyDDB Ding Item Cache
+description = "Provides caching bin for ding items that contain extended information 
+from external services."
+version = 7.x-2.2.0+easy
+core = 7.x
+package = easyDDB
+
