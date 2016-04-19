@@ -348,3 +348,10 @@ function ding2_update_7017() {
 function ding2_update_7018() {
   ding2_translation_update();
 }
+
+/**
+ * Enable ding_item_viewer module and dependencies.
+ */
+function ding2_update_7019() {
+  module_enable(array('ding_item_viewer', 'ding_item_cache'));
+}
