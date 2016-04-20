@@ -30,6 +30,7 @@ $base-font-weight-bold:           600;
 }
 
 .ding-item-viewer {
+  clear: both;
   margin: 10px 0;
   height: 420px;
   font-size: $base-font-size;
@@ -195,8 +196,13 @@ $base-font-weight-bold:           600;
       }
 
       // Entity buttons
-      .field-type-ding-entity-buttons a {
-        margin-left: 5px;
+      .field-type-ding-entity-buttons {
+        float: right;
+        margin-top: 20px;
+
+        a {
+          margin-left: 5px;
+        }
       }
 
       // Author
