@@ -11,6 +11,7 @@
 }
 
 .ding-item-viewer {
+  clear: both;
   margin: 10px 0;
   height: 420px;
   font-size: 16px;
@@ -143,6 +144,10 @@
   line-height: 2em;
   margin-right: 5px;
 }
+.ding-item-viewer .browsebar-item.active .field-type-ding-entity-buttons {
+  float: right;
+  margin-top: 20px;
+}
 .ding-item-viewer .browsebar-item.active .field-type-ding-entity-buttons a {
   margin-left: 5px;
 }
@@ -209,8 +214,4 @@
   overflow: hidden;
   font-size: 80%;
   margin-top: 10px;
-}
-
-.ding-item-viewer-queries {
-  display: none;
 }
