@@ -163,14 +163,8 @@ projects[manualcrop][version] = "1.5"
 projects[maintenance_mode_api][subdir] = "contrib"
 projects[maintenance_mode_api][version] = "1.0-beta1"
 
-; This version of media is tested to work with both images and videos.
-projects[media][type] = "module"
 projects[media][subdir] = "contrib"
-projects[media][download][type] = "git"
-projects[media][download][url] = "http://git.drupal.org/project/media.git"
-projects[media][download][revision] = "c3cda2b"
-; Fixed issue where "insert" fails, see https://www.drupal.org/node/2184475.
-projects[media][patch][] = "https://www.drupal.org/files/issues/media_popup_trigger_some_js-2184475-6.patch"
+projects[media][version] = "1.5"
 
 projects[media_vimeo][subdir] = "contrib"
 projects[media_vimeo][version] = "2.0-rc1"
