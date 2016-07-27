@@ -5,7 +5,7 @@ defaults[projects][subdir] = "contrib"
 
 ; Contrib modules
 projects[addressfield][subdir] = "contrib"
-projects[addressfield][version] = "1.0-beta5"
+projects[addressfield][version] = "1.2"
 
 projects[admin_menu][subdir] = "contrib"
 projects[admin_menu][version] = "3.0-rc5"
@@ -30,7 +30,7 @@ projects[better_exposed_filters][subdir] = "contrib"
 projects[better_exposed_filters][version] = "3.4"
 
 projects[block_access][subdir] = "contrib"
-projects[block_access][version] = "1.5"
+projects[block_access][version] = "1.6"
 
 projects[cache_actions][subdir] = "contrib"
 projects[cache_actions][version] = "2.0-alpha5"
@@ -50,16 +50,11 @@ projects[customerror][patch][] = "https://www.drupal.org/files/issues/customerro
 projects[customerror][patch][] = "patches/customerror-disable_auto_redirect.ding2.patch"
 
 projects[date][subdir] = "contrib"
-projects[date][version] = "2.8"
+projects[date][version] = "2.9"
 projects[date][patch][] = "https://www.drupal.org/files/issues/2019-01-16/2843367-php71-string-offset-47.patch"
 
 projects[dibs][subdir] = "contrib"
-projects[dibs][version] = "1.0"
-; Patch to fix empty order_id. See https://drupal.org/node/2107389
-projects[dibs][patch][] = "http://drupal.org/files/dibs-2107389-2.patch"
-; Patch make dibs_split_payments payment_transaction_id a NOT NULL database field.
-; https://www.drupal.org/node/2812891
-projects[dibs][patch][] = "https://www.drupal.org/files/issues/mysql_5.7_compatibility-2812891-2.patch"
+projects[dibs][version] = "1.4"
 
 projects[diff][subdir] = "contrib"
 projects[diff][version] = "3.3"
@@ -85,9 +80,7 @@ projects[entity][version] = "1.8"
 projects[entity][patch][0] = "https://www.drupal.org/files/issues/entity-rebuild-2829437-4.patch"
 
 projects[entitycache][subdir] = "contrib"
-projects[entitycache][version] = "1.2"
-; https://drupal.org/node/2146543, profile 2 blank fields.
-projects[entitycache][patch][0] = "http://drupal.org/files/issues/2146543-ensure-entity-inserts-clears-caches.1.patch"
+projects[entitycache][version] = "1.5"
 
 projects[entityreference][subdir] = "contrib"
 projects[entityreference][version] = "1.1"
@@ -110,7 +103,7 @@ projects[features][subdir] = "contrib"
 projects[features][version] = "2.10"
 
 projects[features_extra][subdir] = "contrib"
-projects[features_extra][version] = "1.0-beta1"
+projects[features_extra][version] = "1.0"
 
 projects[feeds][subdir] = "contrib"
 projects[feeds][version] = "2.0-beta4"
@@ -141,7 +134,7 @@ projects[formblock][download][url] = "http://git.drupal.org/project/formblock.gi
 projects[formblock][download][revision] = "2d94c83"
 
 projects[geocoder][subdir] = "contrib"
-projects[geocoder][version] = "1.2"
+projects[geocoder][version] = "1.3"
 
 projects[geofield][subdir] = "contrib"
 projects[geofield][version] = "1.2"
@@ -163,7 +156,7 @@ projects[honeypot][subdir] = "contrib"
 projects[honeypot][version] = "1.25"
 
 projects[image_resize_filter][subdir] = "contrib"
-projects[image_resize_filter][version] = "1.14"
+projects[image_resize_filter][version] = "1.16"
 
 projects[job_scheduler][subdir] = "contrib"
 projects[job_scheduler][version] = "2.0-alpha3"
@@ -175,7 +168,7 @@ projects[jquery_update][version] = "3.0-alpha5"
 projects[jquery_update][patch][] = "https://www.drupal.org/files/issues/2018-12-13/jquery_update_permissions-2621436-13.patch"
 
 projects[languageicons][subdir] = "contrib"
-projects[languageicons][version] = "1.0"
+projects[languageicons][version] = "1.1"
 
 projects[lazy_pane][subdir] = "contrib"
 projects[lazy_pane][version] = "1.2"
@@ -183,14 +176,10 @@ projects[lazy_pane][version] = "1.2"
 projects[lazy_pane][patch][] = https://www.drupal.org/files/issues/2018-11-09/change-prepended-scripts-attaching-3012604-1.patch
 
 projects[leaflet][subdir] = "contrib"
-projects[leaflet][version] = "1.1"
-; OSM Mapnik is hard-coded to be accessed via http, but some sites may need maps to render under https.
-; The patch change code to use headless urls ("//" instead of "http://") for map access..
-; Patch from https://www.drupal.org/node/2341015
-projects[leaflet][patch][] = https://www.drupal.org/files/issues/leaflet-https_7x_11-2341015-3.patch
+projects[leaflet][version] = "1.3"
 
 projects[libraries][subdir] = "contrib"
-projects[libraries][version] = "2.2"
+projects[libraries][version] = "2.3"
 
 projects[link][subdir] = "contrib"
 projects[link][version] = "1.6"
@@ -199,9 +188,8 @@ projects[link][version] = "1.6"
 ; Patch from https://www.drupal.org/files/issues/link-external-1914072-22.patch
 projects[link][patch][] = "https://www.drupal.org/files/issues/link_module_displays-1914072-34.patch"
 
-projects[l10n_update][type] = "module"
 projects[l10n_update][subdir] = "contrib"
-projects[l10n_update][version] = "1.0"
+projects[l10n_update][version] = "1.1"
 
 projects[l10n_client][type] = "module"
 projects[l10n_client][subdir] = "contrib"
@@ -254,10 +242,10 @@ projects[menu_block][version] = "2.7"
 projects[menu_block][patch][0] = "patches/menu_block-2x-ctools_exportables-693302-163.ding2.patch"
 
 projects[menu_breadcrumb][subdir] = "contrib"
-projects[menu_breadcrumb][version] = "1.5"
+projects[menu_breadcrumb][version] = "1.6"
 
 projects[menu_position][subdir] = "contrib"
-projects[menu_position][version] = "1.1"
+projects[menu_position][version] = "1.2"
 
 ; To be removed together with p2.
 projects[message][subdir] = "contrib"
@@ -285,9 +273,7 @@ projects[node_clone][subdir] = "contrib"
 projects[node_clone][version] = "1.0"
 
 projects[node_export][subdir] = "contrib"
-projects[node_export][version] = "3.0"
-projects[node_export][patch][] = "http://drupal.org/files/suppress-feature-install-profile-import.patch"
-projects[node_export][patch][] = "http://drupal.org/files/check-field.patch"
+projects[node_export][version] = "3.1"
 
 projects[oembed][subdir] = "contrib"
 projects[oembed][version] = "1.0-rc2"
@@ -302,7 +288,7 @@ projects[og][version] = "2.9"
 projects[og][patch][] = "https://www.drupal.org/files/membership-data-loss-user-save-1502916.patch"
 
 projects[og_menu][subdir] = "contrib"
-projects[og_menu][version] = "3.0"
+projects[og_menu][version] = "3.1"
 projects[og_menu][patch][] = "http://storage.easyting.dk/og_menu-make_links_persistent.patch"
 
 projects[opening_hours][subdir] = "contrib"
@@ -329,14 +315,13 @@ projects[panels][version] = "3.4"
 projects[panels][patch][] = "https://www.drupal.org/files/issues/deprecated-constructor-in-php-7-2557061-3.patch"
 
 projects[panels_breadcrumbs][subdir] = "contrib"
-projects[panels_breadcrumbs][version] = "2.1"
+projects[panels_breadcrumbs][version] = "2.2"
 
 projects[panels_everywhere][subdir] = "contrib"
-projects[panels_everywhere][version] = "1.0-rc1"
-projects[panels_everywhere][type] = "module"
+projects[panels_everywhere][version] = "1.0-rc2"
 
 projects[pathauto][subdir] = "contrib"
-projects[pathauto][version] = "1.2"
+projects[pathauto][version] = "1.3"
 
 projects[pm_existing_pages][subdir] = "contrib"
 projects[pm_existing_pages][version] = "1.4"
@@ -351,7 +336,7 @@ projects[paragraphs][subdir] = "contrib"
 projects[paragraphs][version] = "1.0-rc5"
 
 projects[realname][subdir] = "contrib"
-projects[realname][version] = "1.2"
+projects[realname][version] = "1.3"
 
 projects[redirect][subdir] = "contrib"
 projects[redirect][version] = "1.0-rc3"
@@ -365,17 +350,13 @@ projects[role_delegation][subdir] = "contrib"
 projects[role_delegation][version] = "1.1"
 
 projects[rules][subdir] = "contrib"
-projects[rules][version] = "2.7"
+projects[rules][version] = "2.9"
 
 projects[scheduler][subdir] = "contrib"
 projects[scheduler][version] = "1.5"
 
-; Patched with "Secure Permissions fails with features and multilingual"
-projects[secure_permissions][type] = "module"
 projects[secure_permissions][subdir] = "contrib"
-projects[secure_permissions][download][type] = "git"
-projects[secure_permissions][download][url] = "http://git.drupal.org/project/secure_permissions.git"
-projects[secure_permissions][download][revision] = "ef5eec5"
+projects[secure_permissions][version] = "1.6"
 projects[secure_permissions][patch][] = "http://drupal.org/files/issues/2188491-features-multilingual-2.patch"
 projects[secure_permissions][patch][] = "http://drupal.org/files/issues/secure_permissions-dont_disable_all_permissions-2499607-3.patch"
 
@@ -399,7 +380,7 @@ projects[search_api_db][version] = "1.5"
 
 ; To be removed together with p2.
 projects[similarterms][subdir] = "contrib"
-projects[similarterms][version] = "2.3"
+projects[similarterms][version] = "2.5"
 
 projects[sslproxy][subdir] = "contrib"
 projects[sslproxy][version] = "1.0"
@@ -416,22 +397,14 @@ projects[token][version] = "1.6"
 projects[transliteration][subdir] = "contrib"
 projects[transliteration][version] = "3.2"
 
-; Using dev release, as the "stable" version is making errors in the install profile.
 projects[uuid][subdir] = "contrib"
-projects[uuid][download][type] = "git"
-projects[uuid][download][url] = "http://git.drupal.org/project/uuid.git"
-projects[uuid][download][revision] = "3f4d9fb"
+projects[uuid][subdir] = "1.0-beta1"
 
 projects[variable][subdir] = "contrib"
 projects[variable][version] = "2.5"
 
 projects[varnish][subdir] = "contrib"
-projects[varnish][version] = "1.0-beta3"
-projects[varnish][patch][0] = "http://drupal.org/files/issues/notification_level_settings-2169271-3.patch"
-; Fixes "Connection reset by peer" on large purge list by batching paths, https://www.drupal.org/node/1481136
-projects[varnish][patch][] = "https://www.drupal.org/files/issues/varnish_purge_limit-1481136-11_1.patch"
-; Fixes missing leading slash from ban URLs, https://www.drupal.org/node/2340829
-projects[varnish][patch][] = "https://www.drupal.org/files/issues/varnish-leave_base_path_in_urls-2340829-26.patch"
+projects[varnish][version] = "1.1"
 
 projects[virtual_field][subdir] = "contrib"
 projects[virtual_field][version] = "1.2"
@@ -461,15 +434,13 @@ projects[views_rss_media][patch][] = "https://www.drupal.org/files/issues/views_
 
 ; Development version where the "unpublished" status have been fixed on the content edit page.
 projects[view_unpublished][subdir] = "contrib"
-projects[view_unpublished][download][type] = "git"
-projects[view_unpublished][download][url] = "http://git.drupal.org/project/view_unpublished.git"
-projects[view_unpublished][download][revision] = "e9df1d3"
+projects[view_unpublished][version] = "1.2"
 
 projects[watchdog_filtering][subdir] = "contrib"
 projects[watchdog_filtering][version] = "1.3"
 
 projects[webform][subdir] = "contrib"
-projects[webform][version] = "4.10"
+projects[webform][version] = "4.13"
 
 projects[workbench][subdir] = "contrib"
 projects[workbench][version] = "1.2"
