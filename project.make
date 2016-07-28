@@ -233,6 +233,7 @@ projects[media_youtube][version] = "3.0"
 projects[memcache][subdir] = "contrib"
 projects[memcache][version] = "1.6"
 
+projects[menu_block][type] = "module"
 projects[menu_block][subdir] = "contrib"
 projects[menu_block][version] = "2.7"
 ; Add support for features export of blocks
@@ -398,7 +399,7 @@ projects[transliteration][subdir] = "contrib"
 projects[transliteration][version] = "3.2"
 
 projects[uuid][subdir] = "contrib"
-projects[uuid][subdir] = "1.0-beta1"
+projects[uuid][version] = "1.0-beta1"
 
 projects[variable][subdir] = "contrib"
 projects[variable][version] = "2.5"
