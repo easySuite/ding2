@@ -7,16 +7,6 @@
 require_once 'includes/TingSearchCqlDoctor.class.inc';
 
 /**
- * Implements hook_init().
- *
- * Make the ting search overlay available for all other JavaScripts around the
- * site.
- */
-function ting_search_init() {
-  drupal_add_js(drupal_get_path('module', 'ting_search') . '/js/ting_search_overlay.js');
-}
-
-/**
  * Implements hook_ctools_plugin_directory().
  *
  * It simply tells panels where to find the .inc files that define various
@@ -925,15 +915,31 @@ function ting_search_submit($form, &$form_state) {
   $fields = array();
 
   $extended_fields = array(
-    'creator' => 'term.creator',
-    'title' => 'term.title',
-    'subject' => 'term.subject',
+    'creator' => array(
+      'index' => 'term.creator',
+      'parents' => array('creator'),
+    ),
+    'title' => array(
+      'index' => 'term.title',
+      'parents' => array('title'),
+    ),
+    'subject' => array(
+      'index' => 'term.subject',
+      'parents' => array('subject'),
+    ),
   );
+  // Allow other modules change fields.
+  drupal_alter('ting_search_fields', $extended_fields);
 
-  foreach ($extended_fields as $name => $index) {
-    if (!empty($form_state['values'][$name])) {
-      $value = $form_state['values'][$name];
-      $fields[] = $index . '=' . (strpos($value, ' ') ? '"' . $value . '"' : $value);
+  foreach ($extended_fields as $name => $data) {
+    if (isset($data['value'])) {
+      $fields[] = $data['value'];
+    }
+    else {
+      $value = drupal_array_get_nested_value($form_state['values'], $data['parents']);
+      if (!empty($value)) {
+        $fields[] = $data['index'] . '=' . (strpos($value, ' ') ? '"' . $value . '"' : $value);
+      }
     }
   }
 
