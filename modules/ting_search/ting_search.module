@@ -925,15 +925,23 @@ function ting_search_submit($form, &$form_state) {
   $fields = array();
 
   $extended_fields = array(
-    'creator' => 'term.creator',
+    'author' => 'term.creator',
     'title' => 'term.title',
     'subject' => 'term.subject',
   );
 
-  foreach ($extended_fields as $name => $index) {
-    if (!empty($form_state['values'][$name])) {
-      $value = $form_state['values'][$name];
-      $fields[] = $index . '=' . (strpos($value, ' ') ? '"' . $value . '"' : $value);
+  // Allow other modules change fields.
+  drupal_alter('ting_search_fields', $extended_fields);
+
+  foreach ($extended_fields as $name => $data) {
+    if (isset($data['value'])) {
+      $fields[] = $data['value'];
+    }
+    else {
+      $value = drupal_array_get_nested_value($form_state['values'], $data['parents']);
+      if (!empty($value)) {
+        $fields[] = $data['index'] . '=' . (strpos($value, ' ') ? '"' . $value . '"' : $value);
+      }
     }
   }
 
