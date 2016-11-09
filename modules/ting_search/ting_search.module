@@ -938,7 +938,7 @@ function ting_search_submit($form, &$form_state) {
       $fields[] = $data['value'];
     }
     else {
-      $value = drupal_array_get_nested_value($form_state['values'], $data['parents']);
+      $value = trim(drupal_array_get_nested_value($form_state['values'], $data['parents']));
       if (!empty($value)) {
         $fields[] = $data['index'] . '=' . (strpos($value, ' ') ? '"' . $value . '"' : $value);
       }
