@@ -146,7 +146,8 @@ function ting_search_carousel_content_type_render($subtype, $conf, $panel_args, 
   if (!empty($conf['searches'])) {
     $searches = $conf['searches'];
   }
-  elseif (!empty(variable_get('ting_carousel_search_queries', array()))) {
+  $varget_queries = variable_get('ting_carousel_search_queries', array());
+  elseif (!empty($varget_queries)) {
     $searches = variable_get('ting_carousel_search_queries', array());
     $searches = $searches['searches'];
   }
@@ -154,7 +155,7 @@ function ting_search_carousel_content_type_render($subtype, $conf, $panel_args, 
   if (!empty($conf['ting_search_carousel_settings'])) {
     $searches_configuration = $conf['ting_search_carousel_settings'];
   }
-  elseif (!empty(variable_get('ting_carousel_search_queries', array()))) {
+  elseif (!empty($varget_queries)) {
     $searches_configuration = variable_get('ting_carousel_search_queries', array());
     $searches_configuration = $searches_configuration['ting_search_carousel_settings'];
   }
