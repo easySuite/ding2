@@ -472,3 +472,13 @@ function ding2_update_7033() {
     variable_set('views_defaults', $status);
   }
 }
+
+function ding2_update_dependencies() {
+  $dependencies = array();
+
+  $dependencies['ding2'][7021] = array(
+    'search_api' => 7118,
+  );
+
+  return $dependencies;
+}
