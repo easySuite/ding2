@@ -173,6 +173,16 @@ function ddbasic_preprocess__node__ding_news(&$variables) {
 function ddbasic_preprocess__node__ding_event(&$variables) {
   $date = field_get_items('node', $variables['node'], 'field_ding_event_date');
 
+  $price = field_get_items('node', $variables['node'], 'field_ding_event_price');
+  if (!empty($price)) {
+    $variables['raw_price'] = $price[0]['value'];
+    $variables['event_price'] = $price[0]['value'] . ' kr.';
+  }
+  else {
+    $variables['raw_price'] = '';
+    $variables['event_price'] = t('Free');
+  }
+
   $location = field_get_items('node', $variables['node'], 'field_ding_event_location');
   $variables['alt_location_is_set'] = !empty($location[0]['name_line']) || !empty($location[0]['thoroughfare']);
 
@@ -264,6 +274,13 @@ function ddbasic_preprocess__node__ding_event(&$variables) {
     case 'full':
       array_push($variables['classes_array'], 'node-full');
       if (!empty($date)) {
+        // Add event start date to variables.
+        $variables['start_date'] = $variables['node']->field_ding_event_date[LANGUAGE_NONE][0]['value'];
+        // Add event end date to variables.
+        $variables['end_date'] = $variables['node']->field_ding_event_date[LANGUAGE_NONE][0]['value2'];
+
+        array_push($variables['classes_array'], 'node-full');
+
         // Add event time to variables. A render array is created based on the
         // date format "time_only".
         $event_time_ra = field_view_field('node', $variables['node'], 'field_ding_event_date', array(
