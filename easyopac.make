@@ -402,13 +402,6 @@ projects[ting_field_search][download][url]    = "git@github.com:easySuite/ting_f
 ;projects[ting_field_search][download][tag]    = "7.x-3.0.5"
 projects[ting_field_search][download][branch] = "development"
 
-projects[ting_marc][type]             = "module"
-projects[ting_marc][subdir]           = ""
-projects[ting_marc][download][type]   = "git"
-projects[ting_marc][download][url]    = "git@github.com:easySuite/ting_marc.git"
-;projects[ting_marc][download][tag]    = "7.x-3.0.5"
-projects[ting_marc][download][branch] = "development"
-
 projects[ting_proposed_searches][type]             = "module"
 projects[ting_proposed_searches][subdir]           = ""
 projects[ting_proposed_searches][download][type]   = "git"
