@@ -130,3 +130,22 @@ function ting_search_carousel_update_7005() {
   variable_del('ting_carousel_search_queries');
   variable_del('ting_search_carousel_settings');
 }
+
+/**
+ * Remove any access rules for carousels.
+ */
+function ting_search_carousel_update_7006() {
+  $query = db_select('panels_pane', 'pp')
+    ->fields('pp', array('pid', 'access'))
+    ->condition('type', 'carousel')
+    ->condition('subtype', 'carousel')
+    ->execute()
+    ->fetchAll();
+
+  foreach ($query as $item) {
+    if (!empty($item->access)) {
+      $item->access = array();
+      db_update('panels_pane')->fields(array('access' => serialize($item->access)))->condition('pid', $item->pid)->execute();
+    }
+  }
+}
