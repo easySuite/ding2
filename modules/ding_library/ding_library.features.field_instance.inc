@@ -81,11 +81,11 @@ function ding_library_field_default_field_instances() {
       'module' => 'addressfield',
       'settings' => array(
         'available_countries' => array(
-          'DE' => 'DE',
-          'DK' => 'DK',
+          'GL' => 'GL',
         ),
         'format_handlers' => array(
           'address' => 'address',
+          'address-hide-country' => 0,
           'organisation' => 0,
           'name-full' => 0,
           'name-oneline' => 0,
@@ -383,6 +383,7 @@ function ding_library_field_default_field_instances() {
     'label' => 'Links',
     'required' => 0,
     'settings' => array(
+      'absolute_url' => 1,
       'attributes' => array(
         'class' => '',
         'configurable_title' => 1,
@@ -396,6 +397,7 @@ function ding_library_field_default_field_instances() {
       'enable_tokens' => 1,
       'rel_remove' => 'default',
       'title' => 'required',
+      'title_label_use_field_label' => FALSE,
       'title_maxlength' => 255,
       'title_value' => '',
       'url' => 0,

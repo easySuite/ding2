@@ -1,0 +1,5 @@
+name = Gronbib Frontend
+description = Gronbib frontend changes over default easySuite
+core = 7.x
+package = Gronbib
+project = gronbib

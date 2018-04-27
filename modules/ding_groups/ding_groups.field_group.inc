@@ -94,5 +94,11 @@ function ding_groups_field_group_info() {
   );
   $export['group_ding_group_tagging|node|ding_group|form'] = $field_group;
 
+  // Translatables
+  // Included for use with string extractors like potx.
+  t('Content');
+  t('Images');
+  t('Tagging');
+
   return $export;
 }

@@ -96,6 +96,9 @@ function ding_page_strongarm() {
       'workflow_tab' => array(
         'custom_settings' => FALSE,
       ),
+      'alternative_layout_full' => array(
+        'custom_settings' => TRUE,
+      ),
     ),
     'extra_fields' => array(
       'form' => array(
@@ -116,6 +119,30 @@ function ding_page_strongarm() {
             'weight' => '5',
             'visible' => TRUE,
           ),
+          'teaser' => array(
+            'weight' => '3',
+            'visible' => TRUE,
+          ),
+        ),
+        'ding_serendipity_info' => array(
+          'default' => array(
+            'weight' => '0',
+            'visible' => TRUE,
+          ),
+          'teaser' => array(
+            'weight' => '0',
+            'visible' => TRUE,
+          ),
+        ),
+        'language' => array(
+          'default' => array(
+            'weight' => '7',
+            'visible' => FALSE,
+          ),
+          'teaser' => array(
+            'weight' => '4',
+            'visible' => FALSE,
+          ),
         ),
       ),
     ),
@@ -126,7 +153,7 @@ function ding_page_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'language_content_type_ding_page';
-  $strongarm->value = '0';
+  $strongarm->value = '2';
   $export['language_content_type_ding_page'] = $strongarm;
 
   $strongarm = new stdClass();

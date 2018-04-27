@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * @file
+ * Overwrite some features on easySuite.
+ */
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function gronbib_frontend_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'form_alter' && isset($implementations['gronbib_frontend'])) {
+    $group = $implementations['gronbib_frontend'];
+    unset($implementations['gronbib_frontend']);
+    $implementations['gronbib_frontend'] = $group;
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function gronbib_frontend_form_search_block_form_alter(&$form, &$form_state) {
+  $page_args = arg();
+  if (!empty($page_args[1]) && is_numeric($page_args[1])) {
+    $node = node_load($page_args[1]);
+    if ($node->type == 'ding_library') {
+      // Getting info about current node translations.
+      $node_translations = translation_node_get_translations($node->tnid);
+
+      // Collecting translations titles.
+      $titles = [];
+      foreach ($node_translations as $node_translation) {
+        $titles[] = $node_translation->title;
+      }
+
+      // Hardcoding relations of library title (in english) with option from
+      // ting_search_field search form fieldset.
+      if (in_array('Central Library of Greenland', $titles)) {
+        $form['ting_field_search']['#default_value'] = 'nunatta_atuagaateqarfia';
+      }
+
+      if (in_array('National Library of Greenland', $titles)) {
+        $form['ting_field_search']['#default_value'] = 'groenlandica';
+      }
+    }
+  }
+}

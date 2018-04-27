@@ -322,5 +322,18 @@ function ding_event_field_group_info() {
   );
   $export['group_right|node|ding_event|default'] = $field_group;
 
+  // Translatables
+  // Included for use with string extractors like potx.
+  t('Attachments');
+  t('Content');
+  t('Date, location and price');
+  t('Images');
+  t('Left');
+  t('Left column');
+  t('Right');
+  t('Right column');
+  t('Tagging');
+  t('Ting');
+
   return $export;
 }

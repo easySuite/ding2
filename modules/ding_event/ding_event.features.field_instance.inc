@@ -64,6 +64,7 @@ function ding_event_field_default_field_instances() {
           'status' => TRUE,
         ),
       ),
+      'entity_translation_sync' => FALSE,
       'user_register_form' => FALSE,
     ),
     'view modes' => array(
@@ -731,6 +732,63 @@ function ding_event_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-ding_event-field_ding_event_rooms'
+  $field_instances['node-ding_event-field_ding_event_rooms'] = array(
+    'bundle' => 'ding_event',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'alternative_layout_full' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 9,
+      ),
+      'default' => array(
+        'label' => 'inline',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 5,
+      ),
+      'search_result' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 6,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 9,
+      ),
+      'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 9,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_ding_event_rooms',
+    'label' => 'Rooms',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+      ),
+      'type' => 'options_select',
+      'weight' => 14,
+    ),
+  );
+
   // Exported field_instance: 'node-ding_event-field_ding_event_tags'
   $field_instances['node-ding_event-field_ding_event_tags'] = array(
     'bundle' => 'ding_event',
@@ -1030,6 +1088,62 @@ function ding_event_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-ding_event-field_editorial_base'
+  $field_instances['node-ding_event-field_editorial_base'] = array(
+    'bundle' => 'ding_event',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'alternative_layout_full' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 8,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 11,
+      ),
+      'search_result' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 7,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 8,
+      ),
+      'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 8,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_editorial_base',
+    'label' => 'Section',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+      ),
+      'type' => 'options_select',
+      'weight' => 41,
+    ),
+  );
+
   // Exported field_instance: 'node-ding_event-og_group_ref'
   $field_instances['node-ding_event-og_group_ref'] = array(
     'bundle' => 'ding_event',
@@ -1090,6 +1204,7 @@ function ding_event_field_default_field_instances() {
           'status' => TRUE,
         ),
       ),
+      'entity_translation_sync' => FALSE,
       'user_register_form' => FALSE,
     ),
     'view modes' => array(
@@ -1115,12 +1230,154 @@ function ding_event_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'taxonomy_term-editorial_base-field_eb_section_content_image'
+  $field_instances['taxonomy_term-editorial_base-field_eb_section_content_image'] = array(
+    'bundle' => 'editorial_base',
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 3,
+      ),
+    ),
+    'entity_type' => 'taxonomy_term',
+    'field_name' => 'field_eb_section_content_image',
+    'label' => 'Content image.',
+    'required' => 0,
+    'settings' => array(
+      'alt_field' => 0,
+      'default_image' => 0,
+      'file_directory' => '',
+      'file_extensions' => 'png gif jpg jpeg',
+      'max_filesize' => '',
+      'max_resolution' => '',
+      'min_resolution' => '',
+      'title_field' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'media',
+      'settings' => array(
+        'allowed_schemes' => array(
+          'public' => 'public',
+          'vimeo' => 0,
+          'youtube' => 0,
+        ),
+        'allowed_types' => array(
+          'audio' => 0,
+          'document' => 0,
+          'image' => 'image',
+          'video' => 0,
+        ),
+        'browser_plugins' => array(
+          'ding_content' => 0,
+          'media_default--media_browser_1' => 'media_default--media_browser_1',
+          'media_default--media_browser_my_files' => 0,
+          'media_internet' => 0,
+          'upload' => 'upload',
+          'youtube' => 0,
+        ),
+        'manualcrop_crop_info' => TRUE,
+        'manualcrop_default_crop_area' => TRUE,
+        'manualcrop_enable' => FALSE,
+        'manualcrop_inline_crop' => FALSE,
+        'manualcrop_instant_crop' => FALSE,
+        'manualcrop_instant_preview' => TRUE,
+        'manualcrop_keyboard' => TRUE,
+        'manualcrop_maximize_default_crop_area' => FALSE,
+        'manualcrop_require_cropping' => array(),
+        'manualcrop_styles_list' => array(),
+        'manualcrop_styles_mode' => 'include',
+        'manualcrop_thumblist' => FALSE,
+      ),
+      'type' => 'media_generic',
+      'weight' => 3,
+    ),
+  );
+
+  // Exported field_instance: 'taxonomy_term-editorial_base-field_eb_section_summary_text'
+  $field_instances['taxonomy_term-editorial_base-field_eb_section_summary_text'] = array(
+    'bundle' => 'editorial_base',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+    ),
+    'entity_type' => 'taxonomy_term',
+    'field_name' => 'field_eb_section_summary_text',
+    'label' => 'Summary',
+    'required' => 0,
+    'settings' => array(
+      'text_processing' => 1,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'rows' => 5,
+      ),
+      'type' => 'text_textarea',
+      'weight' => 3,
+    ),
+  );
+
+  // Exported field_instance: 'taxonomy_term-editorial_base-field_term_page'
+  $field_instances['taxonomy_term-editorial_base-field_term_page'] = array(
+    'bundle' => 'editorial_base',
+    'default_value' => array(
+      0 => array(
+        'value' => 0,
+      ),
+    ),
+    'deleted' => 0,
+    'description' => 'Create a term page',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 1,
+      ),
+    ),
+    'entity_type' => 'taxonomy_term',
+    'field_name' => 'field_term_page',
+    'label' => 'Term page',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'display_label' => 1,
+      ),
+      'type' => 'options_onoff',
+      'weight' => 32,
+    ),
+  );
+
   // Translatables
   // Included for use with string extractors like potx.
   t('An external link to a site where the user can sign up for the event or buy tickets to the event. The link is printet out as a button. If the event has a price the text on the button will be "Bestil billet(ter)" - if not, the text will be "Deltag i arrangementet". If Place2book is used, this field should not be used.');
   t('Body');
   t('Book ticket/Participate in event');
   t('Category');
+  t('Content image.');
+  t('Create a term page');
   t('Date');
   t('Display this event in the selected group (temapage).');
   t('Events show the value "Gratis", if the field is set to 0. If there\'s multiple ticket types, you can set the value as lowest - highest price in the field, like "30 - 50"');
@@ -1133,9 +1390,13 @@ function ding_event_field_default_field_instances() {
   t('Materials');
   t('Optional. If provided, the location address will be shown instead of the address of the associated library when presenting info on the event.');
   t('Price');
+  t('Rooms');
+  t('Section');
   t('Select the libraries this content should be associated with.');
+  t('Summary');
   t('Tags');
   t('Target');
+  t('Term page');
   t('Title image');
 
   return $field_instances;

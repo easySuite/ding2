@@ -257,5 +257,14 @@ function ding_library_field_group_info() {
   );
   $export['group_right_col_search|node|ding_library|search_result'] = $field_group;
 
+  // Translatables
+  // Included for use with string extractors like potx.
+  t('Contact');
+  t('Content');
+  t('Images');
+  t('Left column');
+  t('Links');
+  t('Right column');
+
   return $export;
 }
