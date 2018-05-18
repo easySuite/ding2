@@ -14,7 +14,7 @@ projects[culture_frontend][type]             = "module"
 projects[culture_frontend][subdir]           = ""
 projects[culture_frontend][download][type]   = "git"
 projects[culture_frontend][download][url]    = "git@github.com:easySuite/culture_frontend.git"
-projects[culture_frontend][download][branch] = "develop"
+projects[culture_frontend][download][branch] = "EASYOPAC-861"
 
 projects[kultur_calendar][type]             = "module"
 projects[kultur_calendar][subdir]           = ""
