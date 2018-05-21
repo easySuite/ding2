@@ -25,7 +25,8 @@ function ding_user_preprocess_html(&$variables) {
       // Redirect anonymous user to front page login. This is to prevent the
       // library user from seeing /user, login and password page.
       // Unless in maintenance_mode: There's no front page login when in maintenance_mode, and a redirect prevent login.
-      if (!variable_get('maintenance_mode', 0)) {
+      $enable_login_page = variable_get('ding_user_show_login_page', 0);
+      if ($enable_login_page != 1 && !variable_get('maintenance_mode', 0)) {
         drupal_goto('', array('fragment' => 'login'));
       }
     }
@@ -701,7 +702,7 @@ function ding_user_get_private_key() {
   }
   watchdog(
     'ding_user',
-    'ding_user_private_key not found', 
+    'ding_user_private_key not found',
     array(),
     WATCHDOG_CRITICAL
   );
