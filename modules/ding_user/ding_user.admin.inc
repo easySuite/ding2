@@ -15,6 +15,13 @@ function ding_user_admin_setting_form($form, &$form_state) {
     '#description' => t('The link is used in the text next to the log-in form'),
   );
 
+  $form['ding_user_show_login_page'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Show user login form page'),
+    '#description' => t('Show user login form page instead of ding_popup panel.'),
+    '#default_value' => variable_get('ding_user_show_login_page', 0),
+  );
+
   return system_settings_form($form);
 }
 
