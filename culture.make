@@ -21,3 +21,6 @@ projects[kultur_calendar][subdir]           = ""
 projects[kultur_calendar][download][type]   = "git"
 projects[kultur_calendar][download][url]    = "git@github.com:easySuite/kultur_calendar.git"
 projects[kultur_calendar][download][branch] = "culture_development"
+
+projects[similar][subdir] = "contrib"
+projects[similar][version] = "2.0-beta6"
