@@ -54,6 +54,15 @@ function ding_frontend_views_default_views() {
   $handler->display->display_options['fields']['user']['display'] = 'view';
   $handler->display->display_options['fields']['user']['view_mode'] = 'full';
   $handler->display->display_options['fields']['user']['bypass_access'] = 0;
+  /* Field: Indexed Multiple types: Bundle */
+  $handler->display->display_options['fields']['item_bundle']['id'] = 'item_bundle';
+  $handler->display->display_options['fields']['item_bundle']['table'] = 'search_api_index_default_multiple_index';
+  $handler->display->display_options['fields']['item_bundle']['field'] = 'item_bundle';
+  $handler->display->display_options['fields']['item_bundle']['label'] = '';
+  $handler->display->display_options['fields']['item_bundle']['exclude'] = TRUE;
+  $handler->display->display_options['fields']['item_bundle']['element_label_colon'] = FALSE;
+  $handler->display->display_options['fields']['item_bundle']['link_to_entity'] = 0;
+  $handler->display->display_options['fields']['item_bundle']['format_name'] = 1;
   /* Contextual filter: Search: Fulltext search */
   $handler->display->display_options['arguments']['search_api_views_fulltext']['id'] = 'search_api_views_fulltext';
   $handler->display->display_options['arguments']['search_api_views_fulltext']['table'] = 'search_api_index_default_multiple_index';
