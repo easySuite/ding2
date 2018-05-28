@@ -255,7 +255,7 @@ function ding_event_views_default_views() {
   $handler->display->display_options['link_url'] = 'arrangementer';
   $handler->display->display_options['defaults']['exposed_form'] = FALSE;
   $handler->display->display_options['exposed_form']['type'] = 'basic';
-  $handler->display->display_options['exposed_form']['options']['submit_button'] = 'Search';
+  $handler->display->display_options['exposed_form']['options']['submit_button'] = 'Ujaasigit';
   $handler->display->display_options['exposed_form']['options']['reset_button'] = TRUE;
   $handler->display->display_options['exposed_form']['options']['reset_button_label'] = 'Alle arrangementer';
   $handler->display->display_options['exposed_form']['options']['exposed_sorts_label'] = 'Sortér efter';
@@ -444,7 +444,7 @@ function ding_event_views_default_views() {
   $handler->display->display_options['filters']['combine']['group'] = 1;
   $handler->display->display_options['filters']['combine']['exposed'] = TRUE;
   $handler->display->display_options['filters']['combine']['expose']['operator_id'] = 'combine_op';
-  $handler->display->display_options['filters']['combine']['expose']['label'] = 'Search';
+  $handler->display->display_options['filters']['combine']['expose']['label'] = 'Ujaasigit';
   $handler->display->display_options['filters']['combine']['expose']['operator'] = 'combine_op';
   $handler->display->display_options['filters']['combine']['expose']['identifier'] = 'title';
   $handler->display->display_options['filters']['combine']['expose']['remember_roles'] = array(
@@ -1488,7 +1488,7 @@ function ding_event_views_default_views() {
     t('Alle'),
     t('Event list'),
     t('more'),
-    t('Search'),
+    t('Ujaasigit'),
     t('Alle arrangementer'),
     t('Number of elements'),
     t('- Alle -'),

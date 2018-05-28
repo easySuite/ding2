@@ -6,7 +6,6 @@
  *
  * @ingroup views_templates
  */
-//dump($classes_array);
 ?>
 <?php if (!empty($title)): ?>
   <h3><?php print $title; ?></h3>
@@ -23,7 +22,7 @@
               <?php print $result->node_title; ?>
             </h3>
 
-            <?php print $result->field_field_ding_library_lead[0]['rendered']; //dump($result->field_field_ding_library_lead);die; ?>
+            <?php print $result->field_field_ding_library_lead[0]['rendered']; ?>
           </div>
         </a>
       </article>

@@ -5,6 +5,8 @@
  * Overwrite some features on easySuite.
  */
 
+include_once 'gronbib_frontend.features.inc';
+
 /**
  * Implements hook_module_implements_alter().
  */

@@ -262,7 +262,7 @@ function ding_frontpage_default_page_manager_pages() {
   $display->panels['s1_r_01_100'][0] = 'new-ebf5abb1-6e01-46d0-ba95-7c3b7ad27513';
   $pane = new stdClass();
   $pane->pid = 'new-92abca0d-e5b5-4cba-8653-de9eca1d5400';
-  $pane->panel = 's2_r_04_050_1';
+  $pane->panel = 's3_r_04_050_1';
   $pane->type = 'all_opening_hours';
   $pane->subtype = 'all_opening_hours';
   $pane->shown = TRUE;
@@ -282,66 +282,10 @@ function ding_frontpage_default_page_manager_pages() {
   $pane->locks = array();
   $pane->uuid = '92abca0d-e5b5-4cba-8653-de9eca1d5400';
   $display->content['new-92abca0d-e5b5-4cba-8653-de9eca1d5400'] = $pane;
-  $display->panels['s2_r_04_050_1'][0] = 'new-92abca0d-e5b5-4cba-8653-de9eca1d5400';
+  $display->panels['s3_r_04_050_1'][0] = 'new-92abca0d-e5b5-4cba-8653-de9eca1d5400';
   $pane = new stdClass();
-  $pane->pid = 'new-36fde315-2cff-4a43-a916-d536efd7a253';
-  $pane->panel = 's2_r_04_050_2';
-  $pane->type = 'ding_nodelist';
-  $pane->subtype = 'ding_nodelist';
-  $pane->shown = TRUE;
-  $pane->access = array();
-  $pane->configuration = array(
-    'list_type' => 'custom-dynamic',
-    'title_length' => 25,
-    'body_length' => 100,
-    'dynamic_switch' => 0,
-    'nodes_switch' => 1,
-    'autoscroll_delay' => NULL,
-    'columns' => 'full',
-    'content_filter_promoted' => 0,
-    'content_filter_date' => FALSE,
-    'content_types' => array(
-      'ding_news' => 'ding_news',
-    ),
-    'limit' => 0,
-    'more_links' => array(),
-    'override_title_text' => 'Nyheder',
-    'selected_nodes' => array(
-      0 => array(
-        'node' => 'Vi får nu bibliotekssystem [nid:78]',
-        'nid' => '78',
-        'type' => 'ding_news',
-        'weight' => '1',
-        'node_delete_0' => 'Delete',
-      ),
-    ),
-    'sort_field' => '',
-    'sort_order' => 'asc',
-    'taxonomy_filters' => array(),
-    'unique_id' => 'pane-15246490295263',
-    'widget_type' => 'taxonomy',
-    'item_template' => '',
-  );
-  $pane->cache = array(
-    'method' => 'simple',
-    'settings' => array(
-      'lifetime' => '1800',
-      'granularity' => 'context',
-    ),
-  );
-  $pane->style = array(
-    'settings' => NULL,
-  );
-  $pane->css = array();
-  $pane->extras = array();
-  $pane->position = 0;
-  $pane->locks = array();
-  $pane->uuid = '36fde315-2cff-4a43-a916-d536efd7a253';
-  $display->content['new-36fde315-2cff-4a43-a916-d536efd7a253'] = $pane;
-  $display->panels['s2_r_04_050_2'][0] = 'new-36fde315-2cff-4a43-a916-d536efd7a253';
-  $pane = new stdClass();
-  $pane->pid = 'new-27727fdd-d6ee-41f0-9fbe-20dc5db03f21';
-  $pane->panel = 's2_r_04_050_2';
+  $pane->pid = 'new-7b102670-d17d-4cdd-8d67-a8299f95cadc';
+  $pane->panel = 's3_r_04_050_2';
   $pane->type = 'ding_nodelist';
   $pane->subtype = 'ding_nodelist';
   $pane->shown = TRUE;
@@ -355,19 +299,18 @@ function ding_frontpage_default_page_manager_pages() {
     'autoscroll_delay' => NULL,
     'columns' => 'full',
     'content_filter_promoted' => 0,
-    'content_filter_date' => 0,
+    'content_filter_date' => FALSE,
     'content_types' => array(
-      'ding_event' => 'ding_event',
       'ding_news' => 'ding_news',
     ),
     'limit' => '5',
     'more_links' => array(),
-    'override_title_text' => '',
+    'override_title_text' => 'Nyheder',
     'selected_nodes' => array(),
     'sort_field' => '',
     'sort_order' => 'asc',
     'taxonomy_filters' => array(),
-    'unique_id' => 'pane-15246491550123',
+    'unique_id' => 'pane-15266275950678',
     'widget_type' => 'taxonomy',
     'item_template' => '',
   );
@@ -378,16 +321,14 @@ function ding_frontpage_default_page_manager_pages() {
       'granularity' => 'context',
     ),
   );
-  $pane->style = array(
-    'settings' => NULL,
-  );
+  $pane->style = array();
   $pane->css = array();
   $pane->extras = array();
-  $pane->position = 1;
+  $pane->position = 0;
   $pane->locks = array();
-  $pane->uuid = '27727fdd-d6ee-41f0-9fbe-20dc5db03f21';
-  $display->content['new-27727fdd-d6ee-41f0-9fbe-20dc5db03f21'] = $pane;
-  $display->panels['s2_r_04_050_2'][1] = 'new-27727fdd-d6ee-41f0-9fbe-20dc5db03f21';
+  $pane->uuid = '7b102670-d17d-4cdd-8d67-a8299f95cadc';
+  $display->content['new-7b102670-d17d-4cdd-8d67-a8299f95cadc'] = $pane;
+  $display->panels['s3_r_04_050_2'][0] = 'new-7b102670-d17d-4cdd-8d67-a8299f95cadc';
   $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;

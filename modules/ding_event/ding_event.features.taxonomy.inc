@@ -9,16 +9,6 @@
  */
 function ding_event_taxonomy_default_vocabularies() {
   return array(
-    'editorial_base' => array(
-      'name' => 'Section',
-      'machine_name' => 'editorial_base',
-      'description' => NULL,
-      'hierarchy' => 0,
-      'module' => 'taxonomy',
-      'weight' => 0,
-      'language' => 'und',
-      'i18n_mode' => 0,
-    ),
     'event_category' => array(
       'name' => 'Event category',
       'machine_name' => 'event_category',

@@ -89,11 +89,11 @@ function ding_groups_image_default_styles() {
 function ding_groups_node_info() {
   $items = array(
     'ding_group' => array(
-      'name' => t('Groups'),
+      'name' => t('Grupper'),
       'base' => 'node_content',
       'description' => t('Create and new group that can be used to group related content together (temapages)'),
       'has_title' => '1',
-      'title_label' => t('Title'),
+      'title_label' => t('titel'),
       'help' => '',
     ),
   );
