@@ -16,8 +16,6 @@ function ding_event_taxonomy_default_vocabularies() {
       'hierarchy' => 0,
       'module' => 'taxonomy',
       'weight' => 0,
-      'language' => 'und',
-      'i18n_mode' => 0,
     ),
     'event_target' => array(
       'name' => 'Event target',
@@ -26,18 +24,6 @@ function ding_event_taxonomy_default_vocabularies() {
       'hierarchy' => 0,
       'module' => 'taxonomy',
       'weight' => 0,
-      'language' => 'und',
-      'i18n_mode' => 0,
-    ),
-    'rooms' => array(
-      'name' => 'Rooms',
-      'machine_name' => 'rooms',
-      'description' => '',
-      'hierarchy' => 0,
-      'module' => 'taxonomy',
-      'weight' => 0,
-      'language' => 'und',
-      'i18n_mode' => 0,
     ),
   );
 }

@@ -65,7 +65,7 @@ function ding_eresource_image_default_styles() {
 function ding_eresource_node_info() {
   $items = array(
     'ding_eresource' => array(
-      'name' => t('E-resurse'),
+      'name' => t('E-resource'),
       'base' => 'node_content',
       'description' => '',
       'has_title' => '1',

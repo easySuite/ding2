@@ -281,17 +281,5 @@ function ding_eresource_field_group_info() {
   );
   $export['group_right|node|ding_eresource|default'] = $field_group;
 
-  // Translatables
-  // Included for use with string extractors like potx.
-  t('Attachments');
-  t('Categorization');
-  t('Content');
-  t('Data well');
-  t('Images');
-  t('Left');
-  t('Left column');
-  t('Right');
-  t('Right column');
-
   return $export;
 }
