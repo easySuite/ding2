@@ -329,7 +329,7 @@ function ding_event_views_default_views() {
       'bef_format' => 'bef',
       'more_options' => array(
         'bef_select_all_none' => 0,
-        'bef_collapsible' => 0,
+        'bef_collapsible' => 1,
         'autosubmit' => 0,
         'is_secondary' => 0,
         'any_label' => '',
@@ -349,7 +349,7 @@ function ding_event_views_default_views() {
       'bef_format' => 'bef',
       'more_options' => array(
         'bef_select_all_none' => 0,
-        'bef_collapsible' => 0,
+        'bef_collapsible' => 1,
         'autosubmit' => 0,
         'is_secondary' => 0,
         'any_label' => '',
@@ -368,7 +368,7 @@ function ding_event_views_default_views() {
       'bef_format' => 'bef',
       'more_options' => array(
         'bef_select_all_none' => 0,
-        'bef_collapsible' => 0,
+        'bef_collapsible' => 1,
         'autosubmit' => 0,
         'is_secondary' => 0,
         'any_label' => '',
@@ -377,6 +377,25 @@ function ding_event_views_default_views() {
           'available' => array(
             0 => 'global_types',
             1 => 'vocabulary',
+          ),
+        ),
+        'rewrite' => array(
+          'filter_rewrite_values' => '',
+        ),
+      ),
+    ),
+    'sticky' => array(
+      'bef_format' => 'default',
+      'more_options' => array(
+        'bef_select_all_none' => FALSE,
+        'bef_collapsible' => 0,
+        'autosubmit' => 0,
+        'is_secondary' => 0,
+        'any_label' => '',
+        'bef_filter_description' => '',
+        'tokens' => array(
+          'available' => array(
+            0 => 'global_types',
           ),
         ),
         'rewrite' => array(
