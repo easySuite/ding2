@@ -76,10 +76,5 @@ function ding_frontend_field_group_info() {
   );
   $export['group_right_col_search|profile2|ding_staff_profile|default'] = $field_group;
 
-  // Translatables
-  // Included for use with string extractors like potx.
-  t('Left column');
-  t('Right column');
-
   return $export;
 }
