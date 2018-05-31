@@ -706,7 +706,7 @@ function _ding_campaign_rule_by_type($node_type) {
 function ding_campaign_preprocess(&$variables, $hook) {
   switch ($hook) {
     case 'node':
-      $types = array('ding_event','ding_news','ding_eresource');
+      $types = array('ding_event', 'ding_news', 'ding_eresource');
       if ($variables['view_mode'] == 'full' && in_array($variables['type'], $types)) {
         // Load panes for fetching campaign pane settings.
         $conf = array();
@@ -717,7 +717,7 @@ function ding_campaign_preprocess(&$variables, $hook) {
           }
         }
 
-        $context = array('search_term' => array(),'taxonomy_term' => array());
+        $context = array('search_term' => array(), 'taxonomy_term' => array());
         $context['page'] = $variables['node'];
         $campaigns = ding_campaign_display($context, $conf['ding_campaign_count'], $conf['ding_campaign_offset']);
         $variables['campaigns'] = $campaigns;
