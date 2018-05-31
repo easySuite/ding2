@@ -81,11 +81,11 @@ function ding_library_field_default_field_instances() {
       'module' => 'addressfield',
       'settings' => array(
         'available_countries' => array(
-          'GL' => 'GL',
+          'DE' => 'DE',
+          'DK' => 'DK',
         ),
         'format_handlers' => array(
           'address' => 'address',
-          'address-hide-country' => 0,
           'organisation' => 0,
           'name-full' => 0,
           'name-oneline' => 0,

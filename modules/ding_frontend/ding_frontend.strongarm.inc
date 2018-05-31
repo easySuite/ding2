@@ -126,7 +126,7 @@ background-attachment: fixed;',
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'language_count';
-  $strongarm->value = 3;
+  $strongarm->value = 2;
   $export['language_count'] = $strongarm;
 
   $strongarm = new stdClass();
@@ -134,17 +134,17 @@ background-attachment: fixed;',
   $strongarm->api_version = 1;
   $strongarm->name = 'language_default';
   $strongarm->value = (object) array(
-    'language' => 'kl',
-    'name' => 'Greenlandic',
-    'native' => 'Greenlandic',
+    'language' => 'da',
+    'name' => 'Danish',
+    'native' => 'Dansk',
     'direction' => '0',
-    'enabled' => 1,
-    'plurals' => '0',
-    'formula' => '',
+    'enabled' => '1',
+    'plurals' => '2',
+    'formula' => '($n!=1)',
     'domain' => '',
-    'prefix' => 'kl',
-    'weight' => '-10',
-    'javascript' => 'K_nHHxPVLbnltNuYGPO8zUfJ-MztLNagzjtzA7U2SBA',
+    'prefix' => 'da',
+    'weight' => '0',
+    'javascript' => 'kEXXOJvkrM3-8UUyc0YEn7cZin4yU8e6IqRGBYLqGOo',
   );
   $export['language_default'] = $strongarm;
 

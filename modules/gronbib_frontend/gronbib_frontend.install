@@ -9,5 +9,16 @@
  * Implements hook_install().
  */
 function gronbib_frontend_install() {
+  // Add new language to the system.
+  locale_add_language('kl');
+
+  // Set custom path to language icons.
   variable_set('languageicons_path', 'https://storage.easyting.dk/icons/*.png');
+
+  // Add 'GL' to library address field.
+  $field_instance = field_info_instance('node', 'field_ding_library_addresse', 'ding_library');
+  $field_instance['widget']['settings']['available_countries']['GL'] = 'GL';
+  $field_instance['default_value'][0]['country'] = 'GL';
+
+  field_update_instance($field_instance);
 }
