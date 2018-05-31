@@ -160,16 +160,6 @@ function ding_news_strongarm() {
             'visible' => TRUE,
           ),
         ),
-        'language' => array(
-          'default' => array(
-            'weight' => '4',
-            'visible' => FALSE,
-          ),
-          'teaser' => array(
-            'weight' => '5',
-            'visible' => FALSE,
-          ),
-        ),
       ),
     ),
   );

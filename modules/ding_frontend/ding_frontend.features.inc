@@ -1678,6 +1678,34 @@ function ding_frontend_default_search_api_server() {
             "type" : "integer",
             "boost" : "1.0"
           },
+          "node:field_ding_news_lead" : {
+            "table" : "search_api_db_default_multiple_index_text",
+            "type" : "text",
+            "boost" : "1.0"
+          },
+          "node:field_ding_news_tags" : {
+            "table" : "search_api_db_default_multiple_index_node_field_ding_news_tags",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
+            "boost" : "1.0"
+          },
+          "node:field_ding_page_lead" : {
+            "table" : "search_api_db_default_multiple_index_text",
+            "type" : "text",
+            "boost" : "1.0"
+          },
+          "node:field_ding_page_tags" : {
+            "table" : "search_api_db_default_multiple_index_node_field_ding_page_tags",
+            "column" : "value",
+            "type" : "list\\u003Cinteger\\u003E",
+            "boost" : "1.0"
+          },
+          "node:field_ding_event_category" : {
+            "table" : "search_api_db_default_multiple_index",
+            "column" : "node_field_ding_event_category",
+            "type" : "integer",
+            "boost" : "1.0"
+          },
           "node:field_ding_event_lead" : {
             "table" : "search_api_db_default_multiple_index_text",
             "type" : "text",
@@ -1718,6 +1746,12 @@ function ding_frontend_default_search_api_server() {
           "node:field_ding_group_lead" : {
             "table" : "search_api_db_default_multiple_index_text",
             "type" : "text",
+            "boost" : "1.0"
+          },
+          "user:uid" : {
+            "table" : "search_api_db_default_multiple_index",
+            "column" : "user_uid",
+            "type" : "integer",
             "boost" : "1.0"
           },
           "user:roles" : {
@@ -1790,40 +1824,6 @@ function ding_frontend_default_search_api_server() {
           "user:profile_ding_staff_profile:field_ding_staff_work_areas" : {
             "table" : "search_api_db_default_multiple_index_text",
             "type" : "text",
-            "boost" : "1.0"
-          },
-          "node:field_ding_page_tags" : {
-            "table" : "search_api_db_default_multiple_index_node_field_ding_page_ta_1",
-            "column" : "value",
-            "type" : "list\\u003Cinteger\\u003E",
-            "boost" : "1.0"
-          },
-          "node:field_ding_event_category" : {
-            "table" : "search_api_db_default_multiple_index",
-            "column" : "node_field_ding_event_category_1",
-            "type" : "integer",
-            "boost" : "1.0"
-          },
-          "node:field_ding_news_lead" : {
-            "table" : "search_api_db_default_multiple_index_text",
-            "type" : "text",
-            "boost" : "1.0"
-          },
-          "node:field_ding_news_tags" : {
-            "table" : "search_api_db_default_multiple_index_node_field_ding_news_tags",
-            "column" : "value",
-            "type" : "list\\u003Cinteger\\u003E",
-            "boost" : "1.0"
-          },
-          "node:field_ding_page_lead" : {
-            "table" : "search_api_db_default_multiple_index_text",
-            "type" : "text",
-            "boost" : "1.0"
-          },
-          "user:uid" : {
-            "table" : "search_api_db_default_multiple_index",
-            "column" : "user_uid_1",
-            "type" : "integer",
             "boost" : "1.0"
           }
         }

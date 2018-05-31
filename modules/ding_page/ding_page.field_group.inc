@@ -219,14 +219,5 @@ function ding_page_field_group_info() {
   );
   $export['group_right_col_search|node|ding_page|search_result'] = $field_group;
 
-  // Translatables
-  // Included for use with string extractors like potx.
-  t('Attachments');
-  t('Content');
-  t('Images');
-  t('Left column');
-  t('Right column');
-  t('Tagging');
-
   return $export;
 }

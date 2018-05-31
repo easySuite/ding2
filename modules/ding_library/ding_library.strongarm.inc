@@ -155,50 +155,6 @@ function ding_library_strongarm() {
             'label' => 'above',
           ),
         ),
-        'ding_serendipity_info' => array(
-          'default' => array(
-            'weight' => '0',
-            'visible' => TRUE,
-          ),
-          'teaser' => array(
-            'weight' => '0',
-            'visible' => TRUE,
-          ),
-          'search_result' => array(
-            'weight' => '0',
-            'visible' => TRUE,
-          ),
-          'alternative_layout_full' => array(
-            'weight' => '0',
-            'visible' => TRUE,
-          ),
-          'teaser_highlight' => array(
-            'weight' => '0',
-            'visible' => TRUE,
-          ),
-        ),
-        'language' => array(
-          'default' => array(
-            'weight' => '0',
-            'visible' => FALSE,
-          ),
-          'teaser' => array(
-            'weight' => '0',
-            'visible' => FALSE,
-          ),
-          'search_result' => array(
-            'weight' => '0',
-            'visible' => FALSE,
-          ),
-          'alternative_layout_full' => array(
-            'weight' => '0',
-            'visible' => FALSE,
-          ),
-          'teaser_highlight' => array(
-            'weight' => '0',
-            'visible' => FALSE,
-          ),
-        ),
       ),
     ),
   );

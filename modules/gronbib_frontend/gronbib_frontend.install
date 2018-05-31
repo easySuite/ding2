@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Install/uninstall hooks.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function gronbib_frontend_install() {
+  variable_set('languageicons_path', 'https://storage.easyting.dk/icons/*.png');
+}
