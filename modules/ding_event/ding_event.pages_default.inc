@@ -144,7 +144,6 @@ function ding_event_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '%node:title';
   $display->uuid = '45175b89-df7a-48fe-8118-cb87907dc9df';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'ding_event_node_view';
   $display->content = array();
   $display->panels = array();
@@ -343,7 +342,6 @@ taxonomy/term/%term:tid',
   $display->cache = array();
   $display->title = 'Events';
   $display->uuid = 'e6d7ce53-caaa-4af3-8588-00d36e8d512a';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'term_view_panel_context';
   $display->content = array();
   $display->panels = array();
@@ -645,7 +643,6 @@ events
   $display->cache = array();
   $display->title = 'Events';
   $display->uuid = 'd49a3b8f-8e68-4ec6-8382-b2d01945b356';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'page_ding_events_panel_context';
   $display->content = array();
   $display->panels = array();
@@ -975,7 +972,6 @@ node/%node:nid/events
   $display->cache = array();
   $display->title = '';
   $display->uuid = '242cdbfd-b37b-4e9e-b3b0-415f58651d59';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'page_ding_events_library_panel_context';
   $display->content = array();
   $display->panels = array();

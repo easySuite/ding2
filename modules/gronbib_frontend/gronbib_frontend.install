@@ -12,6 +12,26 @@ function gronbib_frontend_install() {
   // Add new language to the system.
   locale_add_language('kl');
 
+  // Enable detection of language from URL.
+  $negotiation = array(
+    'locale-url' => array(
+      'callbacks' => array(
+        'language' => 'locale_language_from_url',
+        'switcher' => 'locale_language_switcher_url',
+        'url_rewrite' => 'locale_language_url_rewrite_url',
+      ),
+      'file' => 'includes/locale.inc',
+    ),
+    'language-default' => array(
+      'callbacks' => array(
+        'language' => 'language_from_default',
+      ),
+    ),
+  );
+
+  variable_del('language_negotiation_language');
+  variable_set('language_negotiation_language', $negotiation);
+
   // Set custom path to language icons.
   variable_set('languageicons_path', 'https://storage.easyting.dk/icons/*.png');
 
@@ -21,4 +41,10 @@ function gronbib_frontend_install() {
   $field_instance['default_value'][0]['country'] = 'GL';
 
   field_update_instance($field_instance);
+
+  // Enable multilanguage support for content types.
+  $content_types = node_type_get_types();
+  foreach ($content_types as $content_type) {
+    variable_set('language_content_type_' . $content_type->type, 2);
+  }
 }

@@ -77,7 +77,6 @@ function ding_library_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '%node:title';
   $display->uuid = 'a6f6496f-682d-4e38-b2a8-18197fe211fd';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'node_view_panel_context_3';
   $display->content = array();
   $display->panels = array();
@@ -592,7 +591,6 @@ function ding_library_default_page_manager_pages() {
   $display->cache = array();
   $display->title = 'Libraries';
   $display->uuid = '608e59aa-498b-4237-b789-65edaaf222de';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'page_ding_libraries_panel_context';
   $display->content = array();
   $display->panels = array();
@@ -795,7 +793,6 @@ function ding_library_default_page_manager_pages() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '895bbe6b-994e-46a3-8ef1-3c2b968fcf51';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'page_ding_library_about_panel_context';
   $display->content = array();
   $display->panels = array();

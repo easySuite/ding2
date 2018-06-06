@@ -237,7 +237,6 @@ function ding_frontpage_default_page_manager_pages() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '6795d6ae-3c57-4fb4-b339-3d6373acce88';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'page_ding_frontpage_panel_context';
   $display->content = array();
   $display->panels = array();

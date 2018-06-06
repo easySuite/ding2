@@ -62,7 +62,6 @@ function ding_frontend_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '8b0c4ce8-f860-4599-b3a1-24f813e70d9a';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'node_view__panel_context_cebaba53-71ed-4536-8f25-4146db6853f9';
   $display->content = array();
   $display->panels = array();
@@ -134,7 +133,6 @@ function ding_frontend_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '2fbcf550-f62b-47bc-b780-4616f4f633ac';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'pm_existing_pages_comments_panel_context';
   $display->content = array();
   $display->panels = array();
@@ -225,7 +223,6 @@ function ding_frontend_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '40390e1a-d2a0-4672-adbb-a343200087d9';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'pm_existing_pages_user_panel_context';
   $display->content = array();
   $display->panels = array();
@@ -315,7 +312,6 @@ search/node',
   $display->cache = array();
   $display->title = '';
   $display->uuid = '1e811334-76b6-4702-b0bc-7d315e6b4b2e';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'search_node_panel_context';
   $display->content = array();
   $display->panels = array();
@@ -459,7 +455,6 @@ search/node',
   $display->cache = array();
   $display->title = '';
   $display->uuid = 'c39b388c-6d1e-4855-8976-3579c119887e';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'search_user__panel_context_68a02d76-90da-41b3-99ca-5b98f987794c';
   $display->content = array();
   $display->panels = array();
@@ -571,7 +566,6 @@ search/node',
   $display->cache = array();
   $display->title = '';
   $display->uuid = '92a45db0-147b-411f-8833-8377a52f5198';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'site_template_panel_context';
   $display->content = array();
   $display->panels = array();
@@ -1202,7 +1196,6 @@ search/node',
   $display->cache = array();
   $display->title = '';
   $display->uuid = '92a45db0-147b-411f-8833-8377a52f5198';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'site_template_search_blank';
   $display->content = array();
   $display->panels = array();
@@ -1291,7 +1284,6 @@ function ding_frontend_default_page_manager_pages() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '53235402-2696-463b-b032-a277a53a3126';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'page_frontpage_panel_context';
   $display->content = array();
   $display->panels = array();

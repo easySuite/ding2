@@ -68,7 +68,6 @@ function ding_groups_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '4d5ebb9a-6744-4fab-b173-28619324b293';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'node_view_panel_context_5';
   $display->content = array();
   $display->panels = array();
@@ -319,7 +318,6 @@ function ding_groups_default_page_manager_pages() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '6f08f11b-a074-4229-a560-23a2c8827724';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'page_ding_groups_news_panel_context';
   $display->content = array();
   $display->panels = array();
@@ -529,7 +527,6 @@ function ding_groups_default_page_manager_pages() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = 'a2c495ea-7df9-4df3-9e61-147d98e1e39f';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'page_groups_events_panel_context';
   $display->content = array();
   $display->panels = array();
@@ -723,7 +720,6 @@ function ding_groups_default_page_manager_pages() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '988af79c-a413-4a43-8c5d-a1b28aae2988';
-  $display->storage_type = 'page_manager';
   $display->storage_id = 'page_groups_listing_panel_context';
   $display->content = array();
   $display->panels = array();
