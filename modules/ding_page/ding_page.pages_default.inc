@@ -98,7 +98,6 @@ function ding_page_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = 'e4576eaa-237b-4dbb-917b-aba5bff3d8a3';
-  $display->storage_id = 'node_view_panel_context_4';
   $display->content = array();
   $display->panels = array();
     $pane = new stdClass();

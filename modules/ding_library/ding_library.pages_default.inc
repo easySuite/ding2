@@ -77,7 +77,6 @@ function ding_library_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '%node:title';
   $display->uuid = 'a6f6496f-682d-4e38-b2a8-18197fe211fd';
-  $display->storage_id = 'node_view_panel_context_3';
   $display->content = array();
   $display->panels = array();
     $pane = new stdClass();
@@ -139,25 +138,6 @@ function ding_library_default_page_manager_handlers() {
     $pane->uuid = '0d5ac3d3-3666-431f-8672-226f8d6b8694';
     $display->content['new-0d5ac3d3-3666-431f-8672-226f8d6b8694'] = $pane;
     $display->panels['attachment_1_1'][1] = 'new-0d5ac3d3-3666-431f-8672-226f8d6b8694';
-    $pane = new stdClass();
-    $pane->pid = 'new-05a7891f-60a5-4df6-9537-ac832dd3fdbd';
-    $pane->panel = 'attachment_1_1';
-    $pane->type = 'des_subscribe';
-    $pane->subtype = 'des_subscribe';
-    $pane->shown = TRUE;
-    $pane->access = array();
-    $pane->configuration = array();
-    $pane->cache = array();
-    $pane->style = array(
-      'settings' => NULL,
-    );
-    $pane->css = array();
-    $pane->extras = array();
-    $pane->position = 2;
-    $pane->locks = array();
-    $pane->uuid = '05a7891f-60a5-4df6-9537-ac832dd3fdbd';
-    $display->content['new-05a7891f-60a5-4df6-9537-ac832dd3fdbd'] = $pane;
-    $display->panels['attachment_1_1'][2] = 'new-05a7891f-60a5-4df6-9537-ac832dd3fdbd';
     $pane = new stdClass();
     $pane->pid = 'new-384f0459-7df1-4abc-ac45-30a7e7ffd93d';
     $pane->panel = 'left_sidebar';
@@ -491,7 +471,7 @@ function ding_library_default_page_manager_handlers() {
     $pane->uuid = '84994b0d-9cf7-4d87-a0dd-552d94fc24a1';
     $display->content['new-84994b0d-9cf7-4d87-a0dd-552d94fc24a1'] = $pane;
     $display->panels['main_content'][6] = 'new-84994b0d-9cf7-4d87-a0dd-552d94fc24a1';
-  $display->hide_title = PANELS_TITLE_PANE;
+  $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
   $export['node_view_panel_context_3'] = $handler;
@@ -758,7 +738,6 @@ function ding_library_default_page_manager_pages() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '895bbe6b-994e-46a3-8ef1-3c2b968fcf51';
-  $display->storage_id = 'page_ding_library_about_panel_context';
   $display->content = array();
   $display->panels = array();
     $pane = new stdClass();

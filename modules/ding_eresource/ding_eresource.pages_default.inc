@@ -269,7 +269,6 @@ function ding_eresource_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = 'E-resurser';
   $display->uuid = 'd44ae923-a33f-4fc1-8d4c-2de4afe70ce0';
-  $display->storage_id = 'term_view_ding_eresource_category';
   $display->content = array();
   $display->panels = array();
     $pane = new stdClass();
@@ -482,7 +481,6 @@ function ding_eresource_default_page_manager_pages() {
   $display->cache = array();
   $display->title = 'E-resurser';
   $display->uuid = 'd44ae923-a33f-4fc1-8d4c-2de4afe70ce0';
-  $display->storage_id = 'page_ding_eresources_panel_context';
   $display->content = array();
   $display->panels = array();
     $pane = new stdClass();

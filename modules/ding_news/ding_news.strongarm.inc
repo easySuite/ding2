@@ -152,10 +152,6 @@ function ding_news_strongarm() {
             'visible' => TRUE,
           ),
           'default' => array(
-            'weight' => '1',
-            'visible' => TRUE,
-          ),
-          'teaser' => array(
             'weight' => '0',
             'visible' => TRUE,
           ),
