@@ -13,9 +13,6 @@ function gronbib_frontend_strongarm() {
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
-  $strongarm = new stdClass();
-  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
-  $strongarm->api_version = 1;
   $strongarm->name = 'color_ddbasic_palette';
   $strongarm->value = array(
     'base' => '#ffffff',
@@ -45,6 +42,13 @@ function gronbib_frontend_strongarm() {
   $strongarm->name = 'site_frontpage';
   $strongarm->value = 'gronbib_frontpage';
   $export['site_frontpage'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'gronbib_frontend_random';
+  $strongarm->value = '0';
+  $export['gronbib_frontend_random'] = $strongarm;
 
   return $export;
 }

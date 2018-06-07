@@ -47,3 +47,32 @@ function gronbib_frontend_form_search_block_form_alter(&$form, &$form_state) {
     }
   }
 }
+
+/**
+ * Implements hook_post_features_revert().
+ */
+function gronbib_frontend_post_features_revert($component) {
+  // Enable detection of language from URL.
+  $negotiation = array(
+    'locale-url' => array(
+      'callbacks' => array(
+        'language' => 'locale_language_from_url',
+        'switcher' => 'locale_language_switcher_url',
+        'url_rewrite' => 'locale_language_url_rewrite_url',
+      ),
+      'file' => 'includes/locale.inc',
+    ),
+    'language-default' => array(
+      'callbacks' => array(
+        'language' => 'language_from_default',
+      ),
+    ),
+  );
+
+  variable_del('language_negotiation_language');
+  variable_set('language_negotiation_language', $negotiation);
+
+  // Set custom path to language icons.
+  variable_set('languageicons_path', 'https://storage.easyting.dk/icons/*.png');
+  variable_set('gronbib_frontend_random', rand());
+}

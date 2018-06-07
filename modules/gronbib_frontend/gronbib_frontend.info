@@ -39,3 +39,4 @@ features[page_manager_pages][] = gronbib_frontpage
 features[variable][] = color_ddbasic_palette
 features[variable][] = i18n_hide_translation_links
 features[variable][] = site_frontpage
+features[variable][] = gronbib_frontend_random
