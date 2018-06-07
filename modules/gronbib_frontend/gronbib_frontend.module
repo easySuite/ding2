@@ -74,5 +74,12 @@ function gronbib_frontend_post_features_revert($component) {
 
   // Set custom path to language icons.
   variable_set('languageicons_path', 'https://storage.easyting.dk/icons/*.png');
+
+  // Enable multilanguage support for content types.
+  $content_types = node_type_get_types();
+  foreach ($content_types as $content_type) {
+    variable_set('language_content_type_' . $content_type->type, 2);
+  }
+
   variable_set('gronbib_frontend_random', rand());
 }
