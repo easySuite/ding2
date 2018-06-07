@@ -23,13 +23,13 @@
     }
   }
   .group-ding-library-right-column {
-    @include span-columns(9);
+    @include span-columns(7);
     @include omega();
     margin-bottom: 40px;
 
     // Tablet
     @include media($tablet) {
-      @include span-columns(10);
+      @include span-columns(9);
     }
 
     // Mobile
@@ -51,6 +51,11 @@
       }
     }
   }
+  .field-name-field-ding-library-title-image {
+    img {
+      float: right;
+    }
+  }
   a.opening-hours-toggle {
     position: static;
     width: getColumn(9);
@@ -61,6 +66,10 @@
     @include media($tablet) {
       margin-top: -20px;
       margin-left: 0;
+    }
+
+    @include media($mobile) {
+      text-align: right;
     }
   }
   .libraries-opening-hours {

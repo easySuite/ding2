@@ -125,6 +125,7 @@ function ding_campaign_theme($existing, $type, $theme, $path) {
         'image' => NULL,
         'description' => NULL,
         'link' => NULL,
+        'options' => NULL,
       ),
       'template' => 'ding-campaign-grid',
       'path' => $path . '/templates',
@@ -185,11 +186,18 @@ function ding_campaign_display($context, $count, $offset, $style = 'medium', $su
         $campaign_image = $campaign->field_camp_image[LANGUAGE_NONE][0]['uri'];
         $campaign_description = !empty($campaign->metatags) ? $campaign->metatags['da']['abstract']['value'] : '';
         $campaign_link = $campaign->field_camp_link[LANGUAGE_NONE][0]['value'];
+
+        $options = array();
+        if ($campaign->field_camp_new_window[LANGUAGE_NONE][0]['value']) {
+          $options['attributes']['target'] = '_blank';
+        }
+
         $content['#content'][] = theme('ding_campaign_grid', array(
             'title' => $campaign_title,
             'image' => theme('image_style', array('path' => $campaign_image, 'style_name' => 'ding_campaign_grid')),
             'description' => $campaign_description,
             'link' => $campaign_link,
+            'options' => $options,
           )
         );
         if (array_filter($more_link)) {
@@ -698,7 +706,8 @@ function _ding_campaign_rule_by_type($node_type) {
 function ding_campaign_preprocess(&$variables, $hook) {
   switch ($hook) {
     case 'node':
-      if ($variables['view_mode'] == 'full' && ($variables['type'] == 'ding_event' || $variables['type'] == 'ding_news')) {
+      $types = array('ding_event', 'ding_news', 'ding_eresource');
+      if ($variables['view_mode'] == 'full' && in_array($variables['type'], $types)) {
         // Load panes for fetching campaign pane settings.
         $conf = [];
         $panels = panels_load_display(1);
