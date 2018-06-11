@@ -88,5 +88,17 @@ function gronbib_frontend_post_features_revert($component) {
  * Implements hook_views_query_alter().
  */
 function gronbib_frontend_views_query_alter(&$view, &$query) {
-  $a = 1;
+  switch ($view->name) {
+    case 'ding_library':
+    case 'ding_news':
+    case 'ding_event':
+    case 'ding_groups':
+      $query->where[1]['conditions'][] = array(
+        'field' => 'language',
+        'value' => array(
+          '***CURRENT_LANGUAGE***' => '***CURRENT_LANGUAGE***',
+        ),
+      );
+      break;
+  }
 }
