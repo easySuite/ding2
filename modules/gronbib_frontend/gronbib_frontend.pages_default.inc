@@ -872,10 +872,10 @@ function gronbib_frontend_default_page_manager_pages() {
   $display->content = array();
   $display->panels = array();
   $pane = new stdClass();
-  $pane->pid = 'new-ebf5abb1-6e01-46d0-ba95-7c3b7ad27513';
+  $pane->pid = 'new-333494a2-4f62-4d6f-bd28-04039ab14a2a';
   $pane->panel = 's1_r_01_100';
   $pane->type = 'views_panes';
-  $pane->subtype = 'ding_library-ding_library_frontpage_list';
+  $pane->subtype = 'gronbib_libraries_views-ding_library_frontpage_list';
   $pane->shown = TRUE;
   $pane->access = array();
   $pane->configuration = array();
@@ -887,9 +887,9 @@ function gronbib_frontend_default_page_manager_pages() {
   $pane->extras = array();
   $pane->position = 0;
   $pane->locks = array();
-  $pane->uuid = 'ebf5abb1-6e01-46d0-ba95-7c3b7ad27513';
-  $display->content['new-ebf5abb1-6e01-46d0-ba95-7c3b7ad27513'] = $pane;
-  $display->panels['s1_r_01_100'][0] = 'new-ebf5abb1-6e01-46d0-ba95-7c3b7ad27513';
+  $pane->uuid = '333494a2-4f62-4d6f-bd28-04039ab14a2a';
+  $display->content['new-333494a2-4f62-4d6f-bd28-04039ab14a2a'] = $pane;
+  $display->panels['s1_r_01_100'][0] = 'new-333494a2-4f62-4d6f-bd28-04039ab14a2a';
   $pane = new stdClass();
   $pane->pid = 'new-92abca0d-e5b5-4cba-8653-de9eca1d5400';
   $pane->panel = 's3_r_04_050_1';
@@ -951,7 +951,9 @@ function gronbib_frontend_default_page_manager_pages() {
       'granularity' => 'context',
     ),
   );
-  $pane->style = array();
+  $pane->style = array(
+    'settings' => NULL,
+  );
   $pane->css = array();
   $pane->extras = array();
   $pane->position = 0;

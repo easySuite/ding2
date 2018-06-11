@@ -17,6 +17,13 @@ function gronbib_frontend_ctools_plugin_api($module = NULL, $api = NULL) {
 }
 
 /**
+ * Implements hook_views_api().
+ */
+function gronbib_frontend_views_api($module = NULL, $api = NULL) {
+  return array("api" => "3.0");
+}
+
+/**
  * Implements hook_default_page_manager_handlers_alter().
  */
 function gronbib_frontend_default_page_manager_handlers_alter(&$data) {

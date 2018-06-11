@@ -83,3 +83,10 @@ function gronbib_frontend_post_features_revert($component) {
 
   variable_set('gronbib_frontend_random', rand());
 }
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function gronbib_frontend_views_query_alter(&$view, &$query) {
+  $a = 1;
+}
