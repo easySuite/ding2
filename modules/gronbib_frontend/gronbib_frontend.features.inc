@@ -20,7 +20,11 @@ function gronbib_frontend_ctools_plugin_api($module = NULL, $api = NULL) {
  * Implements hook_views_api().
  */
 function gronbib_frontend_views_api($module = NULL, $api = NULL) {
-  return array("api" => "3.0");
+  return array(
+    'api' => '3.0',
+    'path' => drupal_get_path('module', 'gronbib_frontend'),
+    'template path' => drupal_get_path('module', 'gronbib_frontend') . '/templates',
+  );
 }
 
 /**
