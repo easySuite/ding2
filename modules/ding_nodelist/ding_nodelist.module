@@ -1600,6 +1600,19 @@ function _ding_nodelist_get_dams_image_info($node, $image_field) {
     $title = !empty($image['field_file_image_title_text']) ? $image['field_file_image_title_text']['und'][0]['safe_value'] : '';
     $alt = !empty($image['field_file_image_alt_text']) ? $image['field_file_image_alt_text']['und'][0]['safe_value'] : $title;
 
+    if (!empty($node->has_video) && $image['filemime'] == 'video/youtube') {
+      $video_id = explode("?v=", $node->has_video);
+      $video_id = $video_id[1];
+      $url = "http://img.youtube.com/vi/$video_id/maxresdefault.jpg";
+
+      $file = system_retrieve_file($url, 'public://list_image/news', TRUE, FILE_EXISTS_RENAME);
+      file_save($file);
+
+      $path = $file->uri;
+      $title = $image['title'] ? $image['title'] : $image['filename'];
+      $alt = $image['alt'] ? $image['alt'] : $title;
+    }
+
     return array(
       'path' => $path,
       'title' => $title,
