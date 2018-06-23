@@ -934,8 +934,23 @@ function ding_frontend_image_default_styles() {
   // Exported image style: ding_secondary_small.
   $styles['ding_secondary_small'] = array(
     'name' => 'ding_secondary_small',
+    'label' => 'ding_secondary_small',
     'effects' => array(
-      14 => array(
+      5 => array(
+        'label' => 'Manual Crop: Reuse cropped style',
+        'help' => 'Reuse a crop selection from another Manual Crop enabled image style.',
+        'effect callback' => 'manualcrop_reuse_effect',
+        'form callback' => 'manualcrop_reuse_form',
+        'summary theme' => 'manualcrop_reuse_summary',
+        'module' => 'manualcrop',
+        'name' => 'manualcrop_reuse',
+        'data' => array(
+          'reuse_crop_style' => 'crop_16_9',
+          'apply_all_effects' => 0,
+        ),
+        'weight' => 0,
+      ),
+      4 => array(
         'label' => 'Scale',
         'help' => 'Scaling will maintain the aspect-ratio of the original image. If only a single dimension is specified, the other dimension will be calculated.',
         'effect callback' => 'image_scale_effect',
@@ -952,7 +967,6 @@ function ding_frontend_image_default_styles() {
         'weight' => 1,
       ),
     ),
-    'label' => 'ding_secondary_small',
   );
 
   // Exported image style: ding_tetiary_large.
