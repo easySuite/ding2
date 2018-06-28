@@ -309,8 +309,6 @@ search/node',
   $display->cache = array();
   $display->title = '';
   $display->uuid = '1e811334-76b6-4702-b0bc-7d315e6b4b2e';
-  $display->storage_type = 'page_manager';
-  $display->storage_id = 'search_node_panel_context';
   $display->content = array();
   $display->panels = array();
     $pane = new stdClass();
