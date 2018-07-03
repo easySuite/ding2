@@ -176,20 +176,29 @@ function ding_loan_loans_form($form, &$form_state, $account, $loans = array()) {
         $entity = array_shift($entities);
       }
 
-      // Title link.
-      $raw_title = $entity->getTitle();
-      $uri = entity_uri('ting_object', $entity);
-      $title = l($raw_title, $uri['path']);
+     if (is_object($entity) && !empty($entity->reply)) {
+       $raw_title = $entity->getTitle();
 
-      // Attempt to render a cover.
-      $cover = field_view_field('ting_object', $entity, 'ting_cover', 'user_list');
+       // Add title link.
+       $uri = entity_uri('ting_object', $entity);
+       $title = l($raw_title, $uri['path']);
+
+       // Add creator(s).
+       $creators = $entity->creators;
+
+       // Add type.
+       $mat_type = $entity->type;
+
+       // Attempt to render a cover.
+       $cover = field_view_field('ting_object', $entity, 'ting_cover', 'user_list');
+     }
 
       $item = array(
         '#type' => 'material_item',
         '#loan' => $loan,
         '#id' => $loan->id,
-        '#creators' => !empty($entity->creators) ? $entity->creators : NULL,
-        '#material_type' => !empty($entity->type) ? $entity->type : NULL,
+        '#creators' => isset($creators) ? $creators : NULL,
+        '#material_type' => isset($mat_type) ? $mat_type : NULL,
         '#title' => $title,
         '#cover' => isset($cover) ? $cover : NULL,
         '#information' => array(
