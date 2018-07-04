@@ -329,6 +329,12 @@ projects[emailkanon][download][url]    = "git@github.com:easySuite/emailkanon.gi
 ;projects[emailkanon][download][tag]    = "7.x-3.0.0"
 projects[emailkanon][download][branch] = "development"
 
+projects[gronbib_frontend][type]             = "module"
+projects[gronbib_frontend][subdir]           = ""
+projects[gronbib_frontend][download][type]   = "git"
+projects[gronbib_frontend][download][url]    = "git@github.com:easySuite/gronbib_frontend.git"
+projects[gronbib_frontend][download][branch] = "development"
+
 projects[kultunaut_events][type]             = "module"
 projects[kultunaut_events][subdir]           = ""
 projects[kultunaut_events][download][type]   = "git"
