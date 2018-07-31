@@ -24,3 +24,9 @@ projects[kultur_calendar][download][branch] = "culture_development"
 
 projects[similar][subdir] = "contrib"
 projects[similar][version] = "2.0-beta6"
+
+projects[domain_taxonomy][type]             = "module"
+projects[domain_taxonomy][subdir]           = "contrib"
+projects[domain_taxonomy][download][type]   = "git"
+projects[domain_taxonomy][download][url]    = "https://git.drupal.org/project/domain_taxonomy.git"
+projects[domain_taxonomy][download][revision] = "e489da08999708c9830cc25aa6d432e0a738be9f"
