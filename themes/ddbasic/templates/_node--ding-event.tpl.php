@@ -90,6 +90,7 @@
  * @see template_process()
  */
 ?>
+
 <div itemscope itemtype="http://schema.org/Event">
 <article class="event">
   <?php if (isset($content['field_ding_event_image_gallery'])) : ?>
