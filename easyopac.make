@@ -78,7 +78,7 @@ projects[ding_event_calendar][subdir]           = ""
 projects[ding_event_calendar][download][type]   = "git"
 projects[ding_event_calendar][download][url]    = "git@github.com:easySuite/ding_event_calendar.git"
 ;projects[ding_event_calendar][download][tag]    = "7.x-3.0.2"
-projects[ding_event_calendar][download][branch] = "development"
+projects[ding_event_calendar][download][branch] = "develop-calendar"
 
 projects[ding_event_subscriptions][type]             = "module"
 projects[ding_event_subscriptions][subdir]           = ""
