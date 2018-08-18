@@ -320,6 +320,7 @@ function ding_event_form_views_exposed_form_alter(&$form, &$form_state) {
     if (!empty($form['title'])) {
       $form['title']['#attributes']['placeholder'] = t('Search for an event');
     }
+    $form['title']['#autocomplete_path'] = 'culture_events/date/autocomplete';
 
     // Hide reset button if there's nothing to reset.
     foreach ($form_state['view']->exposed_input as $exposed_input) {
