@@ -90,16 +90,22 @@ function ding_library_strongarm() {
     'extra_fields' => array(
       'form' => array(
         'title' => array(
-          'weight' => '0',
+          'weight' => '1',
         ),
         'path' => array(
-          'weight' => '7',
+          'weight' => '9',
         ),
         'og_menu' => array(
           'weight' => '0',
         ),
         'redirect' => array(
-          'weight' => '30',
+          'weight' => '11',
+        ),
+        'domain' => array(
+          'weight' => '2',
+        ),
+        'metatags' => array(
+          'weight' => '13',
         ),
       ),
       'display' => array(
