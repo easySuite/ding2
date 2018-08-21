@@ -303,13 +303,14 @@ function ding_library_field_default_field_bases() {
     'type' => 'taxonomy_term_reference',
   );
 
-  // Exported field_base: 'field_hide_news_and_events'.
+  // Exported field_base: 'field_hide_news_and_events'
   $field_bases['field_hide_news_and_events'] = array(
     'active' => 1,
     'cardinality' => 1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_hide_news_and_events',
+    'foreign keys' => array(),
     'indexes' => array(
       'value' => array(
         0 => 'value',

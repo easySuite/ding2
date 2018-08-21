@@ -10,7 +10,7 @@
 function ding_library_field_default_field_instances() {
   $field_instances = array();
 
-  // Exported field_instance: 'node-ding_library-field_ding_library_addresse'.
+  // Exported field_instance: 'node-ding_library-field_ding_library_addresse'
   $field_instances['node-ding_library-field_ding_library_addresse'] = array(
     'bundle' => 'ding_library',
     'default_value' => array(
@@ -96,7 +96,7 @@ function ding_library_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-field_ding_library_body'.
+  // Exported field_instance: 'node-ding_library-field_ding_library_body'
   $field_instances['node-ding_library-field_ding_library_body'] = array(
     'bundle' => 'ding_library',
     'default_value' => NULL,
@@ -154,7 +154,7 @@ function ding_library_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-field_ding_library_fax_number'.
+  // Exported field_instance: 'node-ding_library-field_ding_library_fax_number'
   $field_instances['node-ding_library-field_ding_library_fax_number'] = array(
     'bundle' => 'ding_library',
     'default_value' => NULL,
@@ -213,7 +213,7 @@ function ding_library_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-field_ding_library_geocode'.
+  // Exported field_instance: 'node-ding_library-field_ding_library_geocode'
   $field_instances['node-ding_library-field_ding_library_geocode'] = array(
     'bundle' => 'ding_library',
     'default_value' => NULL,
@@ -280,7 +280,7 @@ function ding_library_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-field_ding_library_lead'.
+  // Exported field_instance: 'node-ding_library-field_ding_library_lead'
   $field_instances['node-ding_library-field_ding_library_lead'] = array(
     'bundle' => 'ding_library',
     'default_value' => NULL,
@@ -338,7 +338,7 @@ function ding_library_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-field_ding_library_links'.
+  // Exported field_instance: 'node-ding_library-field_ding_library_links'
   $field_instances['node-ding_library-field_ding_library_links'] = array(
     'bundle' => 'ding_library',
     'default_value' => NULL,
@@ -383,7 +383,6 @@ function ding_library_field_default_field_instances() {
     'label' => 'Links',
     'required' => 0,
     'settings' => array(
-      'absolute_url' => 1,
       'attributes' => array(
         'class' => '',
         'configurable_title' => 1,
@@ -397,7 +396,6 @@ function ding_library_field_default_field_instances() {
       'enable_tokens' => 1,
       'rel_remove' => 'default',
       'title' => 'required',
-      'title_label_use_field_label' => FALSE,
       'title_maxlength' => 255,
       'title_value' => '',
       'url' => 0,
@@ -413,7 +411,7 @@ function ding_library_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-field_ding_library_mail'.
+  // Exported field_instance: 'node-ding_library-field_ding_library_mail'
   $field_instances['node-ding_library-field_ding_library_mail'] = array(
     'bundle' => 'ding_library',
     'default_value' => NULL,
@@ -471,8 +469,7 @@ function ding_library_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance:
-  // 'node-ding_library-field_ding_library_phone_number'.
+  // Exported field_instance: 'node-ding_library-field_ding_library_phone_number'
   $field_instances['node-ding_library-field_ding_library_phone_number'] = array(
     'bundle' => 'ding_library',
     'default_value' => NULL,
@@ -531,7 +528,7 @@ function ding_library_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-field_ding_library_slug'.
+  // Exported field_instance: 'node-ding_library-field_ding_library_slug'
   $field_instances['node-ding_library-field_ding_library_slug'] = array(
     'bundle' => 'ding_library',
     'default_value' => NULL,
@@ -585,12 +582,11 @@ function ding_library_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 3,
+      'weight' => 2,
     ),
   );
 
-  // Exported field_instance:
-  // 'node-ding_library-field_ding_library_title_image'.
+  // Exported field_instance: 'node-ding_library-field_ding_library_title_image'
   $field_instances['node-ding_library-field_ding_library_title_image'] = array(
     'bundle' => 'ding_library',
     'deleted' => 0,
@@ -772,12 +768,6 @@ function ding_library_field_default_field_instances() {
     'deleted' => 0,
     'description' => 'News and events on library page will be hidden if checked.',
     'display' => array(
-      'alternative_layout_full' => array(
-        'label' => 'above',
-        'settings' => array(),
-        'type' => 'hidden',
-        'weight' => 0,
-      ),
       'default' => array(
         'label' => 'above',
         'module' => 'list',
@@ -818,11 +808,11 @@ function ding_library_field_default_field_instances() {
         'display_label' => 1,
       ),
       'type' => 'options_onoff',
-      'weight' => 12,
+      'weight' => 31,
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-group_group'.
+  // Exported field_instance: 'node-ding_library-group_group'
   $field_instances['node-ding_library-group_group'] = array(
     'bundle' => 'ding_library',
     'default_value' => array(
@@ -891,7 +881,7 @@ function ding_library_field_default_field_instances() {
         'og_hide' => 1,
       ),
       'type' => 'options_onoff',
-      'weight' => 10,
+      'weight' => 8,
     ),
     'widget_type' => 'options_select',
   );
