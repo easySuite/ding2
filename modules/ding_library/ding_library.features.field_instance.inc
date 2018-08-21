@@ -700,7 +700,64 @@ function ding_library_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-field_hide_news_and_events'
+  // Exported field_instance: 'node-ding_library-field_ding_library_type'.
+  $field_instances['node-ding_library-field_ding_library_type'] = array(
+    'bundle' => 'ding_library',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'alternative_layout_full' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 25,
+      ),
+      'search_result' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_ding_library_type',
+    'label' => 'Library Type',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+      ),
+      'type' => 'options_select',
+      'weight' => 8,
+    ),
+  );
+
+  // Exported field_instance: 'node-ding_library-field_hide_news_and_events'.
   $field_instances['node-ding_library-field_hide_news_and_events'] = array(
     'bundle' => 'ding_library',
     'default_value' => array(
@@ -839,6 +896,7 @@ function ding_library_field_default_field_instances() {
   t('Hide News and Events');
   t('If enabled, events and news can be marked as related to this library and will show up on its library page.');
   t('Lead');
+  t('Library Type');
   t('Links');
   t('News and events on library page will be hidden if checked.');
   t('Phone number');
