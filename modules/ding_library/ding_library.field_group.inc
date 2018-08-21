@@ -8,7 +8,7 @@
  * Implements hook_field_group_info().
  */
 function ding_library_field_group_info() {
-  $export = array();
+  $field_groups = array();
 
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
@@ -21,7 +21,7 @@ function ding_library_field_group_info() {
   $field_group->parent_name = '';
   $field_group->data = array(
     'label' => 'Links',
-    'weight' => '6',
+    'weight' => '7',
     'children' => array(
       0 => 'field_ding_library_geocode',
       1 => 'field_ding_library_links',
@@ -255,7 +255,16 @@ function ding_library_field_group_info() {
       'formatter' => 'open',
     ),
   );
-  $export['group_right_col_search|node|ding_library|search_result'] = $field_group;
+  $field_groups['group_right_col_search|node|ding_library|search_result'] = $field_group;
 
-  return $export;
+  // Translatables
+  // Included for use with string extractors like potx.
+  t('Contact');
+  t('Content');
+  t('Images');
+  t('Left column');
+  t('Links');
+  t('Right column');
+
+  return $field_groups;
 }

@@ -383,6 +383,7 @@ function ding_library_field_default_field_instances() {
     'label' => 'Links',
     'required' => 0,
     'settings' => array(
+      'absolute_url' => 1,
       'attributes' => array(
         'class' => '',
         'configurable_title' => 1,
@@ -396,6 +397,7 @@ function ding_library_field_default_field_instances() {
       'enable_tokens' => 1,
       'rel_remove' => 'default',
       'title' => 'required',
+      'title_label_use_field_label' => FALSE,
       'title_maxlength' => 255,
       'title_value' => '',
       'url' => 0,
@@ -582,11 +584,12 @@ function ding_library_field_default_field_instances() {
         'size' => 60,
       ),
       'type' => 'text_textfield',
-      'weight' => 2,
+      'weight' => 3,
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-field_ding_library_title_image'
+  // Exported field_instance:
+  // 'node-ding_library-field_ding_library_title_image'.
   $field_instances['node-ding_library-field_ding_library_title_image'] = array(
     'bundle' => 'ding_library',
     'deleted' => 0,
@@ -700,7 +703,64 @@ function ding_library_field_default_field_instances() {
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-field_hide_news_and_events'
+  // Exported field_instance: 'node-ding_library-field_ding_library_type'.
+  $field_instances['node-ding_library-field_ding_library_type'] = array(
+    'bundle' => 'ding_library',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'alternative_layout_full' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'above',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 25,
+      ),
+      'search_result' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_ding_library_type',
+    'label' => 'Library Type',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+      ),
+      'type' => 'options_select',
+      'weight' => 8,
+    ),
+  );
+
+  // Exported field_instance: 'node-ding_library-field_hide_news_and_events'.
   $field_instances['node-ding_library-field_hide_news_and_events'] = array(
     'bundle' => 'ding_library',
     'default_value' => array(
@@ -751,11 +811,11 @@ function ding_library_field_default_field_instances() {
         'display_label' => 1,
       ),
       'type' => 'options_onoff',
-      'weight' => 31,
+      'weight' => 12,
     ),
   );
 
-  // Exported field_instance: 'node-ding_library-group_group'
+  // Exported field_instance: 'node-ding_library-group_group'.
   $field_instances['node-ding_library-group_group'] = array(
     'bundle' => 'ding_library',
     'default_value' => array(
@@ -824,7 +884,7 @@ function ding_library_field_default_field_instances() {
         'og_hide' => 1,
       ),
       'type' => 'options_onoff',
-      'weight' => 8,
+      'weight' => 10,
     ),
     'widget_type' => 'options_select',
   );
@@ -839,6 +899,7 @@ function ding_library_field_default_field_instances() {
   t('Hide News and Events');
   t('If enabled, events and news can be marked as related to this library and will show up on its library page.');
   t('Lead');
+  t('Library Type');
   t('Links');
   t('News and events on library page will be hidden if checked.');
   t('Phone number');
