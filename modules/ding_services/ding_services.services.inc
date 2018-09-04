@@ -2,6 +2,7 @@
 
 /**
  * @file
+ * Features export.
  */
 
 /**
