@@ -106,7 +106,6 @@ function ding_nodelist_ctools_plugin_directory($module, $plugin) {
 /**
  * Implements hook_ajax_render_alter().
  *
- * @global boolean $_ding_nodelist_ipe_mode
  * @global boolean $_ding_nodelist_ipe_redirect
  */
 function ding_nodelist_ajax_render_alter(&$commands = array()) {
@@ -502,6 +501,7 @@ function ding_nodelist_add_bottom_link_submit(&$form, &$form_state) {
  * Autocomplete function that gives the available nodes.
  */
 function ding_nodelist_autocomplete($types, $title = '') {
+  global $language;
   $types = explode('|', urldecode($types));
 
   // Fetch all published nodes.
@@ -509,9 +509,13 @@ function ding_nodelist_autocomplete($types, $title = '') {
     ->fields('n', array('nid', 'title'))
     ->condition('n.type', $types, 'IN')
     ->condition('n.title', "%$title%", 'LIKE')
-    ->condition('n.status', NODE_PUBLISHED)
-    ->execute()
-    ->fetchAllKeyed();
+    ->condition('n.status', NODE_PUBLISHED);
+
+  if (module_exists('ding_language')) {
+    $nodes->addTag('language');
+  }
+
+  $nodes = $nodes->execute()->fetchAllKeyed();
 
   // Make a beautiful select.
   $formatted_result = array();
@@ -919,7 +923,7 @@ function _ding_nodelist_init_image_style($widget) {
   // Init image_styles for region.
   switch ($widget) {
     case DING_NODELIST_WIDGET_CAROUSEL:
-      return 'ding_tabroll_large';
+      return 'ding_nodelist_large';
 
     case DING_NODELIST_WIDGET_NODE_BLOCKS:
       return 'ding_panorama_list_large';
@@ -1043,6 +1047,7 @@ function _ding_nodelist_get_templates($include_hidden = TRUE, $content_type = NU
  *   Array of node IDs.
  */
 function _ding_nodelist_get_dynamic_list_nodes($conf = array()) {
+  global $language;
   // Support for slave-master DB servers.
   $query = db_select('node', 'n', array('target' => 'slave'))->fields('n', array('nid'));
   $content_types = array();
@@ -1058,6 +1063,10 @@ function _ding_nodelist_get_dynamic_list_nodes($conf = array()) {
       if ($filter['term_reference'] == 'taxonomy_term_reference') {
         // Use $i in argument placeholder as workaround.
         $ti_l = $query->join('taxonomy_index', $ti_r, "$ti_l.nid = $ti_r.nid AND $ti_r.tid IN (:tids$i)", array(":tids$i" => $filter['filter_terms']));
+      }
+      elseif (empty($conf['term_reference']) && $filter['filter_field'] == 'uid') {
+        $author = user_load_by_name($filter['filter_terms'][0]);
+        $query->condition('uid', $author->uid);
       }
       else {
         $query->join('og_membership', $og, "n.nid = $og.etid AND $og.gid IN (:tids$i) AND $og.field_name = :name$i", array(":tids$i" => $filter['filter_terms'], ":name$i" => $filter['filter_name']));
@@ -1075,6 +1084,10 @@ function _ding_nodelist_get_dynamic_list_nodes($conf = array()) {
     $query->condition('n.type', $conf['content_types'], 'IN')
       ->condition('n.status', NODE_PUBLISHED)
       ->distinct();
+  }
+
+  if (module_exists('ding_language')) {
+    $query->addTag('language');
   }
 
   // Filter by content type/node settings.
@@ -1113,6 +1126,8 @@ function _ding_nodelist_get_dynamic_list_nodes($conf = array()) {
   if ($conf['limit']) {
     $query->range(0, $conf['limit']);
   }
+
+  drupal_alter('ding_nodelist_get_dynamic_list_query', $query);
 
   $nodes = $query->execute()->fetchCol();
 
@@ -1437,14 +1452,14 @@ function _ding_nodelist_get_event_date($event_node) {
 function _ding_nodelist_get_event_time($event_node) {
   $event_date = field_get_items('node', $event_node, 'field_ding_event_date');
 
-  $raw_start = new DateTime($event_date[0]['value'], new DateTimeZone('UTC'));
+  $raw_start = new DateTime($event_date[0]['value'], new DateTimeZone($event_date[0]['timezone_db']));
   $raw_start = $raw_start->getTimestamp();
 
-  $raw_end = new DateTime($event_date[0]['value2'], new DateTimeZone('UTC'));
+  $raw_end = new DateTime($event_date[0]['value2'], new DateTimeZone($event_date[0]['timezone_db']));
   $raw_end = $raw_end->getTimestamp();
 
-  $start = format_date($raw_start, 'ding_time_only');
-  $end = format_date($raw_end, 'ding_time_only');
+  $start = format_date($raw_start, 'ding_time_only', '', $event_date[0]['timezone']);
+  $end = format_date($raw_end, 'ding_time_only', '', $event_date[0]['timezone']);
 
   if ($raw_start != $raw_end) {
     $result = t('!start to !end', array(
@@ -1452,7 +1467,7 @@ function _ding_nodelist_get_event_time($event_node) {
       '!end' => $end,
     ));
   }
-  elseif ($start == "0:00") {
+  elseif ($raw_start == $raw_end) {
     $result = t('All day');
   }
   else {
@@ -1787,4 +1802,37 @@ function ding_nodelist_preprocess(&$variables, $hook) {
     $currency = variable_get('ding_event_currency_type', 'Kr');
     $variables['currency'] = $currency;
   }
+}
+
+/**
+ * Implements hook_form_system_theme_settings_alter().
+ */
+function ding_nodelist_form_system_theme_settings_alter(&$form, &$form_state) {
+  $form['#submit'][] = "_ding_nodelist_process_css_colors";
+}
+
+/**
+ * Function for rewriting colors of ding_nodelist css file.
+ */
+function _ding_nodelist_process_css_colors() {
+  // Create public directory for keeping rewritten styles.
+  $folder_path = 'public://nodelist_colored_css';
+  file_prepare_directory($folder_path, FILE_CREATE_DIRECTORY);
+
+  // Getting theme information.
+  $theme = 'ddbasic';
+  $info = color_get_info($theme);
+  $palette = color_get_palette($theme);
+
+  // Setting paths.
+  $paths['target'] = 'public://nodelist_colored_css/';
+  $paths['source'] = drupal_get_path('module', 'ding_nodelist') . '/css/ding_nodelist.css';
+  $paths['files'] = $paths['map'] = array();
+
+  // Loading ding_nodelist css file content.
+  $style = drupal_load_stylesheet($paths['source'], TRUE);
+  // Rewriting default styles to match current theme color palette.
+  $style = _color_rewrite_stylesheet($theme, $info, $paths, $palette, $style);
+  // Save new css data into file.
+  file_unmanaged_save_data($style, 'public://nodelist_colored_css/ding_nodelist.css', FILE_EXISTS_REPLACE);
 }

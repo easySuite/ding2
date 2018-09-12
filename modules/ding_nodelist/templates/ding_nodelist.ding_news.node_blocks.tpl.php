@@ -15,6 +15,9 @@ $category = field_view_field('node', $item, 'field_ding_news_category', array(
   'label' => 'hidden',
   'type'  => 'taxonomy_term_reference_plain',
 ));
+$lead = field_view_field('node', $item, 'field_ding_news_lead', array(
+  'label' => 'hidden',
+));
 
 $news_date = date('d.m.y', $item->created);
 if ($item->created < $item->changed) {
@@ -38,8 +41,8 @@ if ($item->created < $item->changed) {
           <div
              class="field field-name-field-ding-news-lead field-type-text-long field-label-hidden">
             <div class="field-items">
-              <div class="field-item even">
-                <?php print $item->teaser_lead; ?>
+              <div class="field-item">
+                <?php print $lead['#items'][0]['value']; ?>
               </div>
             </div>
           </div>

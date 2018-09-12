@@ -49,7 +49,7 @@ function ding_nodelist_content_type_render($subtype, array $conf, array $args, $
   // Build title.
   $title = NULL;
   if (!empty($conf['override_title_text'])) {
-    $title = check_plain($conf['override_title_text']);
+    $title = t(check_plain($conf['override_title_text']));
   }
 
   // Create proper layout for variable-width lists.
@@ -131,6 +131,7 @@ function ding_nodelist_content_type_render($subtype, array $conf, array $args, $
       'classes' => implode(' ', $classes),
       'image_style' => $image_style,
       'sorting' => $conf['sort_field'],
+      'image_field' => !empty($conf['image_field']) ? $conf['image_field'] : '',
     ),
   ));
 
@@ -473,6 +474,7 @@ function _ding_nodelist_content_type_form_save(&$form_state, $rebuild = FALSE) {
 function _ding_nodelist_simple_cache_save(&$form_state) {
   // Save cache settings.
   $pane_cache = &$form_state['pane']->cache;
+  $pane_cache['method'] = 'simple';
   $pane_cache['settings'] = array(
     // Defaults the setting for users w/o cache access to 30 minutes.
     'lifetime' => user_access('nodelist cache settings') && isset($form_state['values']['lifetime']) ? $form_state['values']['lifetime'] : variable_get('ding_nodelist_cache_default_time', DING_NODELIST_CACHE_LIFETIME),

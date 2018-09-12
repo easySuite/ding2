@@ -25,7 +25,7 @@ if (!empty($image['path'])) {
          style="background-image:url(<?php print $slide_image; ?>);"></div>
   <?php endif; ?>
   <div class="event-time">
-    <div class="event-day"><?php print t('@event_date', array('@event_date' => date('D', $event_date))); ?></div>
+    <div class="event-day"><?php print format_date($event_date, 'custom', 'D');?></div>
     <div class="event-date"><?php print format_date($event_date, 'day_only'); ?></div>
     <div class="event-month"><?php print format_date($event_date, 'short_month_only'); ?></div>
   </div>

@@ -11,12 +11,13 @@
           delay = parseInt(Drupal.settings.ding_nodelist[item]);
         }
       });
-      
+
       $(this).find('.ding_nodelist-items').slick({
         nextArrow: '<i class="fa fa-next"></i>',
         prevArrow: '<i class="fa fa-prev"></i>',
         autoplay: true,
-        autoplaySpeed: 2000,
+        speed: 500,
+        autoplaySpeed: delay,
         responsive: true,
         dots: true,
         infinite: true,
