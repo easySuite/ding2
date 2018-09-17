@@ -273,30 +273,6 @@ projects[ting_titles_decoration][download][tag]    = "7.x-4.0.2"
 
 
 ; KulturØen.dk repositories
-projects[kultur_calendar][type]             = "module"
-projects[kultur_calendar][subdir]           = ""
-projects[kultur_calendar][download][type]   = "git"
-projects[kultur_calendar][download][url]    = "git@github.com:easySuite/kultur_calendar.git"
-projects[kultur_calendar][download][branch] = "development"
-
-projects[kultur_events][type]             = "module"
-projects[kultur_events][subdir]           = ""
-projects[kultur_events][download][type]   = "git"
-projects[kultur_events][download][url]    = "git@github.com:easySuite/kultur_events.git"
-projects[kultur_events][download][branch] = "development"
-
-projects[kultur_frontpage][type]             = "module"
-projects[kultur_frontpage][subdir]           = ""
-projects[kultur_frontpage][download][type]   = "git"
-projects[kultur_frontpage][download][url]    = "git@github.com:easySuite/kultur_frontpage.git"
-projects[kultur_frontpage][download][branch] = "development"
-
-projects[kultur_subtheme][type]             = "theme"
-projects[kultur_subtheme][subdir]           = ""
-projects[kultur_subtheme][download][type]   = "git"
-projects[kultur_subtheme][download][url]    = "git@github.com:easySuite/kultur_subtheme.git"
-projects[kultur_subtheme][download][branch] = "develop"
-
 projects[ding_language][type]             = "module"
 projects[ding_language][subdir]           = ""
 projects[ding_language][download][type]   = "git"
