@@ -399,7 +399,7 @@ function ting_execute_cache($request) {
 
   // Handle fulltext vs. dkabm caching of object.
   $type = TING_CACHE_TING_OBJECT;
-  if ($parms['format'] == 'docbook') {
+  if (isset($parms['objectFormat']) && $parms['objectFormat'] == 'docbook') {
     $type = TING_CACHE_TING_OBJECT_FULLTEXT;
   }
 
@@ -754,7 +754,7 @@ function ting_execute($request) {
     // next part expect JSON only formatted input. So this hack simply return
     // the XML for now as later on we have to work with open format and XML
     // parsing. So for now simply return the result to fulltext.
-    if ($request instanceof TingClientObjectRequest && $request->getOutputType() == 'xml' && $request->getFormat() == 'docbook') {
+    if ($request instanceof TingClientObjectRequest && $request->getOutputType() == 'xml' && $request->getObjectFormat() == 'docbook') {
       return $res;
     }
 
