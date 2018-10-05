@@ -77,42 +77,44 @@ function ting_relation_field_formatter_view($entity_type, $entity, $field, $inst
       // The isPartOfManifestion relation has all relation to other libraries
       // copies of the relation, so we filter the ones that do not belong to
       // current library.
-      $owner_id = is_object($relation->object) ? $relation->object->getOwnerId() : NULL;
-      if ($relation->type == 'isPartOfManifestation' && variable_get('ting_agency', -1) != $owner_id) {
-        continue;
-      }
+      if (is_object($relation->object)) {
+        $owner_id = is_object($relation->object) ? $relation->object->getOwnerId() : NULL;
+        if ($relation->type == 'isPartOfManifestation' && variable_get('ting_agency', -1) != $owner_id) {
+          continue;
+        }
 
-      // If basic information about a relation group have not been set yet then
-      // add it.
-      if (!isset($groups[$relation->type])) {
-        $groups[$relation->type] = array(
-          '#theme' => 'ting_relations',
-          '#title' => $relation_types[$relation->type],
-          '#source' => $relation->ac_source,
-          '#attributes' => array(
-            'class' => array(
-              drupal_html_class(preg_replace('/(\B[A-Z]|:)/', '_$1', $relation->type)),
-              'ting-relations',
-            ),
-          ),
-          '#relations' => array(),
-        );
+        // If basic information about a relation group have not been set yet then
+        // add it.
+        if (!isset($groups[$relation->type])) {
+          $groups[$relation->type] = [
+            '#theme' => 'ting_relations',
+            '#title' => $relation_types[$relation->type],
+            '#source' => $relation->ac_source,
+            '#attributes' => [
+              'class' => [
+                drupal_html_class(preg_replace('/(\B[A-Z]|:)/', '_$1', $relation->type)),
+                'ting-relations',
+              ],
+            ],
+            '#relations' => [],
+          ];
+        }
+        // Group relations based on types, so they can be show under the same
+        // headline on the page.
+        $groups[$relation->type]['#relations'][] = [
+          '#theme' => 'ting_relation',
+          '#title' => ting_relation_get_title($relation),
+          '#abstract' => ting_relation_get_abstract($relation),
+          '#online' => ting_relation_get_online_url($relation),
+          '#target' => ting_relation_get_target($relation),
+          '#relation' => $relation,
+          '#attributes' => [
+            'class' => [
+              'ting-object-related-item',
+            ],
+          ],
+        ];
       }
-      // Group relations based on types, so they can be show under the same
-      // headline on the page.
-      $groups[$relation->type]['#relations'][] = array(
-        '#theme' => 'ting_relation',
-        '#title' => ting_relation_get_title($relation),
-        '#abstract' => ting_relation_get_abstract($relation),
-        '#online' => ting_relation_get_online_url($relation),
-        '#target' => ting_relation_get_target($relation),
-        '#relation' => $relation,
-        '#attributes' => array(
-          'class' => array(
-            'ting-object-related-item',
-          ),
-        ),
-      );
     }
   }
 
