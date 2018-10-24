@@ -175,3 +175,40 @@ function _fbs_loan_get_renewal_status($loan) {
   }
   return DingProviderLoan::STATUS_NOT_RENEWED;
 }
+
+/**
+ * Replace entity for the loan.
+ *
+ * Should be used in the case object in not in Ting anymore or the reservation
+ * is an remote reservation.
+ *
+ * @param TingEntity $ting_entity
+ *   Provider reservation object.
+ * @param \Ting\TingObject $ting_object
+ *   Mutable ting object that represents the raw search result from the search
+ *   provider.
+ *
+ * @return TingEntity
+ *   Ting entity object, filled with data from provider service.
+ *
+ * @throws \Exception
+ *   Exception thrown if an error occurs while interacting with Alma.
+ */
+function fbs_loan_populate_pseudo_entity(TingEntity $ting_entity, \Ting\TingObject $ting_object) {
+  global $user;
+
+  $loan_list = fbs_loan_list($user);
+
+  $matched_loan = NULL;
+  foreach ($loan_list as $loan) {
+    if ($loan->ding_entity_id === $ting_entity->ding_entity_id) {
+      $matched_loan = $loan;
+      break;
+    }
+  }
+
+  $ting_object->setTitle($matched_loan->display_name);
+  $ting_entity->title = $matched_loan->display_name;
+
+  return $ting_entity;
+}

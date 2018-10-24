@@ -607,7 +607,7 @@ function ding_provider_get_pseudo_entity($ding_entity_id) {
   $ting_object = new TingObject();
 
   $ting_object->setId($ding_entity_id);
-  $ting_object->setSourceId($local_id);
+  $ting_object->setSourceId(explode(':', $ding_entity_id)[1]);
   $ting_object->setOwnerId(drupal_substr($ding_entity_id, 0, strpos($ding_entity_id, '-')));
 
   // See if the provider have any information about the entity.
