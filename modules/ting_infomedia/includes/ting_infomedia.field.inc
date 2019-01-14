@@ -2,7 +2,9 @@
 /**
  * @file
  * An example field using the Field API.
- *
+ */
+
+/**
  * This is updated from Barry Jaspan's presentation at Drupalcon Paris,
  * @link http://acquia.com/community/resources/acquia-tv/intro-field-api-module-developers Video Presentation @endlink
  *
@@ -69,11 +71,11 @@ function ting_infomedia_field_formatter_view($entity_type, $entity, $field, $ins
   $id = $entity->ding_entity_id;
 
   $relation_types = ting_infomedia_get_ting_relations();
-  switch($display['type']) {
+  switch ($display['type']) {
     case 'ting_infomedia_default' :
-      foreach($items as $delta => $item) {
+      foreach ($items as $delta => $item) {
         foreach ($entity->relations as $relation) {
-          if(isset($relation_types[$relation->type]) && $entity->ac_source == 'Artikler' ) {
+          if (isset($relation_types[$relation->type]) && $entity->ac_source == 'Artikler') {
             $element[$delta] = array(
               '#markup' => l(t('Read article'), ting_infomedia_get_article_link($id), array('attributes' => array('class' => 'infomedia_group', 'name'=>$relation->type))),
             );
@@ -91,6 +93,7 @@ function ting_infomedia_field_formatter_view($entity_type, $entity, $field, $ins
  *
  * @param string $entityid
  *   Current entity id.
+ *
  * @return string
  *   Link to infomedia article.
  */
@@ -105,7 +108,7 @@ function ting_infomedia_get_article_link($entityid) {
  * @TODO is some kind of validation needed?
  */
 function ting_infomedia_field_validate($entity_type, $entity, $field, $instance, $langcode, $items, &$errors) {
-  // do nothing
+  // Do nothing.
 }
 
 /**
@@ -114,7 +117,7 @@ function ting_infomedia_field_validate($entity_type, $entity, $field, $instance,
  * @TODO: check.
  */
 function ting_infomedia_is_empty($item, $field) {
-  return false;
+  return FALSE;
 }
 
 /**
