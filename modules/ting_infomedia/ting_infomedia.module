@@ -7,6 +7,7 @@
 
 // Load field hooks.
 module_load_include('inc', 'ting_infomedia', 'includes/ting_infomedia.wrapper');
+module_load_include('inc', 'ting_infomedia', 'includes/ting_infomedia.field');
 
 /**
  * Implements hook_menu().
