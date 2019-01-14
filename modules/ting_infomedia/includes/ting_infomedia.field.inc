@@ -73,7 +73,7 @@ function ting_infomedia_field_formatter_view($entity_type, $entity, $field, $ins
 
   $relation_types = ting_infomedia_get_ting_relations();
   switch ($display['type']) {
-    case 'ting_infomedia_default' :
+    case 'ting_infomedia_default':
       foreach ($items as $delta => $item) {
         foreach ($entity->relations as $relation) {
           if (isset($relation_types[$relation->type]) && $entity->ac_source == 'Artikler') {
