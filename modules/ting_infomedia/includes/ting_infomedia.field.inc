@@ -5,7 +5,8 @@
  */
 
 /**
- * This is updated from Barry Jaspan's presentation at Drupalcon Paris,
+ * This is updated from Barry Jaspan's presentation at Drupalcon Paris.
+ *
  * @link http://acquia.com/community/resources/acquia-tv/intro-field-api-module-developers Video Presentation @endlink
  *
  * Providing a field requires:
@@ -59,7 +60,7 @@ function ting_infomedia_field_formatter_info() {
       'field types' => array(
         'ting_infomedia',
       ),
-    )
+    ),
   );
 }
 
@@ -77,7 +78,7 @@ function ting_infomedia_field_formatter_view($entity_type, $entity, $field, $ins
         foreach ($entity->relations as $relation) {
           if (isset($relation_types[$relation->type]) && $entity->ac_source == 'Artikler') {
             $element[$delta] = array(
-              '#markup' => l(t('Read article'), ting_infomedia_get_article_link($id), array('attributes' => array('class' => 'infomedia_group', 'name'=>$relation->type))),
+              '#markup' => l(t('Read article'), ting_infomedia_get_article_link($id), array('attributes' => array('class' => 'infomedia_group', 'name' => $relation->type))),
             );
           }
         }
@@ -141,7 +142,6 @@ function ting_infomedia_field_load($entity_type, $entities, $field, $instances, 
  * Notes: add the field to given item(s)
  * we could also use hook_field_load or hook_field_prepare_view.
  */
-
 function ting_infomedia_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
   foreach ($entities as $id => $entity) {
     // We could create relations as multiple values here, but it's
