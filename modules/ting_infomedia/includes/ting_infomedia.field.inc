@@ -21,17 +21,10 @@
  * - Defining a widget for the edit form
  *   - hook_field_widget_info()
  *   - hook_field_widget_form()
- *
- * *
-
-/**
- * Implements hook_field_info()
-
- * description of field
  */
 
 /**
- * @TODO: Missing description.
+ * Implements hook_field_info().
  */
 function ting_infomedia_field_info() {
   $ret = array(
@@ -53,9 +46,9 @@ function ting_infomedia_field_info() {
 }
 
 /**
- * Implements hook_field_formatter_info
+ * Implements hook_field_formatter_info().
  *
- * Notes; 'field types' are passed on to hook_field_formatter_view
+ * Notes: 'field types' are passed on to hook_field_formatter_view.
  */
 function ting_infomedia_field_formatter_info() {
   return array(
@@ -69,7 +62,7 @@ function ting_infomedia_field_formatter_info() {
 }
 
 /**
- * Implements hook_field_formatter_view()
+ * Implements hook_field_formatter_view().
  */
 function ting_infomedia_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
   $element = array();
@@ -78,7 +71,7 @@ function ting_infomedia_field_formatter_view($entity_type, $entity, $field, $ins
   $relation_types = ting_infomedia_get_ting_relations();
   switch($display['type']) {
     case 'ting_infomedia_default' :
-      foreach($items as $delta => $items) {
+      foreach($items as $delta => $item) {
         foreach ($entity->relations as $relation) {
           if(isset($relation_types[$relation->type]) && $entity->ac_source == 'Artikler' ) {
             $element[$delta] = array(
@@ -94,10 +87,12 @@ function ting_infomedia_field_formatter_view($entity_type, $entity, $field, $ins
 }
 
 /**
- * Parse the entityid and return an url
+ * Parse the entityid and return an url.
  *
- * @param String $entityid
- * @return String
+ * @param string $entityid
+ *   Current entity id.
+ * @return string
+ *   Link to infomedia article.
  */
 function ting_infomedia_get_article_link($entityid) {
   $ids = explode(':', $entityid);
@@ -105,7 +100,7 @@ function ting_infomedia_get_article_link($entityid) {
 }
 
 /**
- * Implements hook_field_validate
+ * Implements hook_field_validate().
  *
  * @TODO is some kind of validation needed?
  */
@@ -114,9 +109,9 @@ function ting_infomedia_field_validate($entity_type, $entity, $field, $instance,
 }
 
 /**
- * Implements hook_field_is_empty
+ * Implements hook_field_is_empty().
  *
- * @TODO: check
+ * @TODO: check.
  */
 function ting_infomedia_is_empty($item, $field) {
   return false;
@@ -124,6 +119,7 @@ function ting_infomedia_is_empty($item, $field) {
 
 /**
  * Implements hook_field_load().
+ *
  * Notes: Define custom load behavior for this module's field types.
  */
 function ting_infomedia_field_load($entity_type, $entities, $field, $instances, $langcode, &$items, $age) {
@@ -137,9 +133,10 @@ function ting_infomedia_field_load($entity_type, $entities, $field, $instances, 
 }
 
 /**
- * Implements hook_field_formatter_prepare_view
- * Notes; add the field to given item(s)
- * we could also use hook_field_load or hook_field_prepare_view
+ * Implements hook_field_formatter_prepare_view().
+ *
+ * Notes: add the field to given item(s)
+ * we could also use hook_field_load or hook_field_prepare_view.
  */
 
 function ting_infomedia_field_formatter_prepare_view($entity_type, $entities, $field, $instances, $langcode, &$items, $displays) {
