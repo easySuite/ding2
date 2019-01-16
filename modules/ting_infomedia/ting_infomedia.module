@@ -37,6 +37,44 @@ function ting_infomedia_menu() {
 }
 
 /**
+ * Implements hook_field_info().
+ */
+function ting_infomedia_field_info() {
+  $ret = array(
+    'ting_infomedia' => array(
+      'label' => t('A link to infomedia articles'),
+      'description' => t('This field links to infomedia articles'),
+      'settings' => array(
+        'max_length' => 255,
+      ),
+      'default_widget' => 'hidden',
+      'default_formatter' => 'ting_infomedia_default',
+      'virtual_field' => array(
+        'entity_types' => array('ting_object'),
+        'add_widget' => TRUE,
+      ),
+    ),
+  );
+  return $ret;
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ *
+ * Notes: 'field types' are passed on to hook_field_formatter_view.
+ */
+function ting_infomedia_field_formatter_info() {
+  return array(
+    'ting_infomedia_default' => array(
+      'label' => t('Default'),
+      'field types' => array(
+        'ting_infomedia',
+      ),
+    ),
+  );
+}
+
+/**
  * Page callback function.
  *
  * @return array
