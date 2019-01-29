@@ -16,8 +16,13 @@ var argv = require('yargs').argv;
 
 // We only want to process our own non-processed JavaScript files.
 // var jsPath = './scripts/ddbasic.!(*.min).js';
+
 var jsPath = ['./scripts/**/*.js', '!./scripts/contrib/*', '!./scripts/min/**/*.js'];
 var sassPath = ['./sass/**/*.scss', '!./sass/contrib/**'];
+var modules = [
+  '../../modules/easyopac_facetbrowser_extend/scss/easyopac_facetbrowser_extend.scss'
+];
+sassPath = sassPath.concat(modules);
 
 gulp.task('jshint', 'Run Javascript through JSHint',
   function() {
