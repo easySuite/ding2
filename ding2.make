@@ -79,8 +79,8 @@ projects[email][version] = "1.3"
 
 projects[entity][subdir] = "contrib"
 projects[entity][version] = "1.8"
-; https://www.drupal.org/project/rules/issues/1309144
-projects[entity][patch][0] = "https://www.drupal.org/files/issues/entity-1309144-24-7.x-2.x.patch"
+; https://www.drupal.org/node/2829437
+projects[entity][patch][0] = "https://www.drupal.org/files/issues/entity-rebuild-2829437-4.patch"
 
 projects[entitycache][subdir] = "contrib"
 projects[entitycache][version] = "1.2"
