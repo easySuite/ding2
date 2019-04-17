@@ -5,11 +5,6 @@
  */
 
 /**
- * Indicates that a given cache entry have return no reply from the data well.
- */
-define('OPENSEARCH_CACHE_EMPTY_ENTRY', '8e4f3ef1784c020bf7afa5b6dd69b421');
-
-/**
  * Get an ting object or collection.
  *
  * Returns the search response for the given id. This will cache the
@@ -23,94 +18,47 @@ define('OPENSEARCH_CACHE_EMPTY_ENTRY', '8e4f3ef1784c020bf7afa5b6dd69b421');
  * @param bool $with_relations
  *   Whether to return all relations. Defaults to FALSE.
  *
- * @todo Should use getObject, but the ting-client lib doesn't implement that.
- *
- * @return \TingClientObject|\TingClientObjectCollection|NULL
+ * @return bool|mixed|null|\TingClientSearchResult
  *   Ting object or object collection if $collection is TRUE and a collection
  *   was found. NULL is returned if no object or collection could be retrieved.
+ *
+ * @throws \TingClientException
+ *   This may throw this exception if the search request fails.
  */
 function opensearch_get_object($object_id, $collection = FALSE, $with_relations = FALSE) {
   if (!empty($object_id)) {
-    // Check the cache first.
-    $type = OPENSEARCH_CACHE_TING_OBJECT;
-    $cache_key = $object_id;
     if ($collection) {
-      $type = OPENSEARCH_CACHE_COLLECTION;
-      $cache_key = _opensearch_cache_collection_key($object_id);
+      // If this is a collection we need to do a collection request, which is
+      // a search request.
+      $request = opensearch_get_request_factory()->getCollectionRequest();
+      $request->setAllObjects(FALSE);
     }
-    $object = _opensearch_cache_get($cache_key, $type, $with_relations);
-    if ($object != OPENSEARCH_CACHE_EMPTY_ENTRY && !$object) {
-      // Put a negative reply in the cache. It will be overwritten by the
-      // object, or ensure that we won't try to fetch this id again.
-      _opensearch_cache_set($object_id, OPENSEARCH_CACHE_EMPTY_ENTRY, $type);
-
-      // Build request request and set object id.
+    else {
       $request = opensearch_get_request_factory()->getObjectRequest();
-      if ($collection) {
-        // If this is a collection we need to do a collection request, which is
-        // a search request.
-        $request = opensearch_get_request_factory()->getCollectionRequest();
-        $request->setAllObjects(FALSE);
-      }
-      $request->setObjectId($object_id);
+    }
+    $request->setObjectId($object_id);
 
-      // Set agency from the administration interface.
-      if ($agency = variable_get('ting_agency', FALSE)) {
-        $request->setAgency($agency);
-      }
-
-      // Set search profile from the administration interface.
-      $profile = variable_get('opensearch_search_profile', '');
-      if (!empty($profile)) {
-        $request->setProfile($profile);
-      }
-
-      // Get all relations for the object.
-      if ($with_relations) {
-        $request->setAllRelations(TRUE);
-        $request->setRelationData('full');
-      }
-
-      // Execute the request.
-      $object = opensearch_execute_cache($request);
-
-      // If this was a collection request store the collection reply to ensure
-      // that there is no empty cache entry.
-      if ($collection) {
-        if (is_null($object)) {
-          $object = OPENSEARCH_CACHE_EMPTY_ENTRY;
-        }
-        _opensearch_cache_set($object_id, $object, $type);
-      }
+    // Set agency from the administration interface.
+    if ($agency = variable_get('ting_agency', FALSE)) {
+      $request->setAgency($agency);
     }
 
-    // If not asking for a collection, and the object is, return the
-    // sub-object with the same id.
-    if (!$collection && isset($object->objects)) {
-      foreach ($object->objects as $sub_object) {
-        if ($sub_object->id == $object_id) {
-          // If not asking for a collection, and the object is, return the
-          // sub-object with the same id.
-          _opensearch_cache_update_relations_status($sub_object, $with_relations);
-          return $sub_object;
-        }
-      }
-      // No sub-object had the same id. Somethings broken.
-      return NULL;
+    // Set search profile from the administration interface.
+    $profile = variable_get('opensearch_search_profile', '');
+    if (!empty($profile)) {
+      $request->setProfile($profile);
     }
 
-    // Mark the object in cache as relations have been loaded.
-    if (!$collection) {
-      _opensearch_cache_update_relations_status($object, $with_relations);
+    // Get all relations for the object.
+    if ($with_relations) {
+      $request->setAllRelations(TRUE);
+      $request->setRelationData('full');
     }
 
-    // If not asking for a collection, and the object is, return the
-    // sub-object with the same id.
-    if ($object == OPENSEARCH_CACHE_EMPTY_ENTRY) {
-      return NULL;
-    }
+    // Execute the request.
+    $result = opensearch_execute($request);
 
-    return $object;
+    return ($collection || is_null($result)) ? $result : $result[$object_id];
   }
 
   return NULL;
@@ -119,75 +67,47 @@ function opensearch_get_object($object_id, $collection = FALSE, $with_relations 
 /**
  * Get a bunch of objects in one request.
  *
- * @todo Should use getObject when getObject supports getting multiple.
+ * @param string[] $ids
+ *   Data-well PIDs for the objects to get.
+ * @param bool $local
+ *   Flag to indicate whether $ids contains pids or local ids (fausts).
+ *
+ * @return bool|\TingClientSearchResult
+ *   The objects fetched from the data-well.
+ *
+ * @throws \TingClientException
+ *   This may throw this exception if the search request fails.
  */
-function opensearch_get_objects($ids) {
-  $objects = array();
-  // Pre-fill from cache.
-  foreach ($ids as $id) {
-    $objects[$id] = _opensearch_cache_get($id, OPENSEARCH_CACHE_TING_OBJECT);
-    if (isset($objects[$id]) && isset($objects[$id]->objects)) {
-      foreach ($objects[$id]->objects as $sub_object) {
-        if ($sub_object->id == $id) {
-          $objects[$id] = $sub_object;
-          continue 2;
-        }
-      }
-      // No sub-object had the same id. Somethings broken.
-      $objects[$id] = NULL;
-    }
+function opensearch_get_objects(array $ids, $local = FALSE) {
+  $request = opensearch_get_request_factory()->getObjectRequest();
 
-    if ($objects[$id] == OPENSEARCH_CACHE_EMPTY_ENTRY) {
-      $objects[$id] = NULL;
-    }
+  // Set agency from the administration interface.
+  if ($agency = variable_get('ting_agency', FALSE)) {
+    $request->setAgency($agency);
   }
 
-  // Not all object are searchable, such as relation etc. So to get over this we
-  // split the request into to groups "own id's" and "others". Where the first
-  // is ensured to be searchable.
-  $agency = variable_get('ting_agency', FALSE);
-  $query = array();
-  foreach ($objects as $id => $object) {
-    if ($object === FALSE) {
-      // So if the agency match lets search theme as that's faster then fetching
-      // them one by one.
-      if (preg_match('/^(870970-basis|' . $agency . '-katalog|' . $agency . ')/', $id)) {
-        $query[] = 'rec.id=' . $id;
-      }
-      else {
-        // Get objects as it was not local.
-        $objects[$id] = opensearch_get_object($id);
-      }
-    }
+  // Set search profile from the administration interface.
+  $profile = variable_get('opensearch_search_profile', '');
+  if (!empty($profile)) {
+    $request->setProfile($profile);
   }
-  // Open search is limited to 50 results per call, so iterate until all results
-  // have been fetched. It has a limit on the size of the query (>187 rec.id=
-  // ORed together seems to break it).
-  $query_chunks = array_chunk($query, 50);
-  foreach ($query_chunks as $query_chunk) {
-    $request = opensearch_get_request_factory()->getSearchRequest();
-    if ($agency) {
-      $request->setAgency($agency);
-    }
-    $profile = variable_get('opensearch_search_profile', '');
-    if (!empty($profile) && method_exists($request, 'setProfile')) {
-      $request->setProfile($profile);
-    }
-    $request->setQuery(implode(' OR ', $query_chunk));
-    $request->setStart(1);
-    $request->setNumResults(50);
-    $request->setAllObjects(TRUE);
 
-    $result = opensearch_execute_cache($request);
-
-    if ($result && is_array($result->collections)) {
-      foreach ($result->collections as $collection) {
-        if (is_array($collection->objects) && count($collection->objects)) {
-          foreach ($collection->objects as $object) {
-            $objects[$object->id] = $object;
-          }
-        }
-      }
+  // Opensearch getObject complains if it has to return more than 200 records,
+  // with the message 'getObject can fetch up to 200 records. '. But it seems
+  // it also have trouble fething over 169 records, which appears to be a bug.
+  // In any case, we should be safe, if we only fetch 100 records a time.
+  // See: https://platform.dandigbib.org/issues/3828#note-16.
+  $objects = [];
+  foreach (array_chunk($ids, 100) as $chunk) {
+    if ($local) {
+      $request->setLocalIds($chunk);
+    }
+    else {
+      $request->setObjectIds($chunk);
+    }
+    $result = opensearch_execute($request);
+    if (is_array($result)) {
+      $objects += $result;
     }
   }
 
@@ -198,15 +118,15 @@ function opensearch_get_objects($ids) {
  * Performs a search against the well.
  *
  * @param string $query
- *   The search query
+ *   The search query.
  * @param int $page
- *   The page number to retrieve search results for
+ *   The page number to retrieve search results for.
  * @param int $results_per_page
- *   The number of results to include per page
+ *   The number of results to include per page.
  * @param array $options
  *   Options to pass to the search. Possible options are:
  *    - facets: Array of facet names for which to return results. Default:
- *      facet.subject, facet.creator, facet.type, facet.date, facet.language
+ *      facet.subject, facet.creator, facet.type, facet.date, facet.language.
  *    - numFacets: The number of terms to include with each facet. Default: 10
  *    - sort: The key to sort the results by. Default: "" (corresponds to
  *      relevance). The possible values are defined by the sortType type
@@ -221,6 +141,9 @@ function opensearch_get_objects($ids) {
  *
  * @return TingClientSearchResult
  *   The search result.
+ *
+ * @throws \TingClientException
+ *   This may throw this exception if the search request fails.
  */
 function opensearch_do_search($query, $page = 1, $results_per_page = 10, $options = array()) {
   $request = opensearch_get_request_factory()->getSearchRequest();
@@ -313,7 +236,8 @@ function opensearch_do_search($query, $page = 1, $results_per_page = 10, $option
     $request->userDefinedBoost = $uboosts;
   }
 
-  $search_result = opensearch_execute_cache($request);
+  $search_result = opensearch_execute($request);
+
   // Replace collections with proper TingCollection objects.
   if ($search_result && is_array($search_result->collections)) {
     $ids = array();
@@ -331,291 +255,25 @@ function opensearch_do_search($query, $page = 1, $results_per_page = 10, $option
 }
 
 /**
- * Get a ting object from the well in marcxchange format.
+ * Get ting objects from the well in marcxchange format.
  *
- * @param string $object_id
- *   Object identifier.
+ * @param array $object_ids
+ *   Object identifiers.
+ *
+ * @return array
+ *   An array of TingMarchResult objects. Empty array if nothing was found.
+ *
+ * @throws \TingClientException
+ *   This may throw this exception if the search request fails.
  */
-function opensearch_get_object_marcxchange($object_id) {
-  $cache_key = 'marcxchange:' . $object_id;
-  $object = _opensearch_cache_get($cache_key, OPENSEARCH_CACHE_TING_OBJECT, FALSE);
+function opensearch_get_objects_marcxchange(array $object_ids) {
+  $request = opensearch_get_request_factory()->getMarcXchangeRequest();
 
-  if ($object != OPENSEARCH_CACHE_EMPTY_ENTRY && !$object) {
-    _opensearch_cache_set($cache_key, OPENSEARCH_CACHE_EMPTY_ENTRY, OPENSEARCH_CACHE_TING_OBJECT);
+  $request->setAgency(variable_get('ting_agency'));
+  $request->setProfile(variable_get('opensearch_search_profile'));
+  $request->setIdentifier($object_ids);
 
-    $request = opensearch_get_request_factory()->getMarcXchangeRequest();
-
-    $request->setAgency(variable_get('ting_agency'));
-    $request->setProfile(variable_get('opensearch_search_profile'));
-    $request->setIdentifier($object_id);
-
-    // Have to use opensearch_execute directly since marc objects might collide with
-    // normal dkabm objects in the cache.
-    $object = opensearch_execute($request);
-    if ($object) {
-      _opensearch_cache_set($cache_key, $object, OPENSEARCH_CACHE_TING_OBJECT);
-    }
-  }
-
-  return $object;
-}
-
-/**
- * Calls ting_execute() and caches the result.
- *
- * Executes the request and caches sub-objects.
- *
- * @param object $request
- *   The request.
- *
- * @return object
- *   The search reply from the data well.
- */
-function opensearch_execute_cache($request) {
-  $parms = $request->getRequest()->getParameters();
-
-  // Handle fulltext vs. dkabm caching of object.
-  $type = OPENSEARCH_CACHE_TING_OBJECT;
-  if ($parms['format'] == 'docbook') {
-    $type = OPENSEARCH_CACHE_TING_OBJECT_FULLTEXT;
-  }
-
-  // User static cache to store request, used in another function to see if the
-  // same request is made more than once.
-  $calls = &drupal_static(__FUNCTION__);
-  if (!isset($calls)) {
-    $calls = array();
-  }
-  $calls[] = $parms;
-
-  // Check if the reply have been stored in cache.
-  $reply = _opensearch_cache_get(md5(serialize($parms)), OPENSEARCH_CACHE_REPLY);
-  if (!$reply) {
-    // Reply for the request was not found, so we have to ask the data well.
-    $reply = opensearch_execute($request);
-
-    // Cache any sub-objects (mostly true for collections).
-    if (isset($reply->objects)) {
-      foreach ($reply->objects as $object) {
-        _opensearch_cache_set($object->id, $object, OPENSEARCH_CACHE_TING_OBJECT);
-        // Cache any relations.
-        if (isset($object->relations)) {
-          foreach ($object->relations as $relation) {
-            if (isset($relation->id)) {
-              _opensearch_cache_set($relation->id, $relation);
-            }
-          }
-        }
-      }
-    }
-
-    // Cache any collections. Done after objects to ensure that collections take
-    // precedence.
-    if (isset($reply->collections)) {
-      foreach ($reply->collections as &$collection) {
-        if (is_array($collection->objects)) {
-          foreach ($collection->objects as $object) {
-            // Cache any relations.
-            if (isset($object->relations)) {
-              foreach ($object->relations as $relation) {
-                if (isset($relation->id)) {
-                  _opensearch_cache_set($relation->id, $relation);
-                }
-              }
-            }
-            _opensearch_cache_set($object->id, $object, $type);
-          }
-          _opensearch_cache_set(_opensearch_cache_collection_key($collection->objects[0]->id), $collection, OPENSEARCH_CACHE_COLLECTION);
-        }
-      }
-    }
-
-    // Cache any relations.
-    if (isset($reply->relations)) {
-      foreach ($reply->relations as $relation) {
-        _opensearch_cache_set($relation->id, $relation, OPENSEARCH_CACHE_TING_OBJECT);
-      }
-    }
-
-    // Cache the object self.
-    if ($reply instanceof TingClientObject) {
-      if (!empty($reply->record)) {
-        _opensearch_cache_set($reply->id, $reply);
-      }
-      else {
-        $reply = OPENSEARCH_CACHE_EMPTY_ENTRY;
-      }
-    }
-
-    // Store the reply for the request itself in the cache.
-    if (is_null($reply)) {
-      // Handle empty data well replies.
-      $reply = OPENSEARCH_CACHE_EMPTY_ENTRY;
-    }
-    _opensearch_cache_set(md5(serialize($parms)), $reply, OPENSEARCH_CACHE_REPLY);
-  }
-
-  if ($reply == OPENSEARCH_CACHE_EMPTY_ENTRY) {
-    return NULL;
-  }
-
-  return $reply;
-}
-
-/**
- * Get cached version of a data well search.
- *
- * The cache can lookup ting objects, ting collections or even a replay from
- * the data well.
- *
- * To retrieve an reply simple extract the params from the request object,
- * serialize them and make a MD5 hash as id.
- *
- * @see ting_execute_cache()
- *
- * @param string $id
- *   Object id or the MD5 hash of the parameters used to execute a search
- *   against the date well.
- * @param string $type
- *   The type of data to cache, which is used to set the cache id. It should be
- *   one off: TING_CACHE_TING_OBJECT, TING_CACHE_COLLECTION,
- *   TING_CACHE_TING_OBJECT_FULLTEXT or TING_CACHE_REPLY.
- * @param bool $with_relations
- *   Is the object we are looking up with relations (addi posts).
- *
- * @return mixed
- *   The cached item based on the $type and $id given. If non found in the cache
- *   NULL is returned.
- */
-function _opensearch_cache_get($id, $type = OPENSEARCH_CACHE_TING_OBJECT, $with_relations = FALSE) {
-  $cid = $type . ':' . $id;
-  _opensearch_cache_invoke_cache_key_hook($cid);
-
-  if ($ttl = variable_get('opensearch_cache_lifetime', OPENSEARCH_DEFAULT_CACHE_LIFETIME)) {
-    $cache = cache_get($cid, 'cache_ting');
-    if ($cache && ($cache->expire > REQUEST_TIME)) {
-      $data = $cache->data;
-      // Check if cached version has relations, if request. If it's an empty
-      // array it have not been request by the server yet with relations, so
-      // return FALSE to trigger a data well request.
-      if ($with_relations && (isset($data->relations) && is_array($data->relations) && !count($data->relations))) {
-        return FALSE;
-      }
-
-      // The data maybe NULL which means that the data well have been asked
-      // about this object and no where found.
-      return $data;
-    }
-  }
-  return FALSE;
-}
-
-/**
- * Store cached version of a data well search.
- *
- * The cache can store ting objects, ting collections or even a replay from
- * the data well.
- *
- * To store an reply simple extract the params from the request object,
- * serialize them and make a MD5 hash as id.
- *
- * @see ting_execute_cache()
- *
- * @param string $id
- *   Id that the item was cached under.
- * @param mixed $value
- *   The value to store in the cache.
- * @param string $type
- *   The type of data to cache, which is used to set the cache id. It should be
- *   one off: TING_CACHE_TING_OBJECT, TING_CACHE_COLLECTION,
- *   TING_CACHE_TING_OBJECT_FULLTEXT or TING_CACHE_REPLY.
- */
-function _opensearch_cache_set($id, $value, $type = OPENSEARCH_CACHE_TING_OBJECT) {
-  // Define the cache id.
-  $cid = $type . ':' . $id;
-  _opensearch_cache_invoke_cache_key_hook($cid);
-
-  if ($ttl = variable_get('opensearch_cache_lifetime', OPENSEARCH_DEFAULT_CACHE_LIFETIME)) {
-    cache_set($cid, $value, 'cache_ting', REQUEST_TIME + $ttl);
-  }
-  else {
-    // Without proper caching, use a static cache that only works on pr.
-    // request.
-    $cache = &drupal_static(__FUNCTION__);
-    if (!isset($cache)) {
-      $cache = array();
-    }
-    $cache[$cid] = $value;
-  }
-}
-
-/**
- * Wrapper for invoking our cache_key hook, since we need to do this two places.
- *
- * @see _opensearch_cache_get()
- * @see _opensearch_cache_set()
- *
- * @param string $cid
- *   The cache_key that other modules can modify.
- */
-function _opensearch_cache_invoke_cache_key_hook(&$cid) {
-  // We need to pass by reference, so no module_invoke_all().
-  foreach (module_implements('opensearch_cache_key') as $module) {
-    $function = $module . '_opensearch_cache_key';
-    $function($cid);
-  }
-}
-
-/**
- * Generates a cache id (cid) for ting collection cache.
- *
- * Collections have to be indexed in cache based on the facets selected as the
- * collections changes content based on facets. This is all due to the fact that
- * collections don't have unique id's. In fact we use the first object's id in
- * the collection to id the collection.
- *
- * @param string $object_id
- *   Ting object ID also known as PID.
- *
- * @return string
- *   Cache key to retrieve and set data in the cache,
- */
-function _opensearch_cache_collection_key($object_id) {
-  $cache_key = $object_id;
-  if (!empty($_GET['facets'])) {
-    $cache_key .= ':' . md5(serialize($_GET['facets']));
-  }
-
-  return $cache_key;
-}
-
-/**
- * Mark the object in the cache as having no relations in the data well.
- *
- * This is need as object may have been cached without relations in a search
- * request, but a get_object request may ask for the same object from cache with
- * relations. So this FALSE value is used to ensure that the data well is only
- * asked once for a object with relations even, if it do not have relations.
- *
- * Default value from the data well is an empty array, so if the array is empty
- * the ting_cache_set, function will not return the cached if relations are
- * requested.
- *
- * @param StdClass $object
- *   Ting data well object.
- * @param bool $with_relations
- *   If TRUE relations will be marked.
- */
-function _opensearch_cache_update_relations_status($object, $with_relations = FALSE) {
-  if ($with_relations && $object instanceof TingClientObject) {
-    if (empty($object->relations)) {
-      // Mark this object as having no relations.
-      $object->relations = FALSE;
-    }
-
-    // Update cache with the object.
-    _opensearch_cache_set($object->id, $object);
-  }
+  return opensearch_execute($request);
 }
 
 /**
@@ -626,25 +284,29 @@ function _opensearch_cache_update_relations_status($object, $with_relations = FA
  * @param int $num_results
  *   The number of results to return.
  *
- * @return array
+ * @return bool|\TingClientSearchResult
  *   An array of TingClientObjectRecommendation objects.
+ *
+ * @throws \TingClientException
+ *   This may throw this exception if the search request fails.
  */
 function opensearch_get_object_recommendations($isbn, $num_results = 10) {
   $request = opensearch_get_request_factory()->getObjectRecommendationRequest();
   $request->setIsbn($isbn);
   $request->setNumResults($num_results);
+
   return opensearch_execute($request);
 }
 
 /**
  * Retrieves an initialized Ting client request factory.
  *
+ * @return TingClientRequestFactory
+ *   TingClientRequestFactory object.
+ *
  * @throws TingClientException
  *   If there is no end-point url defined in the configuration this exception is
  *   thrown.
- *
- * @return TingClientRequestFactory
- *   TingClientRequestFactory object.
  */
 function opensearch_get_request_factory() {
   static $request_factory;
@@ -688,17 +350,133 @@ function opensearch_get_request_factory() {
 /**
  * Perform a request against Ting and perform error handling if necessary.
  *
- * @param object $request
+ * @param \TingClientRequest $request
  *   The request.
  *
- * @return mixed
+ * @return \TingClientSearchResult|\TingClientObjectCollection|array|bool|null
  *   Result of the request or false if an error occurs.
+ *   If $request is a TingClientSearchRequest a TingClientSearchResult result
+ *   object is returned.
+ *   If $request is a TingClientCollectionRequest a TingClientObjectCollection
+ *   result object is returned.
+ *   If $request is a TingClientObjectRequest an array of TingClientObject
+ *   result objects is returned or NULL if nothing was found.
  */
-function opensearch_execute($request) {
+function opensearch_execute(TingClientRequest $request) {
   // Get additional parameters from other modules.
   $params = module_invoke_all('opensearch_pre_execute', $request);
   if (!empty($params)) {
     $request->setParameters($params);
+  }
+
+  // Due to the way the entity module is used to handle ting_objects a search
+  // with get all relations is going to be triggered for almost all requests. So
+  // to pre-heat the cache the optimal solution will be to get all relations
+  // within the first search request and predict the next request and put that
+  // result into the cache based on the first result. This will result in an
+  // slower first request but overall a lot fewer request to the data well in
+  // the search pages.
+  if ($request instanceof TingClientCollectionRequest || $request instanceof TingClientObjectRequest || $request instanceof TingClientSearchRequest) {
+    $request->setAllRelations(TRUE);
+    $request->setRelationData('full');
+  }
+
+  if ($response = _opensearch_cache($request)) {
+    // Exact match for request is found in cache. Return early.
+    return $response;
+  }
+
+  // If we are retrieving multiple objects then there might not be a single
+  // request for all these objects combined in the cache but they might be
+  // cached individually.
+  $cached_objects = [];
+  $original_object_ids = [];
+  $original_local_ids = [];
+  if ($request instanceof TingClientObjectRequest) {
+    $object_ids = !empty($request->getObjectIds()) ? $request->getObjectIds() : array();
+    $local_ids = !empty($request->getLocalIds()) ? $request->getLocalIds() : array();
+
+    // Store the original object_ids and local_ids identifier arrays, so that we
+    // can reconstruct the original request later on when genrating cache key
+    // for the response.
+    if ($object_ids) {
+      $original_object_ids = $request->getObjectIds();
+    }
+    if ($local_ids) {
+      $original_local_ids = $request->getLocalIds();
+    }
+
+    // Build maps of singular requests for objects by id or local id.
+    $object_ids = array_combine($object_ids, $object_ids);
+    $object_id_requests = array_map(function($id) use ($request) {
+      $object_request = clone $request;
+      $object_request->setObjectId($id);
+      return $object_request;
+    }, $object_ids);
+
+    $local_ids = array_combine($local_ids, $local_ids);
+    $local_id_requests = array_map(function($id) use ($request) {
+      $object_request = clone $request;
+      $object_request->setLocalId($id);
+      return $object_request;
+    }, $local_ids);
+
+    // Try to retrieve a cached response for each request. Entries which does
+    // not have cached data will get the value FALSE for easy subsequent
+    // filtering.
+    $object_ids = array_map(function ($object_request) {
+      if ($cached_response = _opensearch_cache($object_request)) {
+        // A response for a single object is an array with a single object so
+        // just return the object.
+        return array_shift($cached_response);
+      }
+      else {
+        return FALSE;
+      }
+    }, $object_id_requests);
+    $cached_object_ids = array_filter($object_ids);
+
+    $local_ids = array_map(function ($object_request) {
+      if ($cached_response = _opensearch_cache($object_request)) {
+        // A response for a single object is an array with a single object so
+        // just return the object.
+        return array_shift($cached_response);
+      }
+      else {
+        return FALSE;
+      }
+    }, $local_id_requests);
+    $cached_local_ids = array_filter($local_ids);
+
+    // Ids that we still need to be fetched will not be appearing in the lists
+    // of cached objects.
+    $uncached_object_ids = array_diff_key($object_ids, $cached_object_ids);
+    if (!empty($uncached_object_ids)) {
+      $request->setObjectIds(array_keys($uncached_object_ids));
+    }
+    $uncached_local_ids = array_diff_key($local_ids, $cached_local_ids);
+    if (!empty($uncached_local_ids)) {
+      $request->setLocalIds(array_keys($uncached_local_ids));
+    }
+
+    // The $cached_local_ids array is now keyed by local id and we needed that
+    // to get the uncached local ids. But in the response all objects should be
+    // keyed PID, so here we convert the array of cached "local" objects to be
+    // keyed by their PID.
+    $local_object_pids = [];
+    foreach ($cached_local_ids as $object) {
+      $local_object_pids[] = $object->id;
+    }
+    $cached_local_ids = array_combine($local_object_pids, $cached_local_ids);
+
+    $cached_objects = $cached_object_ids + $cached_local_ids;
+
+    // If there are no ids to fetch then there is no need to issue a request.
+    // Just return the array of cached objects.
+    if (empty($uncached_object_ids) && empty($uncached_local_ids)) {
+      _opensearch_cache($request, $cached_objects);
+      return $cached_objects;
+    }
   }
 
   try {
@@ -709,19 +487,47 @@ function opensearch_execute($request) {
     // next part expect JSON only formatted input. So this hack simply return
     // the XML for now as later on we have to work with open format and XML
     // parsing. So for now simply return the result to fulltext.
-    if ($request instanceof TingClientObjectRequest && $request->getOutputType() == 'xml' && $request->getFormat() == 'docbook') {
+    if ($request instanceof TingClientObjectRequest && $request->getOutputType() == 'xml' && $request->getObjectFormat() == 'docbook') {
       return $res;
     }
 
     $response = $request->parseResponse($res);
 
     // Pass parsed results to other modules.
-    // @todo Check if it works for collection of items.
     $props = module_invoke_all('opensearch_post_execute', $request, $response, $res);
     if (!empty($props)) {
       foreach ($props as $property => $value) {
         $response->{$property} = $value;
       }
+    }
+
+    // Merge any cached objecst that we found earlier with the result from the
+    // request. Note that we do this after invoking post_execute, since the
+    // $response and $res need to correspond.
+    if ($request instanceof TingClientObjectRequest) {
+      // The map uses ids as keys. Order does not matter for object requests.
+      $response = array_merge($cached_objects, $response);
+
+      // Restore the original ids on the request so that our generated cache id
+      // will point to the correct response.
+      if ($original_object_ids) {
+        $request->setObjectIds($original_object_ids);
+      }
+      if ($original_local_ids) {
+        $request->setLocalIds($original_local_ids);
+      }
+    }
+
+    // Update the cache with the raw response object from the data well for
+    // faster processing. Also set the static cache.
+    _opensearch_cache($request, $response);
+
+    // To speed up the entity module, which will trigger an search for each
+    // collection. Try and predict the search request an warm up the cache.
+    // Alternative rewrite the whole ting entity module, which currently is
+    // overkill.
+    if ($response instanceof TingClientSearchResult) {
+      _opensearch_predict_cache($response->collections, $request);
     }
 
     return $response;
@@ -732,9 +538,172 @@ function opensearch_execute($request) {
     }
     watchdog('ting client', 'Error performing request: ' . $e->getMessage(), NULL, WATCHDOG_ERROR, 'http://' . $_SERVER["HTTP_HOST"] . request_uri());
     return FALSE;
-  } finally {
+  }
+  finally {
     timer_stop('ting');
   }
+}
+
+/**
+ * Try and predict future search requests and warm up cache.
+ *
+ * Base on the collections given and the entity model for ting objects we expect
+ * the next search requests to be getCollectionRequest and getObjectRequest. The
+ * information to populate the cache with response to this exists in the first
+ * search request.
+ *
+ * So the cache can be warm-up based on the first TingClientSearchResult object.
+ *
+ * @param array $collections
+ *   The collections found in TingClientSearchResult object.
+ * @param TingClientRequest $request
+ *   The request used to get the collections.
+ *
+ * @throws \TingClientException
+ *   If the search client request fails.
+ */
+function _opensearch_predict_cache(array $collections, TingClientRequest $request) {
+  foreach ($collections as $collection) {
+    foreach ($collection->objects as $object) {
+      if (!is_object($object)) {
+        watchdog('opensearch', 'Predict cache found collection with empty objects. Search query: @query', array('@query' => $request->getQuery()), WATCHDOG_WARNING);
+        break;
+      }
+
+      $collection_request = opensearch_get_request_factory()->getCollectionRequest();
+      $collection_request->setAllObjects(FALSE);
+      $collection_request->setObjectId($object->id);
+      $collection_request->setQuery('*:*');
+
+      // See opensearch_execute() for description of always getting all
+      // relations.
+      $collection_request->setAllRelations(TRUE);
+      $collection_request->setRelationData('full');
+
+      // Set agency from the administration interface.
+      if ($agency = variable_get('ting_agency', FALSE)) {
+        $collection_request->setAgency($agency);
+      }
+
+      // Set search profile from the administration interface.
+      $profile = variable_get('opensearch_search_profile', '');
+      if (!empty($profile)) {
+        $collection_request->setProfile($profile);
+      }
+
+      // Get additional parameters from other modules.
+      $params = module_invoke_all('opensearch_pre_execute', $collection_request);
+      if (!empty($params)) {
+        $collection_request->setParameters($params);
+      }
+
+      // Build the response that matches the request and put it into cache.
+      $collection_response = new TingClientObjectCollection($collection->objects);
+      _opensearch_cache($collection_request, $collection_response);
+
+      // Create cache entry for the object as well.
+      $object_request = opensearch_get_request_factory()->getObjectRequest();
+
+      // See opensearch_execute() for description of always getting all
+      // relations.
+      $object_request->setAllRelations(TRUE);
+      $object_request->setRelationData('full');
+
+      // Set agency from the administration interface.
+      if ($agency = variable_get('ting_agency', FALSE)) {
+        $object_request->setAgency($agency);
+      }
+
+      // Set search profile from the administration interface.
+      $profile = variable_get('opensearch_search_profile', '');
+      if (!empty($profile)) {
+        $object_request->setProfile($profile);
+      }
+
+      // Build both requests for local id and PID.
+      $object_id_request = clone $object_request;
+      $object_id_request->setObjectId($object->id);
+      $local_id_request = clone $object_request;
+      $local_id_request->setLocalId($object->localId);
+
+      // Build the response that matches the request and put it into cache.
+      array_map(function (TingClientObjectRequest $object_request) use ($object) {
+        $params = module_invoke_all('opensearch_pre_execute', $object_request);
+        if (!empty($params)) {
+          $object_request->setParameters($params);
+        }
+        $object_response = array();
+        $object_response[$object->id] = clone $object;
+        _opensearch_cache($object_request, $object_response);
+      }, [$object_id_request, $local_id_request]);
+    }
+  }
+}
+
+/**
+ * Cache/retrieve from cache a search response based on a request.
+ *
+ * @param TingClientRequest $request
+ *   The search request for which to set/retrieve a cached response.
+ * @param \TingClientSearchResult|\TingClientObjectCollection|\TingClientObject[]|NULL $response
+ *   The response to cache. NULL to reset the cache entry for the request.
+ *
+ * @return \TingClientSearchResult|\TingClientObjectCollection|\TingClientObject[]|NULL
+ *   The cached response. NULL if no cached entry exists.
+ */
+function _opensearch_cache(TingClientRequest $request, $response = NULL) {
+  static $static_cache = array();
+  $cid = _opensearch_cache_id($request);
+
+  // Count the number of arguments to determine if $value has been provided.
+  // This allows us to distinguish between situations where $value is not set
+  // and we want to retrieve the cache value and where $value is set to NULL
+  // explicitly.
+  if (func_num_args() == 2) {
+    // Update the cache with the provided value.
+    $static_cache[$cid] = $response;
+    if ($ttl = variable_get('opensearch_cache_lifetime', OPENSEARCH_DEFAULT_CACHE_LIFETIME)) {
+      cache_set($cid, $response, 'cache_opensearch', REQUEST_TIME + $ttl);
+    }
+    return $response;
+  }
+  else {
+    // Try to retrieve value from cache.
+    if (array_key_exists($cid, $static_cache)) {
+      return $static_cache[$cid];
+    }
+
+    $cache = cache_get($cid, 'cache_opensearch');
+    if ($cache && ($cache->expire > REQUEST_TIME)) {
+      $data = $cache->data;
+
+      // Update the static cache with the database cache content to speed up the
+      // next request for the same data.
+      $static_cache[$cid] = $data;
+
+      return $data;
+    }
+  }
+}
+
+/**
+ * Build cache id for this request.
+ *
+ * The whole object it serialized to ensure that the request type is part of the
+ * cache key. This may lead to the same results being cached more than once, but
+ * doing this way simplifies the code and the overhead is minimal.
+ *
+ * @param TingClientRequest $request
+ *   The request that should be used to build the cache id.
+ *
+ * @return string
+ *   The cache id.
+ */
+function _opensearch_cache_id(TingClientRequest $request) {
+  $cid = md5(serialize($request));
+  drupal_alter('opensearch_cache_key', $cid, $request);
+
+  return $cid;
 }
 
 /**
@@ -749,7 +718,7 @@ function _opensearch_get_client() {
   static $client;
 
   if (!isset($client)) {
-    $logger = (variable_get('opensearch_enable_logging', FALSE)) ? new TingClientDrupalWatchDogLogger(opensearch_get_request_factory()) : new TingClientVoidLogger();
+    $logger = (variable_get('opensearch_enable_logging', FALSE)) ? new TingClientDrupalWatchDogLogger() : new TingClientVoidLogger();
     $client = new TingClient(new TingClientRequestAdapter(), $logger);
   }
 

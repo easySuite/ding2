@@ -325,7 +325,7 @@ class OpenSearchTingObject implements TingObjectInterface {
   /**
    * {@inheritdoc}
    */
-  public function getGenere() {
+  public function getGenre() {
     return $this->getRecordEntry('dc:subject', 'dkdcplus:genre');
   }
 
@@ -699,13 +699,13 @@ class OpenSearchTingObject implements TingObjectInterface {
         $titles = explode(' ; ', $titles);
         foreach ($titles as &$title) {
           $title = trim($title);
-          // Some title elements are actually volumne numbers.
+          // Some title elements are actually volume numbers.
           // Do not convert these to links.
           if (!preg_match('/(nr.)? \d+/i', $title)) {
             $title = l($title, 'search/ting/"' . $title . '"');
           }
         }
-        // Reassemple titles.
+        // Reassemble titles.
         $titles = implode(', ', $titles);
         $result = $prefix . ' ' . $titles;
       }

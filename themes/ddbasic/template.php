@@ -34,9 +34,15 @@ function ddbasic_preprocess_html(&$vars) {
       $vars['classes_array'][] = 'search-form-extended';
       $vars['classes_array'][] = 'show-secondary-menu';
 
-      if (menu_get_item()['path'] === 'search/ting/%') {
-        $vars['classes_array'][] = 'extended-search-is-open';
+      // The search form should only be expanded on certain pages.
+      $path = menu_get_item()['path'];
+
+      if (empty($vars['display_extended_search']) &&
+          !in_array($path, ['search/ting/%', 'search/ting', 'search/node/%', 'ding_frontpage'])) {
+        $vars['classes_array'][] = 'extended-search-is-not-open';
+        $vars['classes_array'][] = 'has-search-dropdown';
       }
+
       break;
   }
 
@@ -53,7 +59,7 @@ function ddbasic_preprocess_html(&$vars) {
     $vars['classes_array'][] = 'has-dynamic-background';
   }
 
-  // Detect if current page is a panel page and set class accordingly
+  // Detect if current page is a panel page and set class accordingly.
   $panel_page = page_manager_get_current_page();
 
   if (!empty($panel_page)) {
@@ -67,7 +73,7 @@ function ddbasic_preprocess_html(&$vars) {
   libraries_load('jquery.imagesloaded');
   libraries_load('html5shiv');
   libraries_load('masonry');
-
+  libraries_load('slick');
 }
 
 /**
@@ -76,7 +82,6 @@ function ddbasic_preprocess_html(&$vars) {
  * Process variables for html.tpl.php.
  */
 function ddbasic_process_html(&$vars) {
-
   // Hook into color.module.
   if (module_exists('color')) {
     _color_html_alter($vars);
@@ -127,7 +132,9 @@ function ddbasic_preprocess_panels_pane(&$vars) {
     }
     else {
       // OG menu.
-      $vars['content']['#theme_wrappers'] = array('menu_tree__sub_menu');
+      if (is_array($vars['content'])) {
+        $vars['content']['#theme_wrappers'] = array('menu_tree__sub_menu');
+      }
     }
   }
 
@@ -289,7 +296,7 @@ function ddbasic_preprocess_views_view_unformatted(&$vars) {
     $vars['type_class'] = drupal_html_class($first_node->type);
   }
 
-  // Set no-masonry to true for frontpage event view
+  // Set no-masonry to true for frontpage event view.
   if ($vars['view']->name == 'ding_event' && $vars['view']->current_display == 'ding_event_list_frontpage') {
     $vars['no_masonry'] = TRUE;
   }
@@ -364,6 +371,15 @@ function ddbasic_link($variables) {
  */
 function ddbasic_preprocess_user_profile(&$variables) {
   $variables['user_profile']['summary']['member_for']['#access'] = FALSE;
+
+  // Load profile and view as search_result if user view-mode is search_result.
+  if ($variables['elements']['#view_mode'] == 'search_result') {
+    $user_id = $variables['elements']['#account']->uid;
+    $user_profiles = profile2_load_by_user($user_id);
+    $profile_view = profile2_view($user_profiles['ding_staff_profile'], 'search_result');
+    $variables['user_profile']['profile_ding_staff_profile']['#access'] = TRUE;
+    $variables['user_profile']['profile_ding_staff_profile']['view'] = $profile_view;
+  }
 }
 
 /**
@@ -392,6 +408,11 @@ function ddbasic_preprocess_entity_profile2(&$variables) {
     else {
       $variables['position_no_label'] = FALSE;
     }
+  }
+
+  // Create read more link for search_result view mode.
+  if ($variables['profile2']->type == 'ding_staff_profile' && $variables['elements']['#view_mode'] == 'search_result') {
+    $variables['read_more_link'] = l('<div class="button">' . t('Read more') . '</div>', 'user/' . $variables['elements']['#entity']->uid, array('html' => TRUE));
   }
 }
 
@@ -468,7 +489,13 @@ function ddbasic_menu_link($vars) {
   // Make sure text string is treated as html by l function.
   $element['#localized_options']['html'] = TRUE;
 
-  $link = l('<span>' . $element['#title'] . '</span>', $element['#href'], $element['#localized_options']);
+  // Add div for expanded icon if element has children.
+  if (!empty($vars['element']['#below'])) {
+    $link = l('<span>' . $element['#title'] . '</span><span class="main-menu-expanded-icon"></span>', $element['#href'], $element['#localized_options']);
+  }
+  else {
+    $link = l('<span>' . $element['#title'] . '</span>', $element['#href'], $element['#localized_options']);
+  }
 
   return '<li' . drupal_attributes($element['#attributes']) . '>' . $link . $sub_menu . "</li>\n";
 }
@@ -509,6 +536,9 @@ function ddbasic_menu_link__menu_tabs_menu($vars) {
   if ($element['#original_link']['title'] == $element['#original_link']['link_title']) {
     $element['#title'] = t($element['#title']);
   }
+
+  $title_prefix = '';
+  $title_suffix = '';
 
   // Add some icons to our top-bar menu. We use system paths to check against.
   switch ($element['#href']) {
@@ -717,28 +747,6 @@ function ddbasic_process_page(&$vars) {
 }
 
 /**
- * Preprocess function for ting_object theme function.
- */
-function ddbasic_preprocess_ting_object(&$vars) {
-
-  switch ($vars['elements']['#entity_type']) {
-    case 'ting_object':
-
-      switch ($vars['elements']['#view_mode']) {
-        // Teaser.
-        case 'teaser':
-
-          // Check if overlay is disabled and set class.
-          if (theme_get_setting('ting_object_disable_overlay') == TRUE) {
-            $vars['classes_array'][] = 'no-overlay';
-          }
-          break;
-      }
-      break;
-  }
-}
-
-/**
  * Implements hook_process_ting_object().
  *
  * Adds wrapper classes to the different groups on the ting object.
@@ -778,6 +786,7 @@ function ddbasic_process_ting_object(&$vars) {
               '#path' => $uri_object['path'],
               '#options' => array(
                 'attributes' => array(
+                  'alt' => $vars['object']->title,
                   'class' => array(
                     'action-button',
                     'read-more-button',
@@ -793,16 +802,73 @@ function ddbasic_process_ting_object(&$vars) {
             $vars['content']['group_text']['reserve_button'] = ding_reservation_ding_entity_buttons(
               'ding_entity',
               $vars['object'],
+              $vars['elements']['#view_mode'],
               'ajax'
             );
           }
           if ($vars['object']->online_url) {
             // Slice the output, so it only usese the online link button.
-            $vars['content']['group_text']['online_link'] = array_slice(ting_ding_entity_buttons(
+            $vars['content']['group_text']['online_link'] = ting_ding_entity_buttons(
               'ding_entity',
-              $vars['object']
-            ), 0, 1);
+              $vars['object'],
+              $vars['elements']['#view_mode'],
+              'default'
+            );
           }
+
+          // Truncate abstract.
+          $vars['content']['group_text']['ting_abstract'][0]['#markup'] = add_ellipsis($vars['content']['group_text']['ting_abstract'][0]['#markup'], 330);
+
+          // Check if teaser has rating function and remove abstract.
+          if (!empty($vars['content']['group_text']['group_rating']['ding_entity_rating_action'])) {
+            unset($vars['content']['group_text']['ting_abstract']);
+          }
+
+          break;
+
+        // Teaser no overlay.
+        case 'teaser_no_overlay':
+          $vars['content']['group_text']['read_more_button'] = array(
+            array(
+              '#theme' => 'link',
+              '#text' => t('Read more'),
+              '#path' => $uri_object['path'],
+              '#options' => array(
+                'attributes' => array(
+                  'class' => array(
+                    'action-button',
+                    'read-more-button',
+                  ),
+                ),
+                'html' => FALSE,
+              ),
+            ),
+            '#weight' => 9998,
+          );
+
+          if ($vars['object']->is('reservable')) {
+            $vars['content']['group_text']['reserve_button'] = ding_reservation_ding_entity_buttons(
+              'ding_entity',
+              $vars['object'],
+              $vars['elements']['#view_mode'],
+              'ajax'
+            );
+          }
+          if ($vars['object']->online_url) {
+            // Slice the output, so it only usese the online link button.
+            $vars['content']['group_text']['online_link'] = ting_ding_entity_buttons(
+              'ding_entity',
+              $vars['object'],
+              $vars['elements']['#view_mode'],
+              'default'
+            );
+          }
+
+          // Truncate default title.
+          $vars['static_title'] = '<div class="field-name-ting-title"><h2>' . add_ellipsis($vars['elements']['group_text']['group_inner']['ting_title'][0]['#markup'], 40) . '</h2></div>';
+
+          // Truncate abstract.
+          $vars['content']['group_text']['ting_abstract'][0]['#markup'] = add_ellipsis($vars['content']['group_text']['ting_abstract'][0]['#markup'], 330);
 
           // Check if teaser has rating function and remove abstract.
           if (!empty($vars['content']['group_text']['group_rating']['ding_entity_rating_action'])) {
@@ -824,6 +890,7 @@ function ddbasic_process_ting_object(&$vars) {
               '#text' => t('Read more'),
               '#path' => $uri_object['path'],
               '#options' => array(
+                'alt' => $vars['object']->title,
                 'attributes' => array(
                   'class' => array(
                     'action-button',
@@ -839,15 +906,18 @@ function ddbasic_process_ting_object(&$vars) {
             $vars['content']['buttons']['reserve_button'] = ding_reservation_ding_entity_buttons(
               'ding_entity',
               $vars['object'],
+              $vars['elements']['#view_mode'],
               'ajax'
             );
           }
           if ($vars['object']->online_url) {
             // Slice the output, so it only usese the online link button.
-            $vars['content']['buttons']['online_link'] = array_slice(ting_ding_entity_buttons(
+            $vars['content']['buttons']['online_link'] = ting_ding_entity_buttons(
               'ding_entity',
-              $vars['object']
-            ), 0, 1);
+              $vars['object'],
+              $vars['elements']['#view_mode'],
+              'default'
+            );
           }
 
           break;
@@ -1018,6 +1088,20 @@ function ddbasic_preprocess_form_element(&$variables) {
  * Preprocess ding_carousel.
  */
 function ddbasic_preprocess_ding_carousel(&$variables) {
+  ddbasic_add_ting_object_behaviour();
+}
+
+/**
+ * Preprocess ting_reference_item.
+ */
+function ddbasic_preprocess_ting_reference_item(&$variables) {
+  ddbasic_add_ting_object_behaviour();
+}
+
+/**
+ * Helper function to ensure correct behaviour of ting object overlay.
+ */
+function ddbasic_add_ting_object_behaviour() {
   // Add ajax to make reserve links work.
   drupal_add_library('system', 'drupal.ajax');
   drupal_add_library('system', 'ui.widget');
@@ -1244,40 +1328,8 @@ function ddbasic_select($variables) {
 
   if (isset($variables['element']['#attributes']['multiple']) && $variables['element']['#attributes']['multiple'] == 'multiple') {
     return '<div class="select-wrapper select-wrapper-multiple"><select' . drupal_attributes($element['#attributes']) . '>' . form_select_options($element) . '</select></div>';
-  } else {
+  }
+  else {
     return '<div class="select-wrapper"><select' . drupal_attributes($element['#attributes']) . '>' . form_select_options($element) . '</select></div>';
   }
-
-}
-
-/**
- * Implements hook_libraries_info().
- */
-function ddbasic_libraries_info() {
-  return array(
-    'html5shiv' => array(
-      'name' => 'HTML5 Shiv',
-      'vendor url' => 'https://github.com/aFarkas/html5shiv',
-      'download url' => 'https://github.com/aFarkas/html5shiv/archive/3.7.3.zip',
-      'version arguments' => array(
-        'file' => 'dist/html5shiv.min.js',
-        'pattern' => '/\*.*HTML5 Shiv ([0-9a-zA-Z\.-]+)/',
-      ),
-      'files' => array(
-        'js' => array('dist/html5shiv.min.js'),
-      ),
-    ),
-    'masonry' => array(
-      'name' => 'Masonry',
-      'vendor url' => 'https://github.com/desandro/masonry',
-      'download url' => 'https://github.com/desandro/masonry/archive/v4.1.1.zip',
-      'version arguments' => array(
-        'file' => 'dist/masonry.pkgd.min.js',
-        'pattern' => '/\*.*Masonry PACKAGED v([0-9a-zA-Z\.-]+)/',
-      ),
-      'files' => array(
-        'js' => array('dist/masonry.pkgd.min.js'),
-      ),
-    ),
-  );
 }

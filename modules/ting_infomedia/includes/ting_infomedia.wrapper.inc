@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @file
  * Field wrapper for infomedia.
@@ -18,19 +19,23 @@ module_load_include('client.inc', 'opensearch');
 function ting_infomedia_get_article($id) {
   try {
     $factory = opensearch_get_request_factory();
+    $request = $factory->getInfomediaArticleRequest();
+    $request->makeGet();
+    $request->setFaust($id);
+
+    ting_infomedia_add_user_creds($request);
+    $ret = opensearch_execute($request->getRequest());
+    if (is_string($ret)) {
+      $ret = FALSE;
+    }
+    else {
+      $ret = $request->parse($ret);
+    }
   }
   catch (TingClientException $exception) {
     watchdog_exception('infomedia', $exception);
-
     return FALSE;
   }
-
-  $request = $factory->getInfomediaArticleRequest();
-  $request->makeGet();
-  $request->setFaust($id);
-
-  ting_infomedia_add_user_creds($request);
-  $ret = $request->parse(opensearch_execute($request->getRequest()));
 
   return $ret;
 }
@@ -57,9 +62,9 @@ function ting_infomedia_check_article($id) {
  * Retrieve reviews for an item identified by faust or ISBN.
  *
  * @param int $id
- *   Faust or ISBN
+ *   Faust or ISBN.
  * @param bool $id_is_isbn
- *   Is $id an ISBN instead of faust
+ *   Is $id an ISBN instead of faust.
  *
  * @return TingClientInfomediaResult
  *   TingClientInfomediaResult for the article.
@@ -84,9 +89,9 @@ function ting_infomedia_get_review($id, $id_is_isbn = FALSE) {
  * Count how many reviews an item identified by faust or ISBN has.
  *
  * @param int $id
- *   Faust or ISBN
+ *   Faust or ISBN.
  * @param bool $id_is_isbn
- *   Is $id an ISBN instead of faust
+ *   Is $id an ISBN instead of faust.
  *
  * @return TingClientInfomediaResult
  *   TingClientInfomediaResult for the article.
@@ -107,10 +112,10 @@ function ting_infomedia_check_review($id, $id_is_isbn = FALSE) {
 }
 
 /**
- * Helper function used by infomedia wrapper functions
+ * Helper function used by infomedia wrapper functions.
  *
  * Adds agency and if user is authorized user credentials to request object and
- * returns the object
+ * returns the object.
  *
  * @param TingClientInfomediaRequest $request
  *   Request object to add user credentials to.
@@ -128,21 +133,21 @@ function ting_infomedia_add_user_creds(TingClientInfomediaRequest $request) {
     else {
       $userid = $creds['name'];
     }
+    $pass = isset($creds['pass']) ? $creds['pass'] : '';
+
     $request->setUser($userid);
-    $request->setPin($creds['pass']);
+    $request->setPin($pass);
     if ($agency = variable_get('ting_agency', FALSE)) {
       $request->setAgency($agency);
     }
   }
   catch (DingProviderAuthException $e) {
-    //do nothing
+    // Do nothing.
   }
 
   $name = isset($creds['name']) ? $creds['name'] : '';
-  $pass = isset($creds['pass']) ? $creds['pass'] : '';
 
-  // check if user is authenticated
+  // Check if user is authenticated.
   ding_provider_invoke_page('user', 'authenticate', $name, $pass);
   return $request;
 }
-

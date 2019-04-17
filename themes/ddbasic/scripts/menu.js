@@ -19,11 +19,11 @@
       // If they scrolled down and are past the topbar, add class .topbar-up.
       if(st > last_scroll_top && st > topbar_height) {
           // Scroll Down
-          $('header.site-header').addClass('topbar-up');
+          $('body').addClass('topbar-up');
       } else {
           // Scroll Up
           if(st + $(window).height() < $(document).height()) {
-            $('header.site-header').removeClass('topbar-up');
+            $('body').removeClass('topbar-up');
           }
       }
 
@@ -41,13 +41,28 @@
   Drupal.behaviors.menu = {
     attach: function(context, settings) {
       var topbar_link_user = $('a.topbar-link-user', context),
+          main_menu_wrapper = $('.main-menu-wrapper', context),
+          secondary_menu_wrapper = $('.secondary-menu-wrapper', context),
           close_user_login = $('.close-user-login', context),
           mobile_menu_btn = $('a.topbar-link-menu', context),
           search_btn = $('a.topbar-link-search', context),
           search_extended_btn = $('a.search-extended-button', context),
-          first_level_expanded = $('.main-menu-wrapper > .main-menu > .expanded > a', context),
-          second_level_expanded = $('.main-menu-wrapper > .main-menu > .expanded > .main-menu > .expanded > a', context),
+          first_level_expanded = $('.main-menu-wrapper > .main-menu > .expanded > a .main-menu-expanded-icon', context),
+          second_level_expanded = $('.main-menu-wrapper > .main-menu > .expanded > .main-menu > .expanded > a .main-menu-expanded-icon', context),
           body = $('body');
+
+      // Scope fixes for inner functions.
+      var thisScope = this;
+
+      // We need to check these initially.
+      thisScope.checkMainSecondaryMenusOffset(context);
+      thisScope.checkMainLinksOffset(context);
+
+      // We also need to check it everytime we resize the screen.
+      $(window).resize(function() {
+        thisScope.checkMainSecondaryMenusOffset(context);
+        thisScope.checkMainLinksOffset(context);
+      });
 
       mobile_menu_btn.on('click', function(evt){
         evt.preventDefault();
@@ -86,8 +101,9 @@
       first_level_expanded.on('click', function(evt) {
         if($('.is-tablet').is(':visible')) {
           evt.preventDefault();
-          first_level_expanded.not($(this)).parent().children('.main-menu').slideUp(200);
-          $(this).parent().children('.main-menu').slideToggle(200);
+          first_level_expanded.not($(this)).parent().parent().children('.main-menu').slideUp(200);
+          $(this).toggleClass('open');
+          $(this).parent().parent().children('.main-menu').slideToggle(200);
         }
       });
 
@@ -95,15 +111,15 @@
         if($('.is-tablet').is(':visible')) {
           evt.preventDefault();
           second_level_expanded.not($(this)).removeClass('open');
-          second_level_expanded.not($(this)).parent().children('.main-menu').slideUp(200);
+          second_level_expanded.not($(this)).parent().parent().children('.main-menu').slideUp(200);
           $(this).toggleClass('open');
-          $(this).parent().children('.main-menu').slideToggle(200);
+          $(this).parent().parent().children('.main-menu').slideToggle(200);
         }
       });
 
       search_extended_btn.on('click', function(evt) {
         evt.preventDefault();
-        body.toggleClass('extended-search-is-open');
+        body.toggleClass('extended-search-is-not-open');
       });
 
       // Tablet/mobile menu logout
@@ -124,6 +140,42 @@
           }
         }
       });
+    },
+
+    // If there are too many links in either the main or secondary menu,
+    // we need to tell the CSS so it can adjust the fixed header elements.
+    checkMainSecondaryMenusOffset: function(context) {
+      var main_menu_wrapper = $('.main-menu-wrapper', context),
+          secondary_menu_wrapper = $('.secondary-menu-wrapper', context);
+
+      // One is missing, so we'll skip out.
+      if (!main_menu_wrapper.length || !secondary_menu_wrapper.length) {
+        return;
+      }
+
+      if (main_menu_wrapper[0].offsetTop != secondary_menu_wrapper[0].offsetTop) {
+        $('body').addClass('secondary-menu-below-main');
+      } else {
+        $('body').removeClass('secondary-menu-below-main');
+      }
+    },
+
+    // If there are too many links in the main menu, so it breaks into
+    // two lines, we need to tell CSS to adjust.
+    checkMainLinksOffset: function(context) {
+      var main_menu_links = $('.main-menu-wrapper > .main-menu > li', context);
+
+      // We have less than 2 elements, it doesnt make sense to compare anything.
+      if (main_menu_links.length < 2) {
+        return;
+      }
+
+      // Checking if the first and last elements are on the same line.
+      if (main_menu_links.first().offset().top != main_menu_links.last().offset().top) {
+        $('body').addClass('has-multiline-main-menu');
+      } else {
+        $('body').removeClass('has-multiline-main-menu');
+      }
     }
   };
 

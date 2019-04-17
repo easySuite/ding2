@@ -130,13 +130,12 @@ function fbs_reservation_list($account, $requested_type = NULL, $reset = FALSE) 
  *
  * @param object $account
  *   User to reserve for.
- * @param string $record_ids
+ * @param string $record_id
  *   Id of ting object to reserve.
  * @param array $options
  *   Reservation options.
- *
  */
-function fbs_reservation_create($account, $record_id, $options) {
+function fbs_reservation_create($account, $record_id, array $options) {
   $batch = new FBS\Model\CreateReservationBatch();
   $batch->reservations = array();
 
@@ -202,7 +201,7 @@ function fbs_reservation_create($account, $record_id, $options) {
       case 'success':
       default:
         watchdog('fbs', 'Unexpected state "@state" on failed reservaiton', array('@state' => $result->result), WATCHDOG_WARNING);
-        throw new DingProviderUserException(t('Unknown error from library system while attempting to reserve.'));
+        throw new DingProviderEnduserException(t('Unknown error from library system while attempting to reserve.'));
     };
   }
 }
@@ -220,7 +219,7 @@ function fbs_reservation_create($account, $record_id, $options) {
  * @return bool
  *   TRUE if no errors else FALSE.
  */
-function fbs_reservation_update($account, $reservation_ids, $options) {
+function fbs_reservation_update($account, array $reservation_ids, array $options) {
   $batch = new FBS\Model\UpdateReservationBatch();
   $batch->reservations = array();
   foreach ($reservation_ids as $reservation_id) {
@@ -253,8 +252,8 @@ function fbs_reservation_update($account, $reservation_ids, $options) {
  *
  * @param object $account
  *   User to delete reservations for.
- * @param array $reservation_id
- *   Reservations to delete.
+ * @param string $reservation_id
+ *   ID of the reservation to delete.
  *
  * @return bool
  *   TRUE if no errors else FALSE.
@@ -326,10 +325,14 @@ function fbs_reservation_branch_name($branch_id) {
  *   The default options.
  */
 function fbs_reservation_default_options($account) {
+  // Get values.
+  $interest_period = fbs_reservation_default_interest_period($account);
+
   $patron_info = fbs_get_patron_info($account);
+
   return array(
     'fbs_preferred_branch' => $patron_info['preferred_branch'],
-    'interest_period' => variable_get('fbs_default_interest_period', 180),
+    'interest_period' => $interest_period,
   );
 }
 
@@ -357,9 +360,12 @@ function fbs_reservation_options($account, $default_branch = NULL) {
     $preferred_branch = $default_branch;
   }
 
+  $interest_period = fbs_reservation_default_interest_period($account);
+  $periods = fbs_interest_periods();
+
   $form = array();
   $form += ding_reservation_default_options_branch('fbs_preferred_branch', $preferred_branch, fbs_user_branches($account));
-  $form += ding_reservation_interest_period_selector('interest_period', variable_get('fbs_default_interest_period', 180), fbs_interest_periods());
+  $form += ding_reservation_interest_period_selector('interest_period', $interest_period, $periods);
 
   return $form;
 }
@@ -372,16 +378,33 @@ function fbs_reservation_options($account, $default_branch = NULL) {
  * @param array $values
  *   Form values.
  */
-function fbs_reservation_options_submit($account, $values) {
+function fbs_reservation_options_submit($account, array $values) {
   fbs_update_preferred_branch($account, $values['fbs_preferred_branch']);
 }
 
 /**
- * Implements provider reservation, default_interst_period.
+ * Implements hook_default_interest_period().
  *
- * @return int
- *   Default interest period for user.
+ * Tries to find the users default interest period based on the users profile2
+ * provider profile.
  */
-function fbs_reservation_default_interest_period() {
-  return variable_get('fbs_default_interest_period', 180);
+function fbs_reservation_default_interest_period($account = NULL) {
+  $account = is_null($account) ? $GLOBALS['user'] : $account;
+  $profile = ding_user_provider_profile($account);
+
+  // Check that an profile exists. If this is as user create process it will not
+  // exists (nemid login).
+  $value = NULL;
+  if ($profile !== FALSE) {
+    // Get interest period from the profile.
+    $wrapper = entity_metadata_wrapper('profile2', $profile);
+    $value = $wrapper->field_fbs_interest_period->value();
+  }
+
+  // If no period is selected, try getting default value.
+  if (is_null($value) || empty($value)) {
+    $value = variable_get('fbs_default_interest_period', 180);
+  }
+
+  return $value;
 }

@@ -213,6 +213,10 @@ function opensearch_search_search(TingSearchRequest $ting_query) {
     $options['numFacets'] = $ting_query->getTermsPerFacet();
   }
 
+  if (!empty($ting_query->getFacets())) {
+    $options['facets'] = $ting_query->getFacets();
+  }
+
   // Whether to return all materials from matched collections.
   $options['allObjects'] = $ting_query->getPopulateCollections();
 
@@ -228,13 +232,12 @@ function opensearch_search_search(TingSearchRequest $ting_query) {
   if (empty($search_result)) {
     throw new SearchProviderException("Unable to execute search, inspect logs for details");
   }
-  $result = new OpenSearchTingSearchResult($search_result, $ting_query);
 
-  // Handle the situation where opensearch sets a default sort.
-  if (empty($result->getSearchRequest()->getSorts()) && !empty($result->openSearchResult->sortUsed)) {
-    $sort_used = $result->openSearchResult->sortUsed;
+  // Handle the situation where OpenSearch sets a default sort.
+  if (empty($ting_query->getSorts()) && !empty($search_result->sortUsed)) {
+    $sort_used = $search_result->sortUsed;
     // In situations where we're configured to default to sort by "rank_general"
-    // opensearch may choose to use rank_main_title for the actual sort. Instead
+    // OpenSearch may choose to use rank_main_title for the actual sort. Instead
     // of introducing two different ways of ranking by title, we instead
     // interpret it as "rank_title".
     if ($sort_used === 'rank_main_title') {
@@ -246,11 +249,11 @@ function opensearch_search_search(TingSearchRequest $ting_query) {
     $provider_sorts = opensearch_search_sort_options();
     if (array_key_exists($sort_used, $provider_sorts)) {
       $sort_instance = $provider_sorts[$sort_used]['sort'];
-      $result->getSearchRequest()->addSorts($sort_instance);
+      $ting_query = $ting_query->withSorts($sort_instance);
     }
   }
 
-  return $result;
+  return new OpenSearchTingSearchResult($search_result, $ting_query);
 }
 
 /**
@@ -529,12 +532,12 @@ function opensearch_search_prepare_reference_query($query_string) {
   if (preg_match('/(^\d+$)|(^\d+:\d+$)|(=)/', $query_string)) {
     // The query is either ISBN, tid or CQL search expression.
     // Add as raw (eg non-escaped) string.
-    $query->setRawQuery($query_string);
+    $query = $query->withRawQuery($query_string);
   }
   else {
     // Do a full-text search with the wildcard character appended to expand
     // search results until we have a hit.
-    $query->setFullTextQuery($query_string . '*');
+    $query = $query->withFullTextQuery($query_string . '*');
   }
 
   return $query;
@@ -549,29 +552,13 @@ function opensearch_search_prepare_reference_query($query_string) {
  */
 function opensearch_search_sort_options() {
   $options = [
-    'title_ascending' => [
-      'label' => t('Title (Ascending)'),
-      'sort' => new TingSearchSort(TingSearchCommonFields::TITLE, TingSearchSort::DIRECTION_ASCENDING),
-    ],
-      'title_descending' => [
-      'label' => t('Title (Descending)'),
-      'sort' => new TingSearchSort(TingSearchCommonFields::TITLE, TingSearchSort::DIRECTION_DESCENDING),
-    ],
-    'creator_ascending' => [
-      'label' => t('Creator (Ascending)'),
-      'sort' => new TingSearchSort(TingSearchCommonFields::AUTHOR, TingSearchSort::DIRECTION_ASCENDING),
-    ],
-    'creator_descending' => [
-      'label' => t('Creator (Descending)'),
-      'sort' => new TingSearchSort(TingSearchCommonFields::AUTHOR, TingSearchSort::DIRECTION_DESCENDING),
+    'date_descending' => [
+      'label' => t('Date (Descending)'),
+      'sort' => new TingSearchSort(TingSearchCommonFields::DATE, TingSearchSort::DIRECTION_DESCENDING),
     ],
     'date_ascending' => [
       'label' => t('Date (Ascending)'),
       'sort' => new TingSearchSort(TingSearchCommonFields::DATE, TingSearchSort::DIRECTION_ASCENDING),
-    ],
-    'date_descending' => [
-      'label' => t('Date (Descending)'),
-      'sort' => new TingSearchSort(TingSearchCommonFields::DATE, TingSearchSort::DIRECTION_DESCENDING),
     ],
   ];
 
@@ -582,18 +569,18 @@ function opensearch_search_sort_options() {
   if ($default_sort === 'rank_frequency' && empty($custom_ranking)) {
     $options = array_merge($options, [
       'rank_title' => [
-        'label' => t('Best match on title'),
-        'label_short' => t('Title'),
+        'label' => t('Title', array(), array('context' => 'opensearch_ranking')),
+        'label_short' => t('Title', array(), array('context' => 'opensearch_ranking')),
         'sort' => new TingSearchSort('rank_title'),
       ],
       'rank_creator' => [
-        'label' => t('Best match on creator'),
-        'label_short' => t('Creator'),
+        'label' => t('Creator', array(), array('context' => 'opensearch_ranking')),
+        'label_short' => t('Creator', array(), array('context' => 'opensearch_ranking')),
         'sort' => new TingSearchSort('rank_creator'),
       ],
       'rank_subject' => [
-        'label' => t('Best match on subject'),
-        'label_short' => t('Subject'),
+        'label' => t('Subject', array(), array('context' => 'opensearch_ranking')),
+        'label_short' => t('Subject', array(), array('context' => 'opensearch_ranking')),
         'sort' => new TingSearchSort('rank_subject'),
       ],
     ]);
@@ -620,31 +607,13 @@ function opensearch_search_sort_options() {
  */
 function opensearch_search_object_ids($ids) {
   if (is_array($ids) && !empty($ids)) {
-    $translated_ids = array();
+    $translated_ids = [];
 
-    // Open search is limited to 50 results per call, so split up in chunks to
-    // ensure we get PIDs for all passed local IDs.
-    foreach (array_chunk($ids, 50) as $chunk) {
-      $query = 'rec.id any "' . implode(" ", $chunk) . '" AND facet.acSource=bibliotekskatalog';
-      // Ensure that the work match in opensearch doesn't hide ids for us.
-      $options['collectionType'] = 'manifestation';
-
-      // Ensure we have OpenSearch client.
-      module_load_include('inc', 'opensearch', 'opensearch.client');
-      $res = opensearch_do_search($query, 1, count($chunk), $options);
-
-      // Sometimes the well will be unreachable or not even one of the ids in
-      // chunk was searchable. In any case, this protects against a notice.
-      if (empty($res)) {
-        continue;
-      }
-
-      foreach ($res->collections as $pid => $collection) {
-        $faust = explode(':', $pid)[1];
-        if ($key = array_search($faust, $ids)) {
-          $translated_ids[$faust] = $pid;
-          unset($ids[$key]);
-        }
+    foreach (opensearch_get_objects($ids, TRUE) as $pid => $object) {
+      $faust = explode(':', $pid)[1];
+      if ($key = array_search($faust, $ids)) {
+        $translated_ids[$faust] = $pid;
+        unset($ids[$key]);
       }
     }
 
@@ -658,7 +627,6 @@ function opensearch_search_object_ids($ids) {
     // without holdingsitem.agencyid filter. This way the providers will know
     // which materials can be searched with the current agency id and generate
     // a link to them.
-    //
     foreach ($ids as $faust) {
       $translated_ids[$faust] = '870970-basis:' . $faust;
     }
@@ -666,9 +634,8 @@ function opensearch_search_object_ids($ids) {
     return $translated_ids;
   }
   elseif (is_numeric($ids)) {
-    module_load_include('client.inc', 'opensearch');
-    $obj = opensearch_do_search('rec.id=' . $ids . ' AND facet.acSource=bibliotekskatalog');
-    return !empty($obj) ? key($obj->collections) : '870970-basis:' . $ids;
+    $objects = opensearch_get_objects(array($ids), TRUE);
+    return !empty($objects) ? key($objects) : '870970-basis:' . $ids;
   }
   return FALSE;
 }
@@ -676,56 +643,90 @@ function opensearch_search_object_ids($ids) {
 /**
  * Auto-complete callback for the ting search block.
  *
- * @param string $query
+ * @param string $string
  *   The string to search suggestion with.
  *
  * @return string[]
  *   Items similar to the query.
  */
-function opensearch_search_autocomplete($query) {
+function opensearch_search_autocomplete($string) {
+  $matches = array();
+  $default_settings = opensearch_search_autocomplete_settings();
+
+  $query['q'] = check_plain(strtolower($string));
+  $query['type'] = 'all';
+  $query['rows'] = $default_settings['maxSuggestions'];
+
+  $minimum_string = $default_settings['minimumString'];
+  if (drupal_strlen($string) < $minimum_string) {
+    drupal_json_output($matches);
+    drupal_exit();
+  }
+
+  $suggestions = opensearch_search_autocomplete_suggestions($query);
+  // Maximum space in suggestions dropdown is 60 characters.
+  // Maximum characters for search query string is 256 characters.
+  foreach ($suggestions as $suggestion) {
+    $val = truncate_utf8($suggestion, 60, TRUE, TRUE, 1);
+    $key = truncate_utf8($suggestion, 256, TRUE, FALSE, 1);
+     // Trim whitespace and question mark.
+    $key = trim($key, " \t\n\r\0\x0B?");
+    $key = str_replace('"', '', $key);
+    $key = trim($key, " \t\n\r\0\x0B?");
+    if (strpos($key, ' ')) {
+      $key = '"' . $key . '"';
+    }
+    $matches[$key] = $val;
+  }
+  return $matches;
+}
+
+/**
+ * SuggestionService - retrieve suggestions with drupal_http_request()
+ *
+ * @param array $query
+ *   Search suggestion parameters.
+ *
+ * @return array
+ *   Search suggestion results.
+ */
+function opensearch_search_autocomplete_suggestions(array $query) {
   $items = array();
-
   $rest_url = variable_get('opensearch_search_autocomplete_suggestion_url', '');
-  $method = variable_get('ting_search_autocomplete_method', 'facets');
-  $settings = opensearch_search_autocomplete_settings();
-
-  if (drupal_strlen($query) < $settings['minimumString']) {
-    return $items;
-  }
-  unset($settings['minimumString']);
-
-  if (empty($settings['index'])) {
-    watchdog('opensearch', 'Autocomplete index not defined ', array(), $severity = WATCHDOG_WARNING);
+  if (empty($rest_url)) {
+    watchdog(
+      'opensearch_search_autocomplete',
+      "Autocomplete error: Empty opensearch autocomplete url",
+      array(),
+      $severity = WATCHDOG_ERROR
+    );
     return $items;
   }
 
-  $rest_url = $rest_url . 'rest/' . $method;
-  $settings['query'] = $query;
-  $url = url($rest_url, array('query' => $settings));
+  $url = url($rest_url, array('query' => $query));
+  $headers = array('Accept' => 'application/json');
+  $result = drupal_http_request($url, $headers);
 
-  $result = drupal_http_request($url);
+  if (!empty($result->error)) {
+    watchdog(
+      'opensearch_search_autocomplete',
+      "Autocomplete error: %error (%code)\nURL: !url",
+      array(
+        '%error' => $result->error,
+        '%code' => $result->code,
+        '!url' => $url,
+      ),
+      $severity = WATCHDOG_ERROR
+    );
+    return $items;
+  }
 
   if (!empty($result->data)) {
     $result_data = drupal_json_decode($result->data);
-    if (empty($result->error)) {
-      if (!empty($result_data['suggestions'])) {
-        foreach ($result_data['suggestions'] as $suggestion) {
-          if ($method === 'facetSpell') {
-            $items[truncate_utf8(strip_tags($suggestion['phrase']), 256, TRUE, FALSE, 1)] = $suggestion['phrase'];
-          }
-          else {
-            $items[truncate_utf8(strip_tags($suggestion['suggestion']), 256, TRUE, FALSE, 1)] = $suggestion['suggestion'];
-          }
-        }
+    if (!empty($result_data['response']['docs'])) {
+      foreach ($result_data['response']['docs'] as $suggestion) {
+        $items[] = $suggestion['all'][0];
       }
-    }
-    else {
-      $message = t('Autocomplete error: @error (@error_code) using following URL: @url');
-      watchdog('opensearch', $message, array(
-        '@error' => $result->error,
-        '@error_code' => $result->code,
-        '@url' => $url,
-      ), WATCHDOG_ERROR);
     }
   }
 

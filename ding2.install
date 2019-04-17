@@ -190,6 +190,20 @@ function ding2_remove_module($module) {
 }
 
 /**
+ * Implements hook_update_dependencies().
+ */
+function ding2_update_dependencies() {
+  // Update hook which enables a module if opensearch is present.
+  $dependencies['ding2'][7048] = array(
+    // The update hook that enables the opensearch module if no other search
+    // provider is present.
+    'ting' => 7014,
+  );
+
+  return $dependencies;
+}
+
+/**
  * Enable new shortcuts.
  */
 function ding2_update_7000() {
@@ -563,4 +577,152 @@ function ding2_update_7045() {
  */
 function ding2_update_7046() {
   ding2_translation_update();
+}
+
+/**
+ * Enable ding_app_content_rss module.
+ */
+function ding2_update_7047() {
+  module_enable(array('ding_app_content_rss'));
+}
+
+/**
+ * Enable ding_app_variables module.
+ */
+function ding2_update_7048() {
+  if (module_exists('opensearch')) {
+    module_enable(array('ding_app_variables'));
+  }
+}
+
+/**
+ * Update our own translations.
+ */
+function ding2_update_7049() {
+  ding2_translation_update();
+}
+
+/**
+ * Disable and uninstall ding_mobilesearch module.
+ */
+function ding2_update_7050() {
+  // This function previously disabled, uninstalled and removed any
+  // traces of the module called ding_mobilesearch.
+  //
+  // The contents of this function has been removed due to the decision
+  // about removing the module has been reverted. Read more about this
+  // issue in https://platform.dandigbib.org/issues/3661.
+  //
+  // The function has been left empty, since some distrubitons have
+  // already had this update_hook() ran - but older sites has not.
+}
+
+/**
+ * Enable ding_app_variables module.
+ */
+function ding2_update_7051() {
+  // Rerun the update hook. Some sites may already have run 7048 but without
+  // ding2_update_dependencies and thus without ting_update_7014 and
+  // Opensearch.
+  ding2_update_7048();
+}
+
+/**
+ * Enable CustomError modules.
+ */
+function ding2_update_7052() {
+  module_enable(array('customerror', 'customerroralt'));
+  ding2_set_customerror_pages();
+}
+
+/**
+ * Expand all menu items in the main menu.
+ */
+function ding2_update_7053() {
+  db_update('menu_links')
+    ->fields(array('expanded' => 1))
+    ->condition('menu_name', 'main-menu')
+    ->execute();
+}
+
+/**
+ * Update our own translations.
+ */
+function ding2_update_7054() {
+  ding2_translation_update();
+}
+
+/**
+ * Update our own translations.
+ */
+function ding2_update_7055() {
+  ding2_translation_update();
+}
+
+/**
+ * Enable ding_libs.
+ */
+function ding2_update_7056() {
+  module_enable(array('ding_libs'));
+}
+
+/**
+ * Enable Campaign plus module.
+ */
+function ding2_update_7057() {
+  module_enable(array('ding_campaign_plus'));
+}
+
+/**
+ * Enable Campaign plus extra modules.
+ */
+function ding2_update_7058() {
+  module_enable(array(
+    'ding_campaign_plus_auto',
+    'ding_campaign_plus_basic',
+    'ding_campaign_plus_facet',
+    'ding_campaign_plus_object',
+    'ding_campaign_plus_search',
+  ));
+}
+
+/**
+ * Update translations.
+ */
+function ding2_update_7059() {
+  ding2_translation_update();
+}
+
+/**
+ * Remove ding_webtrends module and clean up related settings.
+ */
+function ding2_update_7060() {
+  ding2_remove_module('ding_webtrends');
+  variable_del('webtrends_domain');
+  variable_del('webtrends_onsitedoms');
+  variable_del('webtrends_dcs_id');
+}
+
+/**
+ * Ensure ding_webtrekk is activated on existing installs.
+ */
+function ding2_update_7061() {
+  module_enable(array('ding_webtrekk'));
+}
+
+/**
+ * Update translations.
+ */
+function ding2_update_7062() {
+  ding2_translation_update();
+}
+
+/**
+ * Enable Section and Nodelist modules.
+ */
+function ding2_update_7063() {
+  module_enable(array(
+    'ding_sections',
+    'ding_nodelist',
+  ));
 }
