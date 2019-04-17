@@ -1,8 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/issue-4056
 /**
  * @file
  * Exported default file displays.

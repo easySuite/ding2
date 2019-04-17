@@ -1,8 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/issue-4056
 /**
  * @file
  * ding_dams.features.field_base.inc
@@ -14,11 +10,7 @@
 function ding_dams_field_default_field_bases() {
   $field_bases = array();
 
-<<<<<<< HEAD
-  // Exported field_base: 'field_dams_category'
-=======
   // Exported field_base: 'field_dams_category'.
->>>>>>> origin/issue-4056
   $field_bases['field_dams_category'] = array(
     'active' => 1,
     'cardinality' => 1,

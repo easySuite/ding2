@@ -1,8 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/issue-4056
 /**
  * @file
  * Represents logic related to (un)installing of module.
@@ -17,7 +13,6 @@ function ding_dams_schema() {
               SET weight = (SELECT q.w FROM (SELECT (weight + 2) w  FROM system WHERE name = 'media_wysiwyg_view_mode') q) 
               WHERE name = 'ding_dams'");
 }
-<<<<<<< HEAD
 
 /**
  * Implements hook_install().
@@ -87,5 +82,3 @@ function _ding_dams_add_buttons() {
     ->condition('format', 'ding_wysiwyg')
     ->execute();
 }
-=======
->>>>>>> origin/issue-4056

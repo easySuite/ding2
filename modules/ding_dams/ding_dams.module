@@ -1,8 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/issue-4056
 /**
  * @file
  * Code for DAMS module.
@@ -84,13 +80,10 @@ function ding_dams_permission() {
 function ding_dams_popup_callback($ajax, $fid) {
   if (!empty($fid)) {
     if ($ajax) {
-<<<<<<< HEAD
-=======
       ctools_include('modal');
       ctools_include('ajax');
       ctools_modal_add_js();
 
->>>>>>> origin/issue-4056
       $file = file_load($fid);
       $display = array(
         'status' => TRUE,
@@ -102,19 +95,7 @@ function ding_dams_popup_callback($ajax, $fid) {
       );
       $element = file_entity_file_formatter_file_field_view($file, $display, LANGUAGE_NONE);
       $output = render($element);
-<<<<<<< HEAD
-      $commands = array();
-      $commands[] = ajax_command_ding_popup("ding_dams_popup_{$fid}", $file->filename, $output, array(
-        'extra_data' => array(
-          'fit_popup' => TRUE,
-        ),
-      ));
-      print ajax_render($commands);
-      exit;
-=======
-
       return ctools_modal_render("&nbsp;", $output);
->>>>>>> origin/issue-4056
     }
     else {
       $file = file_load($fid);
@@ -143,11 +124,6 @@ function ding_dams_page_alter(&$page) {
     drupal_add_js($js_file, array('scope' => 'footer'));
   }
 
-<<<<<<< HEAD
-  ctools_include('modal');
-  ctools_modal_add_js();
-
-=======
   ctools_include('ajax');
   ctools_include('modal');
   ctools_modal_add_js();
@@ -174,7 +150,6 @@ function ding_dams_page_alter(&$page) {
   drupal_add_js($modal_style, 'setting');
   drupal_add_js(drupal_get_path('module', 'ding_dams') . '/js/ding_dams.scripts.js', 'file');
 
->>>>>>> origin/issue-4056
   if ($media_page) {
     // Use media page for the dams theming.
     $page['#theme'] = 'media_dialog_page';
@@ -253,10 +228,6 @@ function ding_dams_form_file_entity_edit_alter(&$form, &$form_state) {
   }
 }
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/issue-4056
 /**
  * Implements hook_media_wysiwyg_allowed_view_modes_alter().
  */
@@ -340,10 +311,6 @@ function ding_dams_entity_info_alter(&$entity_info) {
  * Implements hook_media_token_to_markup_alter().
  */
 function ding_dams_media_wysiwyg_token_to_markup_alter(&$element, $tag_info, $settings) {
-<<<<<<< HEAD
-  $a = 1;
-=======
->>>>>>> origin/issue-4056
   $ding_view_modes = array(
     'ding_dams_inline',
     'ding_dams_popup',
@@ -403,11 +370,7 @@ function ding_dams_theme($existing, $type, $theme, $path) {
 }
 
 /**
-<<<<<<< HEAD
- * Helper function to get the doctype_icon
-=======
  * Helper function to get the doctype_icon.
->>>>>>> origin/issue-4056
  */
 function ding_dams_get_doctype_icon($file = NULL) {
   if (is_null($file)) {
@@ -483,10 +446,7 @@ function theme_ding_dams_inline(&$variables) {
           'width' => NULL,
           'height' => NULL,
           'multiple_file_behavior' => NULL,
-<<<<<<< HEAD
-=======
           'preload' => NULL,
->>>>>>> origin/issue-4056
         ),
       );
       $element = file_entity_file_formatter_file_field_view($file, $display, LANGUAGE_NONE);

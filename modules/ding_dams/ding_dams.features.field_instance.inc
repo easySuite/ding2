@@ -1,8 +1,4 @@
 <?php
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/issue-4056
 /**
  * @file
  * ding_dams.features.field_instance.inc
@@ -14,11 +10,7 @@
 function ding_dams_field_default_field_instances() {
   $field_instances = array();
 
-<<<<<<< HEAD
-  // Exported field_instance: 'file-audio-field_dams_category'
-=======
   // Exported field_instance: 'file-audio-field_dams_category'.
->>>>>>> origin/issue-4056
   $field_instances['file-audio-field_dams_category'] = array(
     'bundle' => 'audio',
     'default_value' => NULL,
@@ -68,11 +60,7 @@ function ding_dams_field_default_field_instances() {
     ),
   );
 
-<<<<<<< HEAD
-  // Exported field_instance: 'file-document-field_dams_category'
-=======
   // Exported field_instance: 'file-document-field_dams_category'.
->>>>>>> origin/issue-4056
   $field_instances['file-document-field_dams_category'] = array(
     'bundle' => 'document',
     'default_value' => NULL,
@@ -122,11 +110,7 @@ function ding_dams_field_default_field_instances() {
     ),
   );
 
-<<<<<<< HEAD
-  // Exported field_instance: 'file-image-field_dams_category'
-=======
   // Exported field_instance: 'file-image-field_dams_category'.
->>>>>>> origin/issue-4056
   $field_instances['file-image-field_dams_category'] = array(
     'bundle' => 'image',
     'default_value' => NULL,
@@ -204,11 +188,7 @@ function ding_dams_field_default_field_instances() {
     ),
   );
 
-<<<<<<< HEAD
-  // Exported field_instance: 'file-video-field_dams_category'
-=======
   // Exported field_instance: 'file-video-field_dams_category'.
->>>>>>> origin/issue-4056
   $field_instances['file-video-field_dams_category'] = array(
     'bundle' => 'video',
     'default_value' => NULL,
@@ -258,11 +238,7 @@ function ding_dams_field_default_field_instances() {
     ),
   );
 
-<<<<<<< HEAD
-  // Translatables
-=======
   // Translatables.
->>>>>>> origin/issue-4056
   // Included for use with string extractors like potx.
   t('Category');
 

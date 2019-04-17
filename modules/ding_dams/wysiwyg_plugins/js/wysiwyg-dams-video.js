@@ -40,11 +40,7 @@
     insert: function (formatted_media) {
       var html = formatted_media.html;
       if (formatted_media.type !== 'ding_dams_inline') {
-<<<<<<< HEAD
-        html = $(formatted_media.html).children('source');
-=======
         html = $(formatted_media.html).children('a');
->>>>>>> origin/issue-4056
       }
 
       formatted_media.options.dams_type = 'video';
@@ -57,11 +53,8 @@
 
       var markup = '';
       var macro = Drupal.media.filter.create_macro(element);
-<<<<<<< HEAD
-=======
       var data = Drupal.media.filter.extract_file_info(element);
 
->>>>>>> origin/issue-4056
       switch (formatted_media.type) {
         case 'ding_dams_download_link':
           var name = $(formatted_media.html).children('a').html();
@@ -70,10 +63,6 @@
           a.href = element[0].href;
           a.target = '_blank';
           a.className = element[0].className;
-<<<<<<< HEAD
-          a.setAttribute('data-file_info', element.attr('data-file_info'));
-=======
->>>>>>> origin/issue-4056
           a.innerHTML = name;
           markup = a.outerHTML;
           break;
@@ -86,23 +75,6 @@
           break;
 
         case 'ding_dams_popup':
-<<<<<<< HEAD
-          console.log(element)
-          var data = JSON.parse(decodeURI(element.attr('data-file_info')));
-
-          var a = document.createElement('a');
-          a.href = "ding-dams/nojs/popup/" + data.fid;
-          a.target = '_blank';
-          a.className = element[0].className + ' use-ajax';
-          a.setAttribute('data-file_info', element.attr('data-file_info'));
-
-          var image = document.createElement('img');
-          image.src = Drupal.settings.ding_dams.icon_path + '/doc_flv.png';
-          a.appendChild(image);
-
-          markup = a.outerHTML;
-          markup = a.outerHTML;
-=======
           var a = document.createElement('a');
           a.href = "/ding-dams/nojs/popup/" + data.fid;
           a.target = '_blank';
@@ -113,36 +85,21 @@
           a.appendChild(image);
 
           markup = a.outerHTML;
->>>>>>> origin/issue-4056
           break;
 
         case 'ding_dams_download_icon':
           var a = document.createElement('a');
-<<<<<<< HEAD
-          a.href = element[0].src;
-          a.target = '_blank';
-          a.className = element[0].className;
-          a.setAttribute('data-file_info', element.attr('data-file_info'));
-
-          var image = document.createElement('img');
-          image.src = Drupal.settings.ding_dams.icon_path + '/doc_flv.png';
-=======
           a.href = element[0].href;
           a.target = '_blank';
           a.className = element[0].className;
 
           var image = document.createElement('img');
           image.src = Drupal.settings.ding_dams.icon_path + 'doc_flv.png';
->>>>>>> origin/issue-4056
           a.appendChild(image);
 
           markup = a.outerHTML;
           break;
       }
-<<<<<<< HEAD
-      Drupal.media.filter.ensure_tagmap();
-=======
->>>>>>> origin/issue-4056
 
       Drupal.settings.tagmap[macro] = markup;
 

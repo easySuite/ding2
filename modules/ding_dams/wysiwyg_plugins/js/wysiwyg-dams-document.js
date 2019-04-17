@@ -82,10 +82,6 @@
               doctype_icon = 'doc_txt.png';
           }
 
-<<<<<<< HEAD
-          console.log(element);
-=======
->>>>>>> origin/issue-4056
           var a = document.createElement('a');
           a.href = element[0].href;
           a.target = '_blank';

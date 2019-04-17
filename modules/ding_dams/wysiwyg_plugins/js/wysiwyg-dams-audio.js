@@ -5,10 +5,6 @@
 
 (function ($) {
   "use strict";
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/issue-4056
   Drupal.media = Drupal.media || {};
 
   var InsertMediaDamsAudio = function (instance_id) {
@@ -58,10 +54,6 @@
 
       var markup = '';
       var macro = Drupal.media.filter.create_macro(element);
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/issue-4056
       switch (formatted_media.type) {
         case 'ding_dams_download_link':
           var a = document.createElement('a');
@@ -80,20 +72,12 @@
           break;
 
         case 'ding_dams_popup':
-<<<<<<< HEAD
-          var data = JSON.parse(decodeURI(element.attr('data-file_info')));
-          var a = document.createElement('a');
-          a.href = "ding-dams/nojs/popup/" + data.fid;
-          a.target = '_blank';
-          a.className = element[0].className + ' use-ajax';
-=======
           var data = element[0].dataset;
           var a = document.createElement('a');
 
           a.href = "/ding-dams/nojs/popup/" + data.fid;
           a.target = '_blank';
           a.className = element[0].className + ' ctools-use-modal ctools-modal-dams-modal';
->>>>>>> origin/issue-4056
           a.setAttribute('data-file_info', element.attr('data-file_info'));
 
           var image = document.createElement('img');
