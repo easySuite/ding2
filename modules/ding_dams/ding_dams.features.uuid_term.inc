@@ -1,4 +1,8 @@
 <?php
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/issue-4056
 /**
  * @file
  * ding_dams.features.uuid_term.inc

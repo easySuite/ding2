@@ -1,10 +1,18 @@
 #media-tab-media_default--media_browser_my_files > div.form-actions.form-wrapper > a {
   display: none;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/issue-4056
 .ui-dialog-titlebar {
   width: 100%;
   overflow: hidden;
 }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/issue-4056
 .ui-dialog .ui-dialog-titlebar span.ui-dialog-title {
   width: 90%;
   overflow: hidden;
@@ -12,12 +20,24 @@
   text-overflow: ellipsis;;
   float: left;
 }
+<<<<<<< HEAD
 .ding-popup-content video {
   width: 100% !important;
 }
 #media-browser-library-list li {
   width: 23%;
 }
+=======
+
+.ding-popup-content video {
+  width: 100% !important;
+}
+
+#media-browser-library-list li {
+  width: 23%;
+}
+
+>>>>>>> origin/issue-4056
 #media-browser-library-list .media-item {
   float: left;
   width: 90%;
@@ -33,3 +53,29 @@
   left: 25px;
   text-align: left;
 }
+<<<<<<< HEAD
+=======
+
+#modalContent .ctools-modal-dams-modal-content .modal-header {
+  background-color: #cccccc;
+  height: 50px;
+}
+
+#modalContent .ctools-modal-dams-modal-content .modal-header .close-messages-button::after {
+  font-family: 'icomoon';
+  content: "\e907";
+  position: relative;
+  color: #000;
+  display: block;
+  font-size: 4em;
+  margin: 15px 0;
+}
+
+a#edit-media-button.button.button-disabled,
+a#track-media-button.button.button-disabled {
+  background: #eee none;
+  border-color: #eee;
+  text-shadow: none;
+  color: #999;
+}
+>>>>>>> origin/issue-4056

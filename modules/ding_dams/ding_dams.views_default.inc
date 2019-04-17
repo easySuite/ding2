@@ -1,4 +1,8 @@
 <?php
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/issue-4056
 /**
  * @file
  * ding_dams.views_default.inc

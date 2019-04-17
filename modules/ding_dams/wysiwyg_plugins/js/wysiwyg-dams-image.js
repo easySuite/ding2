@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/issue-4056
 /**
  *  @file
  *  Attach Media WYSIWYG behaviors.
@@ -39,6 +43,10 @@
      */
     insert: function (formatted_media) {
       formatted_media.options.dams_type = 'image';
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/issue-4056
       var element = Drupal.media.filter.create_element(formatted_media.html, {
         fid: this.mediaFile.fid,
         view_mode: formatted_media.type,
@@ -47,10 +55,19 @@
         dams_type: 'image'
       });
 
+<<<<<<< HEAD
       var markup = '';
       var macro = Drupal.media.filter.create_macro(element);
       if (formatted_media.type === 'ding_dams_download_link') {
         var data = JSON.parse(decodeURI(element.attr('data-file_info')));
+=======
+      var file_info = Drupal.media.filter.extract_file_info(element);
+
+      var markup = '';
+      var macro = Drupal.media.filter.create_macro(element);
+      if (formatted_media.type === 'ding_dams_download_link') {
+        var data = file_info;
+>>>>>>> origin/issue-4056
         var name = '';
         if (data.fields['field_file_image_alt_text[und][0][value]'].length > 0) {
           name = data.fields['field_file_image_alt_text[und][0][value]'];
@@ -58,14 +75,22 @@
         else {
           name = element[0].src.split('/').pop().split('.')[0];
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/issue-4056
         var a = document.createElement('a');
         a.href = element[0].src;
         a.target = '_blank';
         a.title = element.attr('title');
         a.className = element[0].className;
+<<<<<<< HEAD
         a.setAttribute('data-file_info', element.attr('data-file_info'));
         a.innerHTML = typeof element.attr('title') !== 'undefined' ? element.attr('title') : name;
 
+=======
+        a.innerHTML = typeof element.attr('title') !== 'undefined' ? element.attr('title') : name;
+>>>>>>> origin/issue-4056
         markup = a.outerHTML;
       }
       else {
