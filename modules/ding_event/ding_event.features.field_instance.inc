@@ -928,10 +928,9 @@ function ding_event_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'above',
-        'module' => 'link',
         'settings' => array(),
-        'type' => 'link_default',
-        'weight' => 4,
+        'type' => 'hidden',
+        'weight' => 8,
       ),
       'search_result' => array(
         'label' => 'above',

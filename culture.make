@@ -40,6 +40,12 @@ projects[kultur_subtheme][download][type]   = "git"
 projects[kultur_subtheme][download][url]    = "git@github.com:easySuite/kultur_subtheme.git"
 projects[kultur_subtheme][download][branch] = "develop"
 
+projects[oplev-subtheme][type]             = "theme"
+projects[oplev-subtheme][subdir]           = ""
+projects[oplev-subtheme][download][type]   = "git"
+projects[oplev-subtheme][download][url]    = "git@github.com:easySuite/oplev-subtheme.git"
+projects[oplev-subtheme][download][branch] = "development"
+
 projects[similar][subdir] = "contrib"
 projects[similar][version] = "2.0-beta6"
 
