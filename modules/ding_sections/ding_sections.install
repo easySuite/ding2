@@ -135,3 +135,14 @@ function ding_sections_section_shortcut_exists() {
 
   return FALSE;
 }
+
+/**
+ * Enable "Term page" for migrated sections.
+ */
+function ding_sections_update_7001() {
+  db_update('field_data_field_term_page')
+    ->fields(['field_term_page_value' => 1])
+    ->condition('field_term_page_value', 0)
+    ->condition('deleted', 0)
+    ->execute();
+}
