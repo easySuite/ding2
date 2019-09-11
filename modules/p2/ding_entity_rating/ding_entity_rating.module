@@ -352,7 +352,7 @@ function ding_entity_rating_theme($existing, $type, $theme, $path) {
     ),
     'ding_entity_rating_thank_you' => array(
       'variables' => array(
-        'response' => NULL,
+        'response' => 'Thank you for your input',
       ),
     ),
     'ding_entity_rating_promote_ratings' => array(
@@ -366,7 +366,7 @@ function ding_entity_rating_theme($existing, $type, $theme, $path) {
  * Theme function for theme_ding_entity_rating_thank_you.
  */
 function theme_ding_entity_rating_thank_you($variables) {
-  return '<div class="ding-entity-rating-respons">' . $variables['response'] . '</div>';
+  return '<div class="ding-entity-rating-respons">' . t('@ding_entity_rating_thank_you', ['@ding_entity_rating_thank_you' => $variables['response']]) . '</div>';
 }
 
 /**
