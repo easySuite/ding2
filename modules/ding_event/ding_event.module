@@ -79,6 +79,26 @@ function ding_event_theme() {
         ),
       ),
     ),
+    'views_exposed_form_widgets' => array(
+      'variables' => array(
+        'title' => NULL,
+        'items' => NULL,
+        'element' => NULL,
+      ),
+      'template' => 'templates/views-exposed-form-widget',
+    ),
+    'views_exposed_form_widgets_title' => array(
+      'variables' => array(
+        'element' => NULL,
+      ),
+      'template' => 'templates/views-exposed-form-widget--title',
+    ),
+    'views_exposed_form_widgets_date_inputs' => array(
+      'variables' => array(
+        'element' => NULL,
+      ),
+      'template' => 'templates/views-exposed-form-widget--date-inputs',
+    ),
   );
 }
 
@@ -452,6 +472,86 @@ function ding_event_preprocess_node(&$variables) {
         $link_text = $variables['content'][$field][0]['#markup'];
         $variables['content'][$field][0]['#markup'] = l($link_text, 'arrangementer', array('query' => array($attributes), 'html' => TRUE));
       }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function ding_event_preprocess_views_exposed_form(&$variables) {
+  if (arg(0) == 'arrangementer') {
+    $form = $variables['form'];
+    $excluded_widgets = ['title', 'date', 'field_ding_event_date_value_1'];
+    foreach ($form['#info'] as $widget => $item) {
+      if (!in_array($item['value'], $excluded_widgets)) {
+        $items = [];
+        $title = $item['label'];
+        unset($variables['widgets'][$widget]->label);
+
+        $items_list = $form[$item['value']]['#options'];
+        foreach ($items_list as $id => $option) {
+          if (is_object($option)) {
+            $clean_option = array_keys($option->option);
+            $key = array_shift($clean_option);
+            $items[$key] = $option->option[$key];
+          }
+          else {
+            $items[$id] = $option;
+          }
+        }
+
+        $render = theme('views_exposed_form_widgets', [
+            'title' => $title,
+            'items' => $items,
+            'element' => $form[$item['value']],
+          ]
+        );
+
+        $variables['widgets'][$widget]->widget = $render;
+      }
+    }
+
+    if ($form['#info']['filter-combine']) {
+      $widget = $form['#info']['filter-combine']['value'];
+      $item = $form[$widget];
+      $render = theme('views_exposed_form_widgets_title', [
+          'element' => [
+            'label' => $variables['widgets']['filter-combine']->label,
+            'field' => $item,
+          ],
+        ]
+      );
+      unset($variables['widgets']['filter-combine']->label);
+      $variables['widgets']['filter-combine']->widget = $render;
+    }
+
+    if ($form['#info']['filter-field_ding_event_date_value'] && $form['#info']['filter-field_ding_event_date_value_1']) {
+      $widget_from = $form['#info']['filter-field_ding_event_date_value']['value'];
+      $widget_to = $form['#info']['filter-field_ding_event_date_value_1']['value'];
+
+      $item_from = $form[$widget_from];
+      $item_to = $form[$widget_to];
+
+      $return = [
+        'from' => [
+          'label' => $variables['widgets']['filter-field_ding_event_date_value']->label,
+          'field' => $item_from,
+        ],
+        'to' => [
+          'label' => $variables['widgets']['filter-field_ding_event_date_value_1']->label,
+          'field' => $item_to,
+        ],
+      ];
+
+      $render = theme('views_exposed_form_widgets_date_inputs', [
+          'element' => $return,
+        ]
+      );
+
+      unset($variables['widgets']['filter-field_ding_event_date_value']->label);
+      $variables['widgets']['filter-field_ding_event_date_value']->widget = $render;
+      unset($variables['widgets']['filter-field_ding_event_date_value_1']);
     }
   }
 }
