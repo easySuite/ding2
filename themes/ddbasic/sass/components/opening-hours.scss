@@ -28,6 +28,7 @@
     text-indent: -9999px;
     margin-top: 20px;
     &::after {
+      color: $charcoal-opacity-dark !important;
       top: 0;
       text-indent: 0;
     }
@@ -102,7 +103,7 @@
   td {
     .opening-hours-table-notice {
       margin-left: 10px;
-      color: $charcoal-opacity-dark;
+      color: $white-opacity-dark;
     }
 
     // Tablet

@@ -12,7 +12,7 @@
     width: 100%;
     padding: $box-padding 0;
     margin-bottom: 20px;
-    background-color: $grey;
+    background-color: $bibliofil-dark;
     > a {
       @include span-columns(6 of 8);
 
@@ -90,6 +90,7 @@
       a {
         @include button(arrow-right);
         padding-right: 45px;
+        color: $charcoal-opacity-dark;
         &::after {
           color: $charcoal-opacity-dark;
         }
@@ -109,7 +110,6 @@
   // Full
   // ==========================================================================
   &.node-full {
-    @include linear-gradient(to top, $white 30px, $grey-light 100%);
     padding: 40px 0 30px;
     // Has dynamic background
     .has-dynamic-background & {
@@ -164,6 +164,7 @@
         }
         a {
           @include button('arrow-right');
+          color: $charcoal-opacity-dark;
           padding-right: 45px;
           margin-bottom: 10px;
           &::after {

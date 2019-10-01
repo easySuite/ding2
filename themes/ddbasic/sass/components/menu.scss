@@ -88,13 +88,13 @@ ul {
         > a {
           display: block;
           padding: 30px 5%;
-          border-bottom: 1px solid $charcoal-opacity-light;
+          border-bottom: 1px solid $white-opacity-light;
         }
       }
       a {
-        color: $color-text-on-primary;
+        color: $white;
         &::after {
-          background-color: $color-text-on-primary;
+          background-color: $white;
 
           // Tablet
           @include media($tablet) {
@@ -283,7 +283,7 @@ ul.main-menu-third-level {
       }
       .no-touch & {
         &:hover {
-          color: $charcoal;
+          font-family: $font-family-bold;
         }
       }
     }
@@ -291,10 +291,7 @@ ul.main-menu-third-level {
       &.active-trail,
       &.active {
         > a {
-          color: $charcoal;
-          &::after {
-            color: $charcoal;
-          }
+          font-family: $font-family-bold;
         }
       }
       ul.menu {
@@ -426,6 +423,7 @@ ul.topbar-menu {
       float: right;
       a {
         margin: 5px 0;
+        color: $charcoal-opacity-extra-dark;
       }
 
       // Tablet

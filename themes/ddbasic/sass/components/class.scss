@@ -109,6 +109,7 @@ body > .ding2-site-template {
   text-align: left;
   a {
     @include button(arrow-right);
+    color: $charcoal-opacity-dark;
     &::after {
       color: $charcoal-opacity-dark;
     }
@@ -278,9 +279,12 @@ a.topbar-link-search {
 
 // Topbar opening hours
 a.topbar-link-opening-hours {
-  @include button(clock, $charcoal-opacity-dark, $white, $white, $color-primary);
-  &::after {
-    color: $color-text-link;
+  @include button(clock, $charcoal);
+  color: $charcoal-opacity-extra-dark;
+  &:hover {
+    &::after {
+      color: $charcoal;
+    }
   }
 }
 
@@ -379,7 +383,7 @@ a.print-button {
 
 .field-image-caption {
   margin-top: 10px;
-  color: $charcoal-opacity-dark;
+  color: $white-opacity-dark;
 }
 
 // ==========================================================================

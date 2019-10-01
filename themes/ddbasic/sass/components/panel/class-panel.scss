@@ -100,7 +100,7 @@
     .pane-title {
       @include font('display-small');
       padding-bottom: 20px;
-      border-bottom: 1px solid $charcoal-opacity-light;
+      border-bottom: 1px solid $white-opacity-light;
       margin-bottom: 25px;
       color: $charcoal;
     }
@@ -226,7 +226,7 @@
 
 .panel-pane.pane-search-backends {
   fieldset {
-    border-top: 1px solid $charcoal-opacity-light;
+    border-top: 1px solid $white-opacity-light;
   }
 }
 
@@ -238,7 +238,7 @@
   width: 100%;
   float: left;
   padding: 40px 0;
-  border-top: 1px solid $charcoal-opacity-light;
+  border-top: 1px solid $white-opacity-light;
   .pane-title {
     @include font('display-small');
     color: $charcoal;
@@ -266,7 +266,7 @@
 
 .panel-pane.pane-ding-facetbrowser {
   fieldset {
-    border-top: 1px solid $charcoal-opacity-light;
+    border-top: 1px solid $white-opacity-light;
   }
 
   .hidden-facets-group {
@@ -453,7 +453,7 @@
   width: 100%;
   float: left;
   padding: 40px 0;
-  border-top: 1px solid $charcoal-opacity-light;
+  border-top: 1px solid $white-opacity-light;
   background-image: none;
   .pane-content {
     padding: 0;
@@ -510,7 +510,7 @@
 
 .pane-views-exp-ding-event-ding-event-list {
   .views-exposed-form {
-    border-top: 1px solid $charcoal-opacity-light;
+    border-top: 1px solid $white-opacity-light;
     padding-top: 25px;
     .form-submit {
       margin-top: 0;
@@ -615,10 +615,10 @@
 
     .sub-menu-title {
       position: relative;
-      border-top: 1px solid $charcoal-opacity-light !important;
+      border-top: 1px solid $white-opacity-light !important;
       padding-top: 25px;
 
-      font-family: FaktPro-SemiBold,sans-serif;
+      font-family: $font-family-bold;
       font-size: 18px;
       line-height: 24px;
       margin-top: 10px;
@@ -634,7 +634,7 @@
         padding-right: 64px;
       }
 
-      @include arrow-button(arrow-down);
+      @include arrow-button(arrow-down, $charcoal-opacity-dark);
       &::after {
         display: none;
       }
@@ -666,7 +666,7 @@
             color: $charcoal;
           }
           font-size: 1em;
-          font-family: FaktPro-Normal,sans-serif;
+          font-family: $font-family;
           line-height: 20px;
         }
       }
@@ -706,7 +706,7 @@
 
 .pane-views-exp-ding-news-ding-news-list {
   .views-exposed-form {
-    border-top: 1px solid $charcoal-opacity-light;
+    border-top: 1px solid $white-opacity-light;
     padding-top: 25px;
     .form-submit {
       margin-top: 0;
@@ -772,7 +772,7 @@
     label {
       h2 {
         position: relative;
-        border-top: 1px solid rgba(38, 38, 38, .2);
+        border-top: 1px solid $white-opacity-light;
         padding-top: 25px;
       }
     }

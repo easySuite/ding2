@@ -9,7 +9,7 @@
 
 .panel-pane.system-messages {
   position: relative;
-  background-color: $grey-light;
+  background-color: $bibliofil-dark;
   box-shadow: $box-shadow;
   .panel-pane-inner {
     @include wrapper;
@@ -20,7 +20,6 @@
   .messages {
     padding: 40px 0 20px;
     border: none;
-    background-color: $grey-light;
     > ul {
       list-style: none;
       margin: 0;
