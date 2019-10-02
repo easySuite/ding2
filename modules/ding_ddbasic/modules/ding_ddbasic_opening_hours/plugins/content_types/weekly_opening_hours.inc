@@ -29,6 +29,10 @@ function ding_ddbasic_opening_hours_weekly_opening_hours_content_type_render($su
     $node = node_load($conf['node']);
   }
 
+  if (empty(opening_hours_present_on_node($node->nid)) && variable_get('opening_hours_hide_on_empty_ding_library', 0) == 1) {
+    return $block;
+  }
+
   if (empty($node)) {
     return $block;
   }
