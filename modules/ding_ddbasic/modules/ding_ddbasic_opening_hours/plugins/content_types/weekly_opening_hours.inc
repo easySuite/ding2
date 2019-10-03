@@ -37,6 +37,11 @@ function ding_ddbasic_opening_hours_weekly_opening_hours_content_type_render($su
     return $block;
   }
 
+  $hide_oh_pane = $node->field_hide_oh_library[LANGUAGE_NONE][0]['value'];
+  if (!empty($hide_oh_pane)) {
+    return $block;
+  }
+
   $block->title = t('Opening hours');
   $block->content = theme('ding_ddbasic_opening_hours_week', array(
     'node' => $node,
