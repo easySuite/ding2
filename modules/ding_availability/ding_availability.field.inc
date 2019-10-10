@@ -142,11 +142,14 @@ function ding_availability_field_formatter_view($entity_type, $entity, $field, $
         break;
 
       case 'ding_availability_type':
+        $translated_type = t($entity->type, array(), array(
+            'context' => 'availablity_type')
+        );
         // Generate an unique id.
         $id = drupal_html_id('availability-' . $entity->id);
 
         // Mark as available if it is an online resource,
-        $available_online = (in_array(drupal_strtolower($entity->type), $online_types)) ? 'available' : 'not-available-online';
+        $available_online = (in_array(drupal_strtolower($translated_type), $online_types)) ? 'available' : 'not-available-online';
 
         // Add javascript.
         $attached['js'] = array(
@@ -174,7 +177,7 @@ function ding_availability_field_formatter_view($entity_type, $entity, $field, $
           '#attached' => $attached,
           '#items' => array(
             array(
-              'data' => $entity->type,
+              'data' => $translated_type,
               'id' => $id,
               'class' => array(
                 'availability',
@@ -205,6 +208,9 @@ function ding_availability_field_formatter_view($entity_type, $entity, $field, $
 
         // Loop over the different material types.
         foreach ($typed_entities as $type => $entities) {
+          $translated_type = t($type, array(), array(
+            'context' => 'availablity_type')
+          );
           /* @var \TingEntity[] $entities */
           // Generate an unique id.
           $id = drupal_html_id('availability-' . $entities[0]->id . '-' . $type);
@@ -242,7 +248,7 @@ function ding_availability_field_formatter_view($entity_type, $entity, $field, $
               'link' => array(
                 // The online url can't be used with l(), has it will encode
                 // it.
-                '#markup' => '<a id="' . $id . '" class="js-search-result--availability-link availability available" href="/' . $url['path'] . '">' . check_plain($type) . '</a>',
+                '#markup' => '<a id="' . $id . '" class="js-search-result--availability-link availability available" href="/' . $url['path'] . '">' . check_plain($translated_type) . '</a>',
               ),
             );
           }
@@ -261,7 +267,7 @@ function ding_availability_field_formatter_view($entity_type, $entity, $field, $
               'type' => $type,
               'link' => array(
                 '#theme' => 'link',
-                '#text' => check_plain($type),
+                '#text' => check_plain($translated_type),
                 '#path' => $url['path'],
                 '#options' => array(
                   'attributes' => array(
@@ -281,7 +287,7 @@ function ding_availability_field_formatter_view($entity_type, $entity, $field, $
           // If item is of type 'library materials' (where we can lookup
           // availability data), map the HTML id to the list of entity ids.
           // This is for the current material type group (book, cd, etc.).
-          if (in_array(drupal_strtolower($ac_source), $reservable_sources) && !in_array(drupal_strtolower($type), $online_types)) {
+          if (in_array(drupal_strtolower($ac_source), $reservable_sources) && !in_array(drupal_strtolower($translated_type), $online_types)) {
             foreach ($entities as $object_entity) {
               $id_mapping[$id][] = $object_entity->localId;
             }

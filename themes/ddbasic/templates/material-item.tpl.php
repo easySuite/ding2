@@ -20,7 +20,12 @@
   </div>
   <div class="right-column">
     <?php if (!empty($material_type)) : ?>
-      <div class="item-material-type"><?php print $material_type; ?></div>
+      <?php
+        $translated_type = t($material_type, array(), array(
+          'context' => 'material_type',
+        ));
+      ?>
+      <div class="item-material-type"><?php print $translated_type; ?></div>
     <?php endif; ?>
     <h3 id="<?php print $availability_id; ?>" class="item-title<?php if (isset($material_message)) : ?> has-message <?php
    endif; ?>"><?php print $title; ?></h3>
