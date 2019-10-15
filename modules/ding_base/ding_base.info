@@ -8,7 +8,6 @@ dependencies[] = environment_indicator
 dependencies[] = environment_indicator_variable
 dependencies[] = ding_permissions
 dependencies[] = globalredirect
-dependencies[] = imagemagick
 dependencies[] = jquery_update
 dependencies[] = og
 dependencies[] = og_context

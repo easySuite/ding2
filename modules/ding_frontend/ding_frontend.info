@@ -27,7 +27,6 @@ dependencies[] = panels_breadcrumbs
 dependencies[] = panels_everywhere
 dependencies[] = pm_existing_pages
 dependencies[] = search_api
-dependencies[] = search_api_autocomplete
 dependencies[] = search_api_db
 dependencies[] = search_api_multi
 dependencies[] = search_api_views
