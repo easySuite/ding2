@@ -403,8 +403,6 @@ function ding_campaign_get_campaigns($context, $limit, $offset) {
     @$campaigns[$value->cid] += 0.5;
   }
 
-  arsort($campaigns);
-
   return array_slice(array_keys($campaigns), $offset, $limit);
 }
 
