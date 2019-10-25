@@ -296,7 +296,7 @@ projects[easyddb_frontend_layout][type]             = "module"
 projects[easyddb_frontend_layout][subdir]           = ""
 projects[easyddb_frontend_layout][download][type]   = "git"
 projects[easyddb_frontend_layout][download][url]    = "git@github.com:easySuite/easyddb_frontend_layout.git"
-projects[easyddb_frontend_layout][download][tag]    = "7.x-4.1.0"
+projects[easyddb_frontend_layout][download][tag]    = "7.x-5.0.0"
 ;projects[easyddb_frontend_layout][download][branch] = "development"
 
 projects[easyddb_legend][type]             = "module"
