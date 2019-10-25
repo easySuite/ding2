@@ -491,7 +491,10 @@ function ting_material_details_get_object_property($field_name, TingEntity $enti
   // or the embedded Ting object.
   switch ($field_name) {
     case 'ting_details_type':
-      return $entity->type;
+      $translated_type = t($entity->type, array(), array(
+        'context' => 'material_type',
+      ));
+      return $translated_type;
 
     case 'ting_details_language':
       return $entity->language;

@@ -90,6 +90,7 @@ function ting_field_search_form_ding_facetbrowser_form_alter(&$form, &$form_stat
         foreach ($terms as $term_name => $term) {
           $facets_string = $name . ':' . $term_name;
           $is_selected = FALSE;
+          $term_name = t($term_name, array(), array('context' => 'material_type'));
 
           // If the facet is already selected, we mark if for deletion and add
           // it to default values for this facet checkboxes element.

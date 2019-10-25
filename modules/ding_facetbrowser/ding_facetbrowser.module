@@ -153,19 +153,19 @@ function ding_facetbrowser_form($form, &$form_state, $facets = [], $search = FAL
             $facets_string = '-' . $facets_string;
 
             $uri = $base_root . _ding_facetbrowser_parse_request_uri();
-            $selected[$term_name] = l($term_name_title . ' <span class="count">(' . $term->getCount() . ')</span>', $uri, array(
+            $selected[$term_name] = l(t($term_name_title, array(), array('context' => 'material_type')) . ' <span class="count">(' . $term->getCount() . ')</span>', $uri, array(
               'html' => TRUE,
               'query' => array(
                 'facets' => array('' => $facets_string),
               ),
               'attributes' => array(
-                'title' => $term_name,
+                'title' => t($term_name, array(), array('context' => 'material_type')),
               ),
             ));
           }
           else {
             $uri = $base_root . _ding_facetbrowser_parse_request_uri();
-            $not_selected[$term_name] = l($term_name_title . ' <span class="count">(' . $term->getCount() . ')</span>', $uri, array(
+            $not_selected[$term_name] = l(t($term_name_title, array(), array('context' => 'material_type')) . ' <span class="count">(' . $term->getCount() . ')</span>', $uri, array(
               'html' => TRUE,
               'query' => array(
                 'facets' => array('' => $facets_string),
@@ -249,7 +249,7 @@ function ding_facetbrowser_format_term_name($term_name, $term_count) {
   if (drupal_strlen($term_name) > $substr_length) {
     return drupal_substr($term_name, 0, $substr_length) . '...';
   }
-  return $term_name;
+  return t($term_name, array(), array('context' => 'material_type'));
 }
 
 /**
