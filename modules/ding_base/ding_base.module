@@ -131,7 +131,7 @@ function ding_base_date_formats() {
     ),
     array(
       'type' => 'ding_event_lists_date',
-      'format' => 'l j. F Y',
+      'format' => 'l d F Y',
       'locales' => array(),
     ),
     array(
