@@ -229,7 +229,7 @@ function ding_event_field_default_field_instances() {
         'label' => 'hidden',
         'module' => 'date',
         'settings' => array(
-          'format_type' => 'ding_date_only_version2',
+          'format_type' => 'ding_event_lists_date',
           'fromto' => 'value',
           'multiple_from' => '',
           'multiple_number' => '',
