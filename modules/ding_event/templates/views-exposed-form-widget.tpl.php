@@ -13,7 +13,6 @@ $element_id = $element['#id'];
 <div class="views-exposed-form-widget accordion-wrapper" id="<?php print $element_id; ?>">
   <?php if (isset($title)): ?>
     <div class="accordion-filter-header">
-      <!-- <h2 class="sub-menu-title"><?php print $title; ?></h2> -->
       <a class="accordion-control" data-toggle="collapse" data-target="#<?php print $element_id; ?>-conteiner" aria-controls="<?php print $element_id; ?>-conteiner">
         <?php print $title; ?>
         <span class="arrow"></span>
@@ -28,7 +27,7 @@ $element_id = $element['#id'];
     </div>  
   <?php endif; ?>
   <div id="<?php print $element_id; ?>-conteiner" class="collapse accordion-filter-body">
-    <ul class="sub-menu test2">
+    <ul class="sub-menu">
       <?php foreach ($items as $key => $item): ?>
         <li>
           <input type="checkbox" id="<?php print $element_id . '-' . $key; ?>" name="<?php print $element_name; ?>" value="<?php print $key; ?>">
