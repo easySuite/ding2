@@ -572,7 +572,7 @@ function ding_event_views_post_execute(&$view) {
 /**
  * Get events in different groups.
  */
-function _ding_event_group(array $nodes): array {
+function _ding_event_group(array $nodes) {
   $events[] = reset($nodes);
   foreach ($nodes as $node) {
     if (!_ding_event_same_group($events, $node)) {
@@ -588,12 +588,12 @@ function _ding_event_group(array $nodes): array {
  *
  * Same group means they have the same title, date and library.
  */
-function _ding_event_same_group($nodes, $event): bool {
+function _ding_event_same_group($nodes, $event) {
   $group = FALSE;
   foreach ($nodes as $node) {
-    $event_date = $event->field_ding_event_date[LANGUAGE_NONE][0]['value'] ?? '';
+    $event_date = $event->field_ding_event_date[LANGUAGE_NONE][0]['value'] ? $event->field_ding_event_date[LANGUAGE_NONE][0]['value'] : '';
     $event_date = new DateTime($event_date);
-    $node_date = $node->field_ding_event_date[LANGUAGE_NONE][0]['value'] ?? '';
+    $node_date = $node->field_ding_event_date[LANGUAGE_NONE][0]['value'] ? $node->field_ding_event_date[LANGUAGE_NONE][0]['value'] : '';
     $node_date = new DateTime($node_date);
 
     if ($event->title == $node->title &&
