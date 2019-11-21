@@ -333,3 +333,14 @@ function ding_frontend_preprocess_views_exposed_form(&$variables) {
     }
   }
 }
+
+/**
+ * Implements hook_preprocess().
+ *
+ * Hide "Email Format" field output from profile output on content search.
+ */
+function ding_frontend_preprocess(&$variables, $hook) {
+   if ($hook == 'user_profile') {
+     unset($variables['user_profile']['mimemail']);
+   }
+}
