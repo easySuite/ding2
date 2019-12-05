@@ -479,3 +479,18 @@ projects[easyddb_editorial_dashboard][download][type]   = "git"
 projects[easyddb_editorial_dashboard][download][url]    = "git@github.com:easySuite/easyddb_editorial_dashboard.git"
 projects[easyddb_editorial_dashboard][download][tag]    = "7.x-4.2.1"
 ;projects[easyddb_editorial_dashboard][download][branch] = "development"
+
+; Bibliofil
+projects[lms][type]             = "module"
+projects[lms][subdir]           = ""
+projects[lms][download][type]   = "git"
+projects[lms][download][url]    = "git@github.com:easySuite/lms.git"
+;projects[lms][download][tag]    = ""
+projects[lms][download][branch] = "development"
+
+projects[easyopac_nodereferences][type]             = "module"
+projects[easyopac_nodereferences][subdir]           = ""
+projects[easyopac_nodereferences][download][type]   = "git"
+projects[easyopac_nodereferences][download][url]    = "git@github.com:easySuite/lms.git"
+;projects[easyopac_nodereferences][download][tag]    = ""
+projects[easyopac_nodereferences][download][branch] = "development"
