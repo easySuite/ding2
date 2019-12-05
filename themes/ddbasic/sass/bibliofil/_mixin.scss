@@ -16,9 +16,9 @@
 @mixin button(
   $icon,
   $color: $white !important,
-  $background-color: $bibliofil-button
-  // $color-hover: transparent,
-  // $background-color-hover: transparent
+  $background-color: $bibliofil-button !important,
+  $color-hover: $color,
+  $background-color-hover: $bibliofil-button
 ) {
   @include place-icon($icon, $color);
   @include transition(

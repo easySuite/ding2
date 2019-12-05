@@ -2,6 +2,61 @@
 
 // Override the background for body.
 
+/* latin-ext */
+@font-face {
+  font-family: 'Titillium Web Light';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: local('Titillium Web Light'), local('TitilliumWeb-Light'), url(https://fonts.gstatic.com/s/titilliumweb/v8/NaPDcZTIAOhVxoMyOr9n_E7ffGjEGIVzY5abuWIGxA.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Titillium Web Light';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: local('Titillium Web Light'), local('TitilliumWeb-Light'), url(https://fonts.gstatic.com/s/titilliumweb/v8/NaPDcZTIAOhVxoMyOr9n_E7ffGjEGItzY5abuWI.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Titillium Web';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Titillium Web Regular'), local('TitilliumWeb-Regular'), url(https://fonts.gstatic.com/s/titilliumweb/v8/NaPecZTIAOhVxoMyOr9n_E7fdM3mDaZRbryhsA.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Titillium Web';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Titillium Web Regular'), local('TitilliumWeb-Regular'), url(https://fonts.gstatic.com/s/titilliumweb/v8/NaPecZTIAOhVxoMyOr9n_E7fdMPmDaZRbrw.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Titillium Web SemiBold';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Titillium Web SemiBold'), local('TitilliumWeb-SemiBold'), url(https://fonts.gstatic.com/s/titilliumweb/v8/NaPDcZTIAOhVxoMyOr9n_E7ffBzCGIVzY5abuWIGxA.woff2) format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Titillium Web SemiBold';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Titillium Web SemiBold'), local('TitilliumWeb-SemiBold'), url(https://fonts.gstatic.com/s/titilliumweb/v8/NaPDcZTIAOhVxoMyOr9n_E7ffBzCGItzY5abuWI.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 html,
 body,
 .ding2-site-template {
@@ -11,8 +66,36 @@ body,
 
 h1,
 .node-ding-news.node-full h1,
-.node-ding-event.node-full h1 {
+.node-ding-event.node-full h1,
+.panel-pane ul.sub-menu li a.active,
+.node-ding-library.node-teaser .page-title a {
   color: $white;
+}
+
+a:hover,
+.pane-views-exp-ding-event-ding-event-list .views-exposed-form-widget .sub-menu li label:hover,
+ul.pager li a,
+li a.active {
+  color: $white-opacity-dark;
+}
+
+// Nodelist.
+.ding_nodelist .more-links ul {
+  padding-left: 0;
+  li {
+    margin-left: 0;
+  }
+}
+
+.ding_nodelist-promoted_nodes {
+  .last-left-block,
+  .first-right-block {
+    h3 {
+      a {
+        color: $white;
+      }
+    }
+  }
 }
 
 // Override the background for content and messages. 
@@ -43,7 +126,7 @@ h1,
 .content-wrapper {
   .pane-content {
     .frontpage-layout {
-      .panel-pane{
+      .panel-pane {
         background-color: $bibliofil;
         background-image: none;
       }
@@ -70,7 +153,7 @@ h1,
 // Override the background and color for input.
 .pane-views-exp-ding-event-ding-event-list .form-item input {
   background-color: $white;
-  color:  $text-input;
+  color: $text-input;
 }
 
 // Override the background for submit button.
@@ -111,6 +194,16 @@ a.topbar-link-opening-hours {
 .field-image-caption {
 	color: $white-opacity-dark;
 }	
+
+.carousel-tabs {
+  .carousel-list-tabs {
+    .carousel-item {
+      a {
+        color: $white-opacity-dark;
+      }
+    }
+  }
+}
 
 .ding-carousel {
   .slick-slider {
@@ -244,9 +337,25 @@ ul.topbar-menu {
     }
   }
 }
-// Event.
-.node-ding-event {
-  &.node-teaser {
+
+// Nodelist
+.ding_nodelist-node_blocks {
+  .nb-item {
+    a {
+      color: $white;
+    }
+
+    .text {
+      .info-top {
+        color: $white-opacity-light;
+      }
+
+      .date,
+      .info-bottom {
+        color: $white;
+      }
+    }
+
     .inner {
       .background {
         background-color: $bibliofil-dark;
@@ -256,6 +365,40 @@ ul.topbar-menu {
       &.is-hovered,
       &:hover {
         .background {
+          background-color: $color-topbar;
+          .button {
+            color: $charcoal-opacity-dark;
+          }
+        }
+        .text {
+          .date,
+          .info-bottom,
+          .title-and-lead .field-type-text-long {
+            color: $white;
+          }
+        }
+      }
+    }
+  }
+}
+
+// Event.
+.node-ding-event {
+  &.node-teaser {
+    .info-top {
+      color: $white-opacity-light;
+    }
+
+    .inner {
+      .background {
+        background-color: $bibliofil-dark;
+      }
+    }
+    .no-touch & {
+      &.is-hovered,
+      &:hover {
+        .background {
+          background-color: $color-topbar;
           .button {
             color: $charcoal-opacity-dark;
           }
@@ -266,6 +409,11 @@ ul.topbar-menu {
       }
     }
   }
+}
+
+.no-touch .node-ding-event.node-teaser.is-hovered .background,
+.no-touch .node-ding-event.node-teaser:hover .background {
+  background-color: $bibliofil;
 }
 
 // News.
@@ -411,10 +559,22 @@ ul.topbar-menu {
 
 .view-tags-list {
   .group-separator {
-    background-image: nones;
+    background-image: none;
   }
 }
 
 input[type=checkbox]:checked+label::after {
   color: $charcoal-opacity-dark;
+}
+
+#sliding-popup.sliding-popup-bottom {
+  #popup-buttons {
+    .agree-button,
+    .find-more-button,
+    .hide-popup-button {
+      background: $bibliofil-button;
+      background-image: none;
+      color: $white;
+    }
+  }
 }

@@ -13,11 +13,7 @@ $color-standard-text: $white;
 $charcoal-opacity-extra-dark: rgba(38, 38, 38, 0.8);
 $text-input: #333;
 
-
-// The color-module is dependent on the following five variables and their specific values. Therefore they may not be altered.
-
-$color-primary: $white;
-$color-secondary: $white;
+$color-secondary: #5b9f50 !global;
 
 $color-text: $white;
 
