@@ -560,7 +560,7 @@ function ding_event_preprocess_views_exposed_form(&$variables) {
  * Implements hook_views_post_execute().
  */
 function ding_event_views_post_execute(&$view) {
-  if ($view->name == 'ding_event') {
+  if ($view->name == 'ding_event' && $view->current_display != 'event_libraries_list') {
     $nids = array_map(function ($node) {
       return $node->nid;
     }, $view->result);
