@@ -20,7 +20,6 @@
   background-color: $grey-light;
   z-index: $z-header + 1;
   overflow: hidden;
-  color: $charcoal-opacity-extra-dark;
 
   // Tablet
   @include media($tablet) {

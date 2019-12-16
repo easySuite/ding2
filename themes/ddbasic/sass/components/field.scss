@@ -306,7 +306,7 @@ div.search-field-in-content--message {
 // ==========================================================================
 .ting-reference-item {
   .placeholder {
-    background-color: $bibliofil-dark;
+    @include linear-gradient(to top, $grey-light 30px, $grey-medium 100%);
     min-height: 336px;
 
     .icon-spinner {

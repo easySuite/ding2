@@ -59,7 +59,7 @@
         @include transition(color $speed-fast $ease);
         @include font('base');
         padding: 0;
-        color: $white-opacity-dark;
+        color: $charcoal-opacity-dark;
         &::after {
           @include transition(height $speed-fast $ease);
           content: '';
@@ -72,6 +72,7 @@
         }
         .no-touch & {
           &:hover {
+            color: $color-standard-text;
             &::after {
               height: 3px;
             }

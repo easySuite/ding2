@@ -29,8 +29,9 @@ body.toolbar {
 }
 
 body {
+  @include transition(background-color $speed $ease);
   padding-top: $header-height; // Compensate for fixed header
-  background-color: $bibliofil;
+  background-color: $white;
   // When topbar is open
   &.topbar-is-open,
   &.overlay-is-active {

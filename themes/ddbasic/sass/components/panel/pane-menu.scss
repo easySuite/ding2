@@ -11,7 +11,7 @@
 .pane-og-menu-og-single-menu-block,
 .pane-user-menu {
   .sub-menu-title {
-    border-bottom: 1px solid $white-opacity-light;
+    border-bottom: 1px solid $charcoal-opacity-light;
     padding-bottom: 25px;
   }
 }
@@ -36,7 +36,7 @@
   }
   .sub-menu-title {
     position: relative;
-    border-top: 1px solid $white-opacity-light;
+    border-top: 1px solid $charcoal-opacity-light;
     padding-top: 25px;
 
     // Tablet
@@ -54,7 +54,7 @@
       margin-bottom: 0;
     }
 
-    @include arrow-button(arrow-down, $charcoal-opacity-dark);
+    @include arrow-button(arrow-down);
     &::after {
       display: none;
     }
@@ -93,7 +93,7 @@
 
   &:last-child {
     @include media($tablet) {
-      border-bottom: 1px solid $white-opacity-light;
+      border-bottom: 1px solid $charcoal-opacity-light;
       &.pane-og-menu-og-single-menu-block {
         border-bottom: none;
       }

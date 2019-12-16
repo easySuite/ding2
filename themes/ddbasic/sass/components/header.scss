@@ -124,7 +124,7 @@
         z-index: 4;
         float: left;
         padding: 10px 5%;
-        background-color: $bibliofil-dark;
+        background-color: $color-primary;
         box-shadow: $box-shadow;
       }
     }
@@ -244,7 +244,6 @@
         float: left;
         input[type="submit"] {
           border-radius: 0 $round-corner $round-corner 0;
-          background-color: $bibliofil-button;
         }
 
         // Tablet
@@ -407,7 +406,7 @@
     z-index: $z-header - 2;
     left: 0;
     width: 100%;
-    background-color: $color-topbar;
+    background-color: $color-primary;
     box-shadow: $box-shadow;
 
     // Tablet
@@ -445,7 +444,7 @@
         width: 100%;
         display: block;
         box-shadow: none;
-        background-color: $bibliofil-dark;
+        background-color: $color-primary;
         .mobile-menu-is-open & {
           box-shadow: $box-shadow;
         }

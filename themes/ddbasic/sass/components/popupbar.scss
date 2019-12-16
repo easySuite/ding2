@@ -16,7 +16,6 @@
   background-color: $grey-light;
   z-index: $z-overlay + 1;
   overflow: hidden;
-  color: $charcoal-opacity-dark;
   .popupbar-is-open & {
     @include transition(
       transform $speed $ease,

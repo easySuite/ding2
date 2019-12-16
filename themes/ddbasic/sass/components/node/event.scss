@@ -37,7 +37,7 @@
       height: 100%;
       top: 0;
       left: 0;
-      background-color: $bibliofil-dark;
+      background-color: $grey;
       .button {
         @include transition(opacity $speed $ease);
         position: absolute;
@@ -160,6 +160,7 @@
             box-shadow $speed $ease
           );
           width: 115%;
+          background-color: $white;
           box-shadow: $box-shadow;
 
           // Tablet
@@ -181,14 +182,12 @@
             color $speed $ease
           );
           opacity: 1;
-          color: $charcoal-opacity-dark;
         }
         .title-and-lead {
           @include transition(
             min-height $speed $hover-delay $ease
           );
           min-height: 118px;
-          color: $white;
         }
         .field-name-field-ding-event-lead {
           @include transition(
@@ -203,6 +202,7 @@
   // Full
   // ==========================================================================
   &.node-full {
+    @include linear-gradient(to top, $white 30px, $grey-light 100%);
     padding: 40px 0 30px;
     // Has dynamic background
     .has-dynamic-background & {
