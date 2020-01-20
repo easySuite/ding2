@@ -392,6 +392,7 @@ function ding_availability_render_legend() {
   $availability_legend['on-loan'] = t('On loan');
   $availability_legend['unavailable'] = t('Unavailable');
   $availability_legend['unreservable'] = t('Not reservable');
+  $availability_legend['pending'] = t('Status inaccessible');
 
   // Render image html using theme_image (returns NULL if file doesn't exist).
   foreach ($availability_legend as $key => $val) {
