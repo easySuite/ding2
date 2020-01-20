@@ -9,4 +9,4 @@
 @import 'contrib/bourbon/bourbon', 'configuration/grid-settings', 'contrib/neat/neat';
 
 // Include the rest.
-@import 'configuration/variables', 'configuration/typography', 'configuration/mixin', 'configuration/function', 'configuration/animation', 'configuration/extend';
+@import 'configuration/variables', 'bibliofil/variables', 'configuration/typography', 'bibliofil/typography', 'configuration/mixin','bibliofil/mixin', 'configuration/function', 'configuration/animation', 'configuration/extend';
