@@ -79,6 +79,8 @@
   stylesheets[all][] = sass_css/add-ons/related-content.css
   stylesheets[all][] = sass_css/add-ons/servicemeddelelse-list.css
 
+  stylesheets[all][] = sass_css/bibliofil/overrides.css
+
   stylesheets[print][] = sass_css/print.css
 
 ;----------// JavaScripts
