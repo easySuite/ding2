@@ -162,13 +162,8 @@ input[type="submit"] {
 }
 
 // Override table tr.
-tr {
-  &:nth-child(2n + 1) {
-    background-color: $bibliofil-dark;
-  }
-}
 
-tr.odd {
+table tr.odd {
   background-color: $bibliofil-dark;
 }
 
@@ -456,6 +451,7 @@ ul.topbar-menu {
     margin-bottom: 40px;
     .pane-title {
       border-bottom: 1px solid $white-opacity-light;
+      color: $white;
     }
   }
 }
