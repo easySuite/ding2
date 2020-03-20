@@ -326,6 +326,13 @@ projects[easyddb_zerohit_redirect][download][url]    = "git@github.com:easySuite
 projects[easyddb_zerohit_redirect][download][tag]    = "7.x-4.0.2"
 ;projects[easyddb_zerohit_redirect][download][branch] = "development"
 
+projects[easyopac_local_material][type]             = "module"
+projects[easyopac_local_material][subdir]           = ""
+projects[easyopac_local_material][download][type]   = "git"
+projects[easyopac_local_material][download][url]    = "git@github.com:easySuite/easyopac_local_material.git"
+;projects[easyopac_local_material][download][tag]    = ""
+projects[easyopac_local_material][download][branch] = "development"
+
 projects[easyopac_status][type]             = "module"
 projects[easyopac_status][subdir]           = ""
 projects[easyopac_status][download][type]   = "git"
