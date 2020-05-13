@@ -42,7 +42,9 @@ projects[cs_adaptive_image][subdir] = "contrib"
 projects[cs_adaptive_image][version] = "1.0"
 
 projects[ctools][subdir] = "contrib"
-projects[ctools][version] = "1.12"
+projects[ctools][version] = "1.9"
+; Fix regression. See https://www.drupal.org/node/2209775
+projects[ctools][patch][] = "https://www.drupal.org/files/issues/ctools-readd_access_callback_params-2209775-24.patch"
 
 projects[customerror][subdir] = "contrib"
 projects[customerror][version] = "1.4"
@@ -322,8 +324,6 @@ projects[pagepreview][version] = "1.0-alpha1"
 
 projects[panels][subdir] = "contrib"
 projects[panels][version] = "3.4"
-; Fix PHP7 errors - PHP 4 style constructors - (https://www.drupal.org/node/2557061)
-projects[panels][patch][] = "https://www.drupal.org/files/issues/deprecated-constructor-in-php-7-2557061-3.patch"
 
 projects[panels_breadcrumbs][subdir] = "contrib"
 projects[panels_breadcrumbs][version] = "2.1"
