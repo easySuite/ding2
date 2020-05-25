@@ -668,3 +668,7 @@ input[type=checkbox]:checked+label::after {
 .pane-des-subscribe {
   background: $color-topbar;
 }
+
+.node.view-mode-search-result .content {
+  background: $bibliofil-dark;
+}
