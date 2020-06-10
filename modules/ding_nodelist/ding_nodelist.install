@@ -485,3 +485,50 @@ function ding_nodelist_update_7008() {
       ->execute();
   }
 }
+
+/**
+ * Cleanup templates table.
+ */
+function ding_nodelist_update_7009() {
+  // Check ding_blog enabled;
+  $blog_enabled = FALSE;
+  if (module_exists('ding_blog')) {
+    $blog_enabled = TRUE;
+  }
+
+  // Stage 1.
+  $opts = db_select('ding_nodelist_templates', 'dnt')
+    ->fields('dnt', [])
+    ->condition('content_type', '')
+    ->execute()
+    ->fetchAll();
+
+  foreach ($opts as $opt) {
+    $exp = explode('.', $opt->filename);
+
+    if (!empty($exp[1])) {
+      $ct = $exp[1];
+      $widget = $exp[2];
+      $status = 0;
+
+      if (strpos($opt->filename, $ct) !== FALSE && $ct == 'blog' && !$blog_enabled) {
+        $status = 1;
+      }
+
+      db_update('ding_nodelist_templates')
+        ->fields([
+          'content_type' => $ct,
+          'widget' => $widget,
+          'status' => $status,
+        ])
+        ->condition('filename', $opt->filename)
+        ->execute();
+    }
+  }
+
+  // Stage 2.
+  db_delete('ding_nodelist_templates')
+    ->condition('content_type', '')
+    ->condition('widget', '')
+    ->execute();
+}
