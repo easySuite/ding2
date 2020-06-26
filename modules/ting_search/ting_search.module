@@ -225,7 +225,7 @@ function ting_search_form_search_block_form_alter(&$form, &$form_state, $form_id
   // executed twice. See http://platform.dandigbib.org/issues/372 for more
   // information.
   $form['#action'] = url('search-blank');
-  
+
   // Adding content search option into ting_field_search dropdown.
   if (!empty($form['ting_field_search'])) {
     $node_search = array('node' => t('Search Content'));
@@ -333,7 +333,7 @@ function ting_search_conditions_callback($keys) {
     $remove = array();
     $redirect = FALSE;
     foreach ($_REQUEST['facets'] as $key => $facet) {
-      if (preg_match('/^-facet/', $facet)) {
+      if (preg_match('/^-([^.]+)/', $facet)) {
         $remove[] = preg_replace('/^-/', '', $facet);
         $redirect = TRUE;
         unset($_REQUEST['facets'][$key]);

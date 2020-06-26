@@ -871,6 +871,18 @@ function _ting_default_online_types() {
     'pc-spil (net)',
     'avis (net)',
     'e-node',
+    "Bok",
+    "DVD",
+    "Lydbok (cd)",
+    "Noter",
+    "Lydopptak - CD",
+    "Lydbok - MP3 CD",
+    "fg",
+    "1",
+    "Lydopptak - CD",
+    "Lydbok (digikort)",
+    "db,dh",
+    "dk",
   );
 }
 
