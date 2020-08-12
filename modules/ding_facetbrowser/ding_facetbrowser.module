@@ -144,17 +144,11 @@ function ding_facetbrowser_form($form, &$form_state, $facets = [], $search = FAL
         }
 
         foreach ($terms as $term_name => $term) {
-          $term_value = NULL;
-          if (method_exists($term, 'getValue')) {
-            $term_value = $term->getValue();
-          }
-          $right_side = !empty($term_value) ? $term_value : $term_name;
-
-          $facets_string = $facet->getName() . ':' . $right_side;
+          $facets_string = $facet->getName() . ':' . $term_name;
           $term_name_title = $term_name;
           ding_facetbrowser_format_term_name($term_name, $term->getCount());
 
-          if (_ding_facetbrowser_is_facet_set($facet->getName(), $term_name, $term_value) === TRUE) {
+          if (_ding_facetbrowser_is_facet_set($facet->getName(), $term_name) === TRUE) {
             $default_values[] = $term_name;
             $facets_string = '-' . $facets_string;
 
@@ -266,7 +260,7 @@ function ding_facetbrowser_format_term_name($term_name, $term_count) {
  * @return Boolean
  */
 
-function _ding_facetbrowser_is_facet_set($term_cat, $term_name, $term_value = NULL) {
+function _ding_facetbrowser_is_facet_set($term_cat, $term_name) {
   $facets = &drupal_static('ding_facetbrowser_facets');
   if (!isset($facets)) {
     $request_uri_parts = explode('?', request_uri());
@@ -274,8 +268,7 @@ function _ding_facetbrowser_is_facet_set($term_cat, $term_name, $term_value = NU
     drupal_static('ding_facetbrowser_facets', $facets);
   }
   foreach ($facets as $facet) {
-    $right_side = !(empty($term_value)) ? $term_value : $term_name;
-    if (preg_replace('/facets\[\d*\]=/i', '', $facet) == $term_cat . ':' . $right_side) {
+    if (preg_replace('/facets\[\d*\]=/i', '', $facet) == $term_cat . ':' . $term_name) {
       return TRUE;
     }
   }
