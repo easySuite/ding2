@@ -496,7 +496,7 @@ projects[xautoload][version] = "5.7"
 libraries[bpi-client][destination] = "modules/bpi/lib"
 libraries[bpi-client][download][type] = "git"
 libraries[bpi-client][download][url] = "http://github.com/ding2/bpi-client.git"
-libraries[bpi-client][download][tag] = "7.x-6.0.1"
+libraries[bpi-client][download][tag] = "7.x-6.0.2"
 
 ; For wysiwyg.
 libraries[ckeditor][download][type] = "get"
@@ -573,7 +573,7 @@ libraries[psr7][destination] = "libraries"
 libraries[ting-client][download][type] = "git"
 libraries[ting-client][download][url] = "http://github.com/ding2/ting-client.git"
 libraries[ting-client][destination] = "modules/opensearch/lib"
-libraries[ting-client][download][tag] = "7.x-6.0.1"
+libraries[ting-client][download][tag] = "7.x-6.0.2"
 
 ; Obsoleted. Only reference is in ding_frontend.
 libraries[zen-grids][download][type] = "git"
@@ -632,6 +632,9 @@ libraries[ddb-react][directory_name] = "ddb-react"
 libraries[ddb-react][destination] = "libraries"
 
 ; easyOPAC contribution modules
+projects[add_to_head][version]              = "1.2"
+projects[add_to_head][subdir]               = "contrib"
+
 projects[ckeditor_link][subdir]             = "contrib"
 projects[ckeditor_link][version]            = "2.4"
 
