@@ -661,6 +661,31 @@ function ding_event_views_default_views() {
     9 => 0,
   );
   $handler->display->display_options['filters']['field_ding_event_date_value_1']['form_type'] = 'date_popup';
+  /* Filter criterion: Content: Target (field_ding_event_target) */
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['id'] = 'field_ding_event_target_tid';
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['table'] = 'field_data_field_ding_event_target';
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['field'] = 'field_ding_event_target_tid';
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['group'] = 1;
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['operator_id'] = 'field_ding_event_target_tid_op';
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['label'] = 'Event Target';
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['operator'] = 'field_ding_event_target_tid_op';
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['identifier'] = 'field_ding_event_target_tid';
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['multiple'] = TRUE;
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['remember_roles'] = array(
+    2 => '2',
+    1 => 0,
+    3 => 0,
+    4 => 0,
+    5 => 0,
+    6 => 0,
+    7 => 0,
+    8 => 0,
+    9 => 0,
+    10 => 0,
+  );
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['type'] = 'select';
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['vocabulary'] = 'event_target';
   /* Filter criterion: Content: Has taxonomy terms (with depth) */
   $handler->display->display_options['filters']['term_node_tid_depth']['id'] = 'term_node_tid_depth';
   $handler->display->display_options['filters']['term_node_tid_depth']['table'] = 'node';
@@ -712,30 +737,17 @@ function ding_event_views_default_views() {
     10 => 0,
   );
   $handler->display->display_options['filters']['og_group_ref_target_id_entityreference_filter']['reference_display'] = 'ding_event:event_libraries_list';
-  /* Filter criterion: Content: Target (field_ding_event_target) */
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['id'] = 'field_ding_event_target_tid';
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['table'] = 'field_data_field_ding_event_target';
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['field'] = 'field_ding_event_target_tid';
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['exposed'] = TRUE;
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['operator_id'] = 'field_ding_event_target_tid_op';
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['label'] = 'Event Target';
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['operator'] = 'field_ding_event_target_tid_op';
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['identifier'] = 'field_ding_event_target_tid';
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['multiple'] = TRUE;
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['remember_roles'] = array(
-    2 => '2',
-    1 => 0,
-    3 => 0,
-    4 => 0,
-    5 => 0,
-    6 => 0,
-    7 => 0,
-    8 => 0,
-    9 => 0,
-    10 => 0,
-  );
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['type'] = 'select';
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['vocabulary'] = 'event_target';
+  /* Filter criterion: Content: Sticky */
+  $handler->display->display_options['filters']['sticky']['id'] = 'sticky';
+  $handler->display->display_options['filters']['sticky']['table'] = 'node';
+  $handler->display->display_options['filters']['sticky']['field'] = 'sticky';
+  $handler->display->display_options['filters']['sticky']['value'] = 'All';
+  $handler->display->display_options['filters']['sticky']['group'] = 1;
+  $handler->display->display_options['filters']['sticky']['exposed'] = TRUE;
+  $handler->display->display_options['filters']['sticky']['expose']['operator_id'] = '';
+  $handler->display->display_options['filters']['sticky']['expose']['label'] = 'Sticky';
+  $handler->display->display_options['filters']['sticky']['expose']['operator'] = 'sticky_op';
+  $handler->display->display_options['filters']['sticky']['expose']['identifier'] = 'sticky';
   $handler->display->display_options['pane_category']['name'] = 'Event panes';
   $handler->display->display_options['pane_category']['weight'] = '0';
   $handler->display->display_options['allow']['use_pager'] = 0;
@@ -1783,9 +1795,10 @@ function ding_event_views_default_views() {
     t('Search'),
     t('From'),
     t('To'),
+    t('Event Target'),
     t('Event category'),
     t('Select library'),
-    t('Event Target'),
+    t('Sticky'),
     t('Event panes'),
     t('Event list (frontpage)'),
     t('Events'),
