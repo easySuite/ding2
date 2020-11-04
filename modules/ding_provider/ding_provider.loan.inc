@@ -106,6 +106,7 @@ class DingProviderLoan extends DingEntityBase {
       'loan_date',
       'expiry',
       'renewable',
+      'renewal_status',
       'remote_loan',
       'notes',
       'author',
@@ -129,7 +130,7 @@ class DingProviderLoan extends DingEntityBase {
 
   function getEntity() {
     if (!isset($this->entity) || $this->entity === self::NULL) {
-      if (!empty($this->ding_entity_id)) {
+      if (!empty($this->ding_entity_id) && $this->ding_entity_id !== self::NULL) {
         $this->entity = ding_entity_load($this->ding_entity_id);
       }
       else {
@@ -171,4 +172,4 @@ class DingProviderLoan extends DingEntityBase {
 /**
  * Parent class for loan errors.
  */
-class DingProviderLoanUserError extends DingProviderUserException {}
+class DingProviderLoanUserError extends DingProviderEnduserException {}

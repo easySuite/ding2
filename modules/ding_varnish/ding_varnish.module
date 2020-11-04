@@ -53,14 +53,14 @@ function _ding_varnish_header() {
   global $user;
 
   // Cache response for 3 minutes to reduce request load on roll requests.
-  header('Cache-Control:public,max-age=180');
+  header('Cache-Control: public, max-age=180');
 
   // Change the cache of this response on any criteria that may determine this
   // user is coming from a different device.
-  header('Vary: Accept-Encoding,Cookie,User-Agent');
+  header('Vary: Accept-Encoding, Cookie, User-Agent');
 
   // Set custom X-Drupal-Roles header.
-  header('X-Drupal-Roles: ' . implode(',', array_keys($user->roles)));
+  header('X-Drupal-Roles: ' . implode(', ', array_keys($user->roles)));
 
   // No need to render any content. Just die.
   echo '';
@@ -125,15 +125,16 @@ function ding_varnish_init() {
 /**
  * Implements hook_page_build().
  */
-function ding_varnish_page_build() {
+function ding_varnish_page_build(&$page) {
+  global $user;
+
   // Check the static variable form init.
   $cacheable = &drupal_static('ding_varnish_init', FALSE);
   $hook_boot_headers = drupal_get_http_header();
   $max_age = !isset($_COOKIE[session_name()]) || isset($hook_boot_headers['vary']) ? variable_get('page_cache_maximum_age', 0) : 0;
 
   // Check if this request is cacheable and that ttl have been set.
-  // Also, do not cache if there are any drupal messages set.
-  if ($cacheable && !drupal_get_messages(NULL, FALSE)) {
+  if ($cacheable) {
     // Force max-age as session was set above, but page is marked as cacheable.
     $max_age = variable_get('page_cache_maximum_age', 0);
 
@@ -143,14 +144,32 @@ function ding_varnish_page_build() {
     }
   }
 
+  // There are two cases where we shouldn't instruct external proxies to cache
+  // with max-age property in the Cache-Control header:
+  // 1. If any mesagges was set during the request with drupal_set_message, to
+  // avoid these messages being permanently cached in Varnish.
+  // 2. If current user is the anonymous user and Drupal or some other module,
+  // has marked this page as uncacheable. We need to make sure to only check
+  // drupal_page_is_cacheable(), when to user is anonymous, as it will always
+  // be set to FALSE by Drupal for authenticated users. But when user is
+  // anonymous, we need to respect it. For example, the honeypot module will
+  // try to make pages with honeypot enabled forms non-cacheable by using
+  // drupal_page_is_cacheable().
+  if (drupal_get_messages(NULL, FALSE) || (!user_is_logged_in() && !drupal_page_is_cacheable())) {
+    $max_age = 0;
+  }
+
   // Add header "no-cache" to make sure that the browser re-checks Varnish for
   // changes after a login and not server browser cached pages. We have to set
   // the header as Drupal do in bootstrap, as this will override the default
   // header for not logged in users.
-  drupal_add_http_header('Cache-Control', 'public,max-age=' . $max_age . ',no-cache');
+  drupal_add_http_header('Cache-Control', 'public, max-age=' . $max_age . ', no-cache');
 
   // Regardless, always vary on X-Drupal-Roles.
-  drupal_add_http_header('Vary', 'X-Drupal-Roles,Accept-Encoding');
+  drupal_add_http_header('Vary', 'X-Drupal-Roles, Accept-Encoding');
+
+  // Set custom X-Drupal-Roles header.
+  header('X-Drupal-Roles: ' . implode(', ', array_keys($user->roles)));
 }
 
 /**
@@ -165,11 +184,7 @@ function ding_varnish_flush_caches() {
 /**
  * Implements hook_change_maintenance_mode().
  *
- * @param Boolean $maintenance_mode
- * TRUE if the site is being set into maintenance mode.
- * FALSE if maintenance mode is being deactivated.
- *
- * Clear page cache if maintainance status has changed.
+ * Clear page cache in varnish if maintenance status has changed.
  */
 function ding_varnish_change_maintenance_mode($maintenance_mode) {
   varnish_purge_all_pages();

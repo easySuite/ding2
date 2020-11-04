@@ -91,28 +91,21 @@
  * @see template_process()
  */
 
-// Hide fields to exclude double rendering.
-hide($content['field_ding_event_ticket_link']);
-hide($content['field_ding_event_list_filter']);
-hide($content['field_ding_event_price']);
  ?>
 <article class="<?php print $classes; ?>"<?php print $attributes; ?>>
   <div class="inner">
     <div class="left">
       <?php print render($content['group_left']['field_ding_event_title_image']); ?>
       <h2><?php print t('Information about the event'); ?></h2>
-      <?php if ($alt_location_is_set): ?>
-        <?php print render($content['group_left']['field_ding_event_location']); ?>
-      <?php else: ?>
-        <?php print render($content['group_left']['og_group_ref']); ?>
-      <?php endif; ?>
       <!-- insert time-field markup -->
-      <div class="field field-name-field-ding-event-target field-label-inline clearfix">
-        <div class="field-label"><?php print t('Time'); ?></div>
-        <div class="field-items">
-          <div class="field-item even"><?php print $event_time; ?></div>
+      <?php if ($event_time): ?>
+        <div class="field field-name-field-ding-event-target field-label-inline clearfix">
+          <div class="field-label"><?php print t('Time'); ?></div>
+          <div class="field-items">
+            <div class="field-item even"><?php print $event_time; ?></div>
+          </div>
         </div>
-      </div>
+      <?php endif; ?>
       <!-- insert price-field markup -->
       <div class="field field-name-field-ding-event-price field-label-inline clearfix">
         <div class="field-label"><?php print t('Price'); ?></div>
@@ -120,10 +113,17 @@ hide($content['field_ding_event_price']);
           <div class="field-item even"><?php print $event_price; ?></div>
         </div>
       </div>
+      <?php
+        if ($alt_location_is_set):
+          print render($content['group_left']['field_ding_event_location']);
+        else:
+          print render($content['group_left']['og_group_ref']);
+        endif;
+      ?>
       <?php print render($content['group_left']); ?>
       <?php
         if (!empty($book_button)):
-          print $book_button;
+          print render($book_button);
         endif;
       ?>
       <?php if (!empty($campaigns)): ?>
@@ -136,11 +136,11 @@ hide($content['field_ding_event_price']);
       <?php print render($content['group_right']['field_ding_event_date']);?>
       <?php print render($share_button); ?>
       <?php print render($content['group_right']);?>
+
     </div>
     <?php // Render MKWS results set. ?>
     <?php if (!empty($content['field_mkws_node_widget'])) : ?>
       <?php print render($content['field_mkws_node_widget']); ?>
     <?php endif; ?>
-    <?php print render($content); ?>
   </div>
 </article>

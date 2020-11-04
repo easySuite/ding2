@@ -1,0 +1,83 @@
+<?php
+
+/**
+ * @file
+ * Define modules hooks.
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function ding_app_variables_menu() {
+  $items = [];
+
+  $items['ding/variables'] = [
+    'title' => 'Display variables as JSON output',
+    'access callback' => TRUE,
+    'delivery callback' => 'drupal_json_output',
+    'page callback' => 'ding_app_variables_display',
+  ];
+
+  return $items;
+}
+
+/**
+ * Provide variables to the json output.
+ *
+ * @return array
+ *   List of all variables to the output.
+ */
+function ding_app_variables_display() {
+  $carousel_configs[] = _ding_app_variables_get_carousel_configs();
+
+  $variables = [
+    'opensearch_search_profile',
+    'ting_search_results_per_page',
+    'opensearch_url',
+    'opensearch_sort_default',
+    'opensearch_ranking_custom',
+    'opensearch_ranking_fields',
+    'opensearch_boost_fields',
+    'ting_agency',
+  ];
+  $variables_configs = [];
+  foreach ($variables as $variable) {
+    $variables_configs[$variable] = variable_get($variable, '');
+  }
+
+  return [
+    'variables' => $variables_configs,
+    'carousels' => $carousel_configs,
+  ];
+}
+
+/**
+ * Get panels configurations.
+ *
+ * @return array
+ *   List of carousels pane configurations.
+ */
+function _ding_app_variables_get_carousel_configs() {
+  $carousels = [];
+  $query = db_select('panels_pane', 'pp');
+  $query->join('page_manager_handlers', 'pmh', 'pp.did = pmh.did');
+  $panes = $query
+    ->fields('pp', ['type', 'configuration', 'uuid'])
+    ->fields('pmh', ['name', 'subtask'])
+    ->condition('pp.type', 'carousel')
+    ->condition('pp.subtype', 'carousel')
+    ->condition('pp.shown', 1)
+    ->execute();
+
+  foreach ($panes as $pane) {
+    // Identify front-page carousels as 'carousel' so mobile app is aware of them.
+    // Otherwise pick whatever unique combination,
+    $key = ('ding_frontpage' === $pane->subtask) ? 'carousel' : $pane->name . '_' . $pane->type;
+    $carousels[] = [
+      $key => unserialize($pane->configuration),
+      'uuid' => $pane->uuid,
+    ];
+  }
+
+  return $carousels;
+}

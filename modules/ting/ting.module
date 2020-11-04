@@ -1,16 +1,14 @@
 <?php
+
 /**
  * @file
  * Enables integration with Ting.
  */
 
-// Define the different types of data that we cache in ting_set_cache and the
-// default TTL.
-define('TING_DEFAULT_CACHE_LIFETIME', 900);
-define('TING_CACHE_TING_OBJECT', 'ting-object');
-define('TING_CACHE_TING_OBJECT_FULLTEXT', 'ting-object-fulltext');
-define('TING_CACHE_COLLECTION', 'ting-collection');
-define('TING_CACHE_REPLY', 'ting-reply');
+use Drupal\xautoload\Adapter\LocalDirectoryAdapter;
+use Ting\Search\DingProviderStrategy;
+use Ting\Search\TingSearchRequest;
+use Ting\TingObjectInterface;
 
 // Load Field module hooks.
 module_load_include('inc', 'ting', 'ting.field');
@@ -23,7 +21,6 @@ function ting_ctools_plugin_api($module, $api) {
     return array('version' => 2);
   }
 }
-
 
 /**
  * Implements hook_ctools_plugin_directory().
@@ -82,7 +79,7 @@ function ting_menu() {
     'position' => 'left',
     'weight' => 20,
     'page callback' => 'system_admin_menu_block_page',
-    'access arguments' => array('access administration pages'),
+    'access arguments' => array('administer ting settings'),
     'file' => 'system.admin.inc',
     'file path' => drupal_get_path('module', 'system'),
   );
@@ -98,27 +95,9 @@ function ting_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
   $items['admin/config/ting/settings/general'] = array(
-    'title' => t('General settings'),
+    'title' => 'General settings',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
-  );
-
-  $items['admin/config/ting/ranking'] = array(
-    'title' => 'Search result ranking',
-    'description' => 'Provides settings for how search results are ranked.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('ting_admin_ranking_settings'),
-    'access arguments' => array('administer ting settings'),
-    'file' => 'ting.admin.inc',
-  );
-
-  $items['admin/config/ting/boost'] = array(
-    'title' => 'Search result boost',
-    'description' => 'Enable the user to boost specific values for specific fields in search results.',
-    'page callback' => 'drupal_get_form',
-    'page arguments' => array('ting_admin_boost_settings'),
-    'access arguments' => array('administer ting settings'),
-    'file' => 'ting.admin.inc',
   );
 
   $items['admin/config/ting/online_types'] = array(
@@ -149,6 +128,15 @@ function ting_menu() {
   $items['ting/ding_entity_buttons/ajax/%'] = array(
     'delivery callback' => 'ajax_deliver',
   ) + $items['ting/ding_entity_buttons/nojs/%'];
+
+  $items['admin/config/ting/language'] = array(
+    'title' => 'Language',
+    'description' => 'Configure how languages affect Ting objects.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ting_admin_language_settings'),
+    'access arguments' => array('administer ting settings'),
+    'file' => 'ting.admin.inc',
+  );
 
   return $items;
 }
@@ -185,6 +173,16 @@ function ting_render_ding_entity_buttons_callback($request_type, $button_type) {
         );
         break;
 
+      case 'infomedia':
+        $markup = ting_entity_infomedia_button($entity);
+        $html = render($markup);
+
+        $commands[] = ajax_command_replace(
+          '#infomedia-' . $entity->localId . '.ding-entity-button-placeholder',
+          $html
+        );
+        break;
+
       case 'other-formats':
         $markup = ting_entity_other_formats_button($entity);
         $html = render($markup);
@@ -215,18 +213,41 @@ function ting_render_ding_entity_buttons_callback($request_type, $button_type) {
  *   Button markup as render-able array.
  */
 function ting_entity_see_online_button(TingEntity $entity) {
-  $online_types = variable_get('ting_online_types', _ting_default_online_types());
   $entity_type = drupal_strtolower($entity->type);
 
   $markup = [];
 
-  if (!empty($online_types[$entity_type])) {
+  if ($entity->is('online')) {
     $online_url_labels = variable_get('ting_url_labels', _ting_default_url_labels());
     $label = !empty($online_url_labels[$entity_type]) ? $online_url_labels[$entity_type] : $online_url_labels['_default'];
 
     $markup = [
       '#type' => 'markup',
-      '#markup' => '<a class="button-see-online action-button" target="_blank" href="' . $entity->online_url . '">' . $label . '</a>',
+      '#markup' => '<a class="button-see-online action-button use-ajax" target="_blank" href="' . $entity->online_url . '">' . $label . '</a>',
+    ];
+  }
+
+  return $markup;
+}
+
+/**
+ * Render "Infomedia" button.
+ *
+ * @param \TingEntity $entity
+ *   Ting entity as the source of button markup.
+ *
+ * @return array
+ *   Button markup as render-able array.
+ */
+function ting_entity_infomedia_button(TingEntity $entity) {
+  $markup = [];
+
+  if ($entity->is('infomedia')) {
+    $label = t('Read article');
+
+    $markup = [
+      '#type' => 'markup',
+      '#markup' => '<a class="button-infomedia action-button use-ajax" target="_blank" href="' . $entity->online_url . '">' . $label . '</a>',
     ];
   }
 
@@ -247,7 +268,7 @@ function ting_entity_other_formats_button(TingEntity $entity) {
 
   $markup = [];
 
-  if (count($collection->types) > 1) {
+  if (is_a($collection, 'TingCollection') && count($collection->types) > 1) {
     $markup = [
       '#theme' => 'link',
       '#text' => t('Other formats'),
@@ -305,20 +326,6 @@ function ting_menu_alter(&$items) {
 }
 
 /**
- * Implements hook_ding_install_tasks().
- */
-function ting_ding_install_tasks() {
-  module_load_include('inc', 'ting', 'ting.admin');
-  return array(
-    'ting_admin_ting_settings' => array(
-      'display_name' => st('Ting service settings'),
-      'type' => 'form',
-      'file' => drupal_get_path('module', 'ting') . '/ting.admin.inc',
-    ),
-  );
-}
-
-/**
  * Implements hook_permission().
  */
 function ting_permission() {
@@ -342,52 +349,7 @@ function ting_block_info() {
       'info' => t('Ting alternative material types'),
       'cache' => DRUPAL_CACHE_PER_PAGE,
     ),
-    'ting_relation_anchors' => array(
-      'info' => t('Ting relations for material '),
-      'cache' => DRUPAL_CACHE_PER_PAGE,
-    ),
   );
-}
-
-/**
- * Implements hook_cron().
- *
- * Ensures that all expired entries are delete form the cache on cron runes.
- */
-function ting_cron() {
-  cache_clear_all(NULL, 'cache_ting');
-}
-
-/**
- * Implements hook_flush_caches().
- */
-function ting_flush_caches() {
-  return array('cache_ting');
-}
-
-/**
- * Get relations for an ting_entity as an array ([$type] => array($relations)).
- */
-function ting_get_relations($ting_entity) {
-  $relations = array();
-
-  foreach ($ting_entity->relations as $relation) {
-    if ($relation->type == 'dbcaddi:hasOpenUrl' || $relation->type == 'dbcaddi:hasOnlineAccess') {
-      continue;
-    }
-    $relations[$relation->type][] = $relation;
-  }
-
-  // Get references from ting_reference.
-  if (module_exists('ting_reference')) {
-    $refs = module_invoke('ting_reference', 'get_relations', 'ting_object', $ting_entity);
-    if (!empty($refs)) {
-      foreach ($refs as $ref) {
-        $relations[$ref->relation_type][] = $ref;
-      }
-    }
-  }
-  return $relations;
 }
 
 /**
@@ -397,34 +359,13 @@ function ting_block_view($delta = '') {
   $block = new stdClass();
 
   switch ($delta) {
-    case 'ting_relation_anchors':
-      $items = array();
-      if ($object = menu_get_object('ting_object', 2)) {
-        $relations = ting_get_relations($object);
-        if (!empty($relations)) {
-          $relation_types = module_invoke_all('ding_anchor_info');
-          $block->subject = t('About the material');
-
-          foreach ($relations as $key => $relation) {
-            if (isset($relation_types[$key])) {
-              $items[] = l($relation_types[$key] . ' (' . count($relation) . ') ', '#' . urlencode($key), array('external' => TRUE));
-            }
-          }
-          $block->content = array(
-            '#theme' => 'item_list',
-            '#items' => $items,
-          );
-        }
-      }
-      break;
-
     case 'ting_collection_types':
       if ($collection = menu_get_object('ting_collection', 2)) {
         $block->subject = t('Other materialtypes');
         $items = array();
         foreach ($collection->types as $k => $type) {
           if ($collection->types_count[$type] == 1) {
-            $items[] = l($type . ' (' . $collection->types_count[$type] . ')', 'ting/object/' . $collection->entities[$k]->ding_entity_id);
+            $items[] = l($type . ' (' . $collection->types_count[$type] . ')', 'ting/object/' . $collection->getEntities()[$k]->ding_entity_id);
           }
           else {
             $items[] = l($type . ' (' . $collection->types_count[$type] . ')', '#' . $type, array('external' => TRUE));
@@ -443,9 +384,13 @@ function ting_block_view($delta = '') {
       if ($object && $collection = ting_collection_load($object->id)) {
         $items = array();
 
-        foreach ($collection->entities as $entity) {
-          $item = ting_object_view($entity, 'teaser');
-          $items[] = render($item);
+        foreach ($collection->getEntities() as $entity) {
+          // Exclude current page ting_object from carousel in order to avoid
+          // duplications.
+          if ($collection->ding_entity_id != $entity->ding_entity_id) {
+            $item = ting_object_view($entity, 'teaser');
+            $items[] = render($item);
+          }
         }
 
         // Only display block if there are more than one item.
@@ -467,28 +412,6 @@ function ting_block_view($delta = '') {
 }
 
 /**
- * Implements hook_element_info().
- *
- * Define a new form element named ting_ranking_field.
- *
- * It calls the theme function theme_ting_ranking_field, if not defined
- * no elements will be displayed.
- */
-function ting_element_info() {
-  return array(
-    'ting_boost_field' => array(
-      '#input' => TRUE,
-      '#process' => array('ting_boost_field_element_process'),
-    ),
-    'ting_ranking_field' => array(
-      '#input' => TRUE,
-      '#process' => array('ting_ranking_field_element_process'),
-    ),
-  );
-}
-
-
-/**
  * Implements hook_theme().
  */
 function ting_theme() {
@@ -498,10 +421,6 @@ function ting_theme() {
       'render element' => 'elements',
       'file' => 'ting.theme.inc',
     ),
-    'ting_ranking_field' => array(
-      'arguments' => array('element' => NULL),
-    ),
-
   );
 }
 
@@ -603,100 +522,119 @@ function ting_entity_info() {
 }
 
 /**
- * Implements hook_registry_files_alter().
- */
-function ting_registry_files_alter(&$files, $modules) {
-  // Add in ting client classes, so the autoloader knows where to find
-  // them. This is more handy than hardcoding them into the info file.
-  $def = array(
-    'module' => 'ting',
-    'weight' => 0,
-  );
-
-  // Add all of the Ting client library to the registry.
-  foreach (file_scan_directory(drupal_get_path('module', 'ting') . '/lib/ting-client/lib', '/\.php$/') as $filename => $dummy) {
-    $files[$filename] = $def;
-  }
-
-  // And the Ting client unit tests as well.
-  foreach (file_scan_directory(drupal_get_path('module', 'ting') . '/lib/ting-client/tests', '/\.test$/') as $filename => $dummy) {
-    $files[$filename] = $def;
-  }
-}
-
-/**
  * Implements hook_ding_entity_is().
  */
 function ting_ding_entity_is($object, $class) {
-  if ($class == 'reservable' || $class == 'cartable') {
-    $sources = variable_get('ting_reservable_sources', _ting_default_reservable_sources());
-    $types = variable_get('ting_reservable_types', _ting_default_reservable_types());
-    if (in_array(drupal_strtolower($object->ac_source), $sources) && in_array(drupal_strtolower($object->type), $types)) {
-      return TRUE;
-    }
-    else {
-      return FALSE;
-    }
+  if (!$object instanceof TingEntity) {
+    return NULL;
   }
-  elseif ($class == 'periodical') {
-    // @todo make this configurable.
-    // @todo also make sure that availability information isn't displayed
-    //   on the object
-    return in_array(drupal_strtolower($object->type), array('tidsskrift', 'periodikum', 'årbog'));
+
+  // By not returning FALSE if the object doesn't meet the requirement, we give
+  // more flexibilty to other modules.
+  switch ($class) {
+    case 'online':
+      if (!empty($object->getOnline_url())) {
+        return TRUE;
+      }
+      return NULL;
+
+    case 'library_material':
+      $sources = variable_get('ting_library_material_sources', array());
+
+      if (in_array(drupal_strtolower($object->getAc_source()), $sources)) {
+        return TRUE;
+      }
+      return NULL;
   }
 }
 
 /**
  * Implements hook_ding_entity_buttons().
  */
-function ting_ding_entity_buttons($type, $entity) {
+function ting_ding_entity_buttons($type, $entity, $view_mode, $widget = 'default') {
   if (!$entity instanceof TingEntity) {
     return;
   }
 
-  $buttons = array();
+  $buttons = [];
+  // @TODO: Find more proper way of rendering placeholders.
+  if (strpos($_GET['q'], 'search/ting/') !== FALSE || strpos($_GET['q'], 'ting/collection/') !== FALSE) {
+    // Simply render button placeholders that would be replaced with proper
+    // buttons via ajax.
+    $buttons[] = [
+      '#type' => 'markup',
+      '#markup' => '<span id="see-online-' . $entity->localId . '" class="ding-entity-button-see-online ding-entity-button-placeholder"></span>',
+    ];
 
-  // Simply render button placeholders that would be replaced with proper
-  // buttons via ajax.
-  $buttons[] = [
-    '#type' => 'markup',
-    '#markup' => '<span id="see-online-' . $entity->localId . '" class="ding-entity-button-see-online ding-entity-button-placeholder"></span>',
-  ];
-
-  $buttons[] = [
-    '#type' => 'markup',
-    '#markup' => '<span id="other-formats-' . $entity->localId . '" class="ding-entity-button-other-formats ding-entity-button-placeholder"></span>',
-    '#attached' => [
-      'js' => [
-        drupal_get_path('module', 'ting') . '/js/ting_ding_entity_buttons.js',
+    $buttons[] = [
+      '#type' => 'markup',
+      '#markup' => '<span id="other-formats-' . $entity->localId . '" class="ding-entity-button-other-formats ding-entity-button-placeholder"></span>',
+      '#attached' => [
+        'js' => [
+          drupal_get_path('module', 'ting') . '/js/ting_ding_entity_buttons.js',
+        ],
       ],
-    ],
-  ];
+    ];
+  }
+  else {
+    if ($entity instanceof TingEntity) {
+      $buttons = [];
 
+      if ($entity->is('online')) {
+        $settings = variable_get('ting_url_labels', _ting_default_url_labels());
+        $type = drupal_strtolower($entity->type);
+        $label = isset($settings[$type]) && $settings[$type] ? $settings[$type] : $settings['_default'];
+        // The link can't use l() as it will encode the url from ting_proxy. Use
+        // get online as the dc:identifier in $entity->online is not always the
+        // correct url.
+        $buttons[] = [
+          '#type' => 'html_tag',
+          '#tag' => 'a',
+          '#value' => $label,
+          '#attributes' => [
+            'class' => ['button-see-online', 'action-button', 'use-ajax'],
+            'href' => $entity->getOnline_url(),
+            'target' => '_new',
+          ],
+        ];
+      }
+
+      // Loading collection (specially on empty cache is expensive). So only show
+      // "Other formats" buttons where it's needed on the main page of the
+      // material.
+      $entity_path = entity_uri('ting_object', $entity)['path'];
+      if (current_path() == $entity_path) {
+        $collection = ting_collection_load($entity->id);
+        if (is_a($collection, 'TingCollection') && count($collection->types) > 1) {
+          $buttons[] = [
+            '#theme' => 'link',
+            '#text' => t('Other formats'),
+            '#path' => '#',
+            '#options' => [
+              'attributes' => [
+                'class' => ['action-button', 'other-formats', 'use-ajax'],
+              ],
+              'html' => FALSE,
+              'external' => TRUE,
+            ],
+          ];
+        }
+      }
+    }
+  }
   return $buttons;
 }
 
 /**
- * Implements hook_page_alter().
- *
- * Log, and display if the devel module is active and the user has
- * permissions, a warning if the data well was queried more than once.
+ * Implements hook_ding_provider_user().
  */
-function ting_page_alter(&$page) {
-  $calls = &drupal_static('ting_execute_cache');
-  if (count($calls) > 5) {
-    $calls_str = array();
-    foreach ($calls as $call) {
-      $calls_str[] = print_r($calls, TRUE);
-    }
-
-    watchdog('ting', 'Warning, ting_execute called @x times:<br />"@queries"', array('@x' => count($calls), '@queries' => implode('" "', $calls_str)), WATCHDOG_WARNING);
-
-    if (function_exists('dpm') && user_access('access devel information')) {
-      drupal_set_message(t('Warning, ting_execute called @x times.', array('@x' => count($calls))), 'error');
-      dpm($calls, 'ting_execute queries:');
-    }
-  }
+function ting_ding_provider_user() {
+  return array(
+    'search' => array(
+      'required' => TRUE,
+      'install time setup' => TRUE,
+    ),
+  );
 }
 
 /**
@@ -710,7 +648,7 @@ function ting_object_page_view($object) {
  * Page callback: Display a ting collection.
  */
 function ting_collection_page_view($object) {
-  if (count($object->entities) < 2) {
+  if (count($object->getEntities()) < 2) {
     $uri = entity_uri('ting_object', $object);
     drupal_goto($uri['path'], $uri['options']);
   }
@@ -802,6 +740,13 @@ function ting_object_view($object, $view_mode = 'full', $langcode = NULL) {
   }
   $object->content = array();
 
+  // Allow modules to change the view mode
+  // If entity_entity_view_mode_prepare is called on the same object several
+  // times, the view_mode is not changed. Therefore we unset
+  // entity_view_prepared, before setting the view_mode.
+  unset($object->entity_view_prepared);
+  $view_mode = key(entity_view_mode_prepare('ting_object', array($object->id => $object), $view_mode, $langcode));
+
   // _field_invoke_multiple gets pissy if the arrays aren't indexed by the
   // local ID.
   field_attach_prepare_view('ting_object', array($object->tid => $object), $view_mode, $langcode);
@@ -863,17 +808,20 @@ function ting_collection_view($object, $view_mode = 'full', $langcode = NULL) {
  * Sorts the objects according to type and language.
  *
  * But maintains the order of types and languages in the original array.
+ *
+ * @param TingObjectInterface[] $objects
+ *   List of objects.
  */
-function _ting_type_lang_sort($objects, &$return_types) {
+function _ting_type_lang_sort(array $objects, &$return_types) {
   $types = array();
   $languages = array();
   $sorted = array();
   // Sort the objects into type buckets containing language buckets.
   foreach ($objects as $object) {
     // We're using keys so we don't have to uniq its afterwards.
-    $types[$object->type] = TRUE;
-    $languages[$object->language] = TRUE;
-    $buckets[$object->type][$object->language][] = $object;
+    $types[$object->getType()] = TRUE;
+    $languages[$object->getLanguage()] = TRUE;
+    $buckets[$object->getType()][$object->getLanguage()][] = $object;
   }
 
   $return_types = array_keys($types);
@@ -907,110 +855,6 @@ function _ting_default_url_labels() {
 }
 
 /**
- * Processor for the ting_boost_field form element.
- */
-function ting_boost_field_element_process($element, $form_state) {
-  $element['#tree'] = TRUE;
-  $element['#prefix'] = '<div class="ting-boost-field-element clearfix">';
-  $element['#suffix'] = '</div>';
-
-  $element['field_name'] = array(
-    '#title' => t('Field name'),
-    '#type' => 'select',
-    '#options' => array(
-      '' => '- ' . t('Choose') . ' -',
-      'term.acSource' => t('Source'),
-      'term.creator' => t('Author'),
-      'term.date' => t('Year of publish'),
-      'term.language' => t('Language'),
-      'term.type' => t('Material type'),
-      'term.identifier' => t('ISBN number'),
-      'term.subject' => t('Subject'),
-      'facet.dk5' => t('Classification'),
-    ),
-    '#default_value' => (isset($element['#value']['field_name'])) ? $element['#value']['field_name'] : NULL,
-    '#attributes' => array('class' => array('field-name')),
-  );
-
-  $element['field_value'] = array(
-    '#title' => t('Value'),
-    '#type' => 'textfield',
-    '#default_value' => (isset($element['#value']['field_value'])) ? $element['#value']['field_value'] : NULL,
-  );
-
-  $element['weight'] = array(
-    '#title' => t('Weight'),
-    '#type' => 'textfield',
-    // '#type' => 'select',
-    // '#options' => drupal_map_assoc(range(1, 10)),
-    '#default_value' => (isset($element['#value']['weight'])) ? $element['#value']['weight'] : NULL,
-    '#element_validate' => array('boost_weight_validate'),
-  );
-
-  return $element;
-}
-
-/**
- * Validate the boost form.
- */
-function boost_weight_validate($element, &$form_state) {
-  if (!empty($element['#value']) && (is_int($element['#value']))) {
-    form_error($element, t('Boost weight is an integer.'));
-  }
-}
-
-/**
- * Processor for the ting_ranking_field form element.
- */
-function ting_ranking_field_element_process($element, $form_state) {
-  $element['#tree'] = TRUE;
-  $element['#prefix'] = '<div class="ting-ranking-field-element clearfix">';
-  $element['#suffix'] = '</div>';
-
-  $element['field_type'] = array(
-    '#title' => t('Type'),
-    '#type' => 'select',
-    '#options' => array(
-      'phrase' => t('Phrase'),
-      'word' => t('Word'),
-    ),
-    '#default_value' => (isset($element['#value']['field_type'])) ? $element['#value']['field_type'] : NULL,
-  );
-
-  $element['field_name'] = array(
-    '#title' => t('Field name'),
-    '#type' => 'select',
-    '#options' => array(
-      '' => '- ' . t('Choose') . ' -',
-      'term.acSource' => t('Source'),
-      'term.title' => t('Title'),
-      'term.creator' => t('Author'),
-      'term.subject' => t('Subject'),
-      'term.date' => t('Year of publish'),
-      'term.type' => t('Material type'),
-    ),
-    '#default_value' => (isset($element['#value']['field_name'])) ? $element['#value']['field_name'] : NULL,
-    '#attributes' => array('class' => array('field-name')),
-  );
-
-  $element['weight'] = array(
-    '#title' => t('Weight'),
-    '#type' => 'select',
-    '#options' => drupal_map_assoc(range(1, 10)),
-    '#default_value' => (isset($element['#value']['weight'])) ? $element['#value']['weight'] : NULL,
-  );
-
-  return $element;
-}
-
-/**
- * Theme function to format the custom form element ting_ranking_field.
- */
-function theme_ting_ranking_field($element) {
-  return theme('form_element', $element);
-}
-
-/**
  * Default online types.
  *
  * Defined as a function as a define can only be scalars.
@@ -1031,80 +875,17 @@ function _ting_default_online_types() {
 }
 
 /**
- * Default reservable sources.
- *
- * Defined as a function as a define can only be scalars.
- */
-function _ting_default_reservable_sources() {
-  return array(
-    'bibliotekskatalog',
-  );
-}
-
-/**
- * Default reservable types.
- *
- * Defined as a function as a define can only be scalars.
- */
-function _ting_default_reservable_types() {
-  return array(
-    'bog',
-    'node',
-    'dvd',
-    'billedbog',
-    'cd (musik)',
-    'lydbog (cd)',
-    'lydbog (bånd)',
-    'tegneserie',
-    'lydbog (cd-mp3)',
-    'sammensat materiale',
-    'cd',
-    'bog stor skrift',
-    'video',
-    'blu-ray',
-    'cd-rom',
-    'pc-spil',
-    'playstation 3',
-    'xbox 360',
-    'wii',
-    'playstation 2',
-    'playstation 4',
-    'graphic novel',
-    'nintendo ds',
-    'dvd-rom',
-    'kort',
-    'xbox',
-    'gameboy advance',
-    'wii u',
-    'grammofonplade',
-    'playstation',
-    'lydbog',
-    'spil',
-    'puslespil',
-    'diskette',
-  );
-}
-
-/**
  * Fetch known types from the datawell.
  *
  * @return array
  *   Array with data well material types.
  */
 function _ting_fetch_well_types() {
-  // Get a list of types by executing a null query and look at the facets
-  // result.
-  $options = array(
-    'facets' => array('facet.type'),
-    'numFacets' => 99,
-    'reply_only' => TRUE,
-  );
-  module_load_include('client.inc', 'ting');
-  $result = ting_do_search("*", 0, 0, $options);
-
   $types = array();
-  foreach ($result->facets['facet.type']->terms as $term => $count) {
-    $types[drupal_strtolower($term)] = $count;
+
+  // Delegate the fetching of types to a search provider.
+  if (ding_provider_implements('search', 'material_types')) {
+    $types = ding_provider_invoke('search', 'material_types');
   }
 
   // Only save if we actually got any types.
@@ -1122,22 +903,14 @@ function _ting_fetch_well_types() {
  *   Array with the sources.
  */
 function _ting_fetch_well_sources() {
-  // Get a list of sources by executing a null query and look at the facets
-  // result.
-  $options = array(
-    'facets' => array('facet.acSource'),
-    'numFacets' => 99,
-    'reply_only' => TRUE,
-  );
-  module_load_include('client.inc', 'ting');
-  $result = ting_do_search("*", 0, 0, $options);
-
   $sources = array();
-  foreach ($result->facets['facet.acSource']->terms as $term => $count) {
-    $sources[drupal_strtolower($term)] = $count;
+
+  // Delegate the fetching of sources to a search provider.
+  if (ding_provider_implements('search', 'sources')) {
+    $sources = ding_provider_invoke('search', 'sources');
   }
 
-  // Only save if we actually got any types.
+  // Only save if we actually got any sources.
   if (!empty($sources)) {
     variable_set('ting_well_sources', $sources);
   }
@@ -1160,4 +933,71 @@ function _ting_anchor_name($type) {
   $name = str_replace(':', '', $name);
   $name = strtolower($name);
   return $name;
+}
+
+/**
+ * Implements hook_xautoload().
+ *
+ * Place our Ting classes in the Ting namespace.
+ */
+function ting_xautoload(LocalDirectoryAdapter $adapter) {
+  $adapter->absolute()->addPsr4('Ting\\', drupal_get_path('module', 'ting') . '/src');
+}
+
+/**
+ * Prepares a query-object for use.
+ *
+ * @return \Ting\Search\TingSearchRequest
+ *   A prepared query-object that can be used to search for materials.
+ */
+function ting_start_query() {
+  // Set the query-object up with a strategy that uses ding_provider_invoke().
+  return new TingSearchRequest(new DingProviderStrategy());
+}
+
+/**
+ * Loads a TingObjectInterface instance.
+ *
+ * @param string $id
+ *   ID of the TingObject.
+ *
+ * @return null|\Ting\TingObjectInterface
+ *   The loaded object or NULL if it could not be found.
+ */
+function ting_search_object_load($id) {
+  $ting_search_object = ding_provider_invoke('search', 'object_load', [$id]);
+  if (!empty($ting_search_object) && is_array($ting_search_object)) {
+    $ting_search_object = reset($ting_search_object);
+  }
+  else {
+    $ting_search_object = NULL;
+  }
+
+  return $ting_search_object;
+}
+
+/**
+ * Render single ting object with a give view mode.
+ *
+ * This can be used when ajax loading objects.
+ *
+ * @param int $entity_id
+ *   The id of the ting object entity to load.
+ * @param string $view_mode
+ *   The view mode that the ting object should be rendered.
+ *
+ * @return array
+ *   Array with the entity id and rendered object keyed as content.
+ */
+function ting_single_object_render($entity_id, $view_mode = 'teaser') {
+  // Load the ting objects found.
+  $entity = entity_load('ting_object', array($entity_id));
+  $ting_object = ting_object_view(reset($entity), $view_mode);
+
+  $build = array(
+    'id' => $entity_id,
+    'content' => render($ting_object),
+  );
+
+  return $build;
 }

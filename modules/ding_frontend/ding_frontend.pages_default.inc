@@ -46,7 +46,7 @@ function ding_frontend_default_page_manager_handlers() {
     ),
   );
   $display = new panels_display();
-  $display->layout = 'ding2_site_template';
+  $display->layout = '25_50_25';
   $display->layout_settings = array();
   $display->panel_settings = array(
     'style_settings' => array(
@@ -62,13 +62,11 @@ function ding_frontend_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '8b0c4ce8-f860-4599-b3a1-24f813e70d9a';
-  $display->storage_type = 'page_manager';
-  $display->storage_id = 'node_view__panel_context_cebaba53-71ed-4536-8f25-4146db6853f9';
   $display->content = array();
   $display->panels = array();
   $pane = new stdClass();
   $pane->pid = 'new-145ca0a3-d464-43ee-a9e2-07ac83d1b440';
-  $pane->panel = 'content';
+  $pane->panel = 'attachment_1_1';
   $pane->type = 'node_content';
   $pane->subtype = 'node_content';
   $pane->shown = TRUE;
@@ -95,7 +93,7 @@ function ding_frontend_default_page_manager_handlers() {
   $pane->locks = array();
   $pane->uuid = '145ca0a3-d464-43ee-a9e2-07ac83d1b440';
   $display->content['new-145ca0a3-d464-43ee-a9e2-07ac83d1b440'] = $pane;
-  $display->panels['content'][0] = 'new-145ca0a3-d464-43ee-a9e2-07ac83d1b440';
+  $display->panels['attachment_1_1'][0] = 'new-145ca0a3-d464-43ee-a9e2-07ac83d1b440';
   $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
@@ -134,8 +132,6 @@ function ding_frontend_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '2fbcf550-f62b-47bc-b780-4616f4f633ac';
-  $display->storage_type = 'page_manager';
-  $display->storage_id = 'pm_existing_pages_comments_panel_context';
   $display->content = array();
   $display->panels = array();
   $pane = new stdClass();
@@ -225,8 +221,6 @@ function ding_frontend_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '40390e1a-d2a0-4672-adbb-a343200087d9';
-  $display->storage_type = 'page_manager';
-  $display->storage_id = 'pm_existing_pages_user_panel_context';
   $display->content = array();
   $display->panels = array();
   $pane = new stdClass();
@@ -315,12 +309,29 @@ search/node',
   $display->cache = array();
   $display->title = '';
   $display->uuid = '1e811334-76b6-4702-b0bc-7d315e6b4b2e';
-  $display->storage_type = 'page_manager';
-  $display->storage_id = 'search_node_panel_context';
   $display->content = array();
   $display->panels = array();
   $pane = new stdClass();
-  $pane->pid = 'new-c4d01991-6425-4508-ba37-2b0688c66f10';
+  $pane->pid = 'new-06e03f81-aacd-462e-be56-7cd9bcd2e5dc';
+  $pane->panel = 'left_sidebar';
+  $pane->type = 'search_backends';
+  $pane->subtype = 'search_backends';
+  $pane->shown = TRUE;
+  $pane->access = array();
+  $pane->configuration = array();
+  $pane->cache = array();
+  $pane->style = array(
+    'settings' => NULL,
+  );
+  $pane->css = array();
+  $pane->extras = array();
+  $pane->position = 0;
+  $pane->locks = array();
+  $pane->uuid = '06e03f81-aacd-462e-be56-7cd9bcd2e5dc';
+  $display->content['new-06e03f81-aacd-462e-be56-7cd9bcd2e5dc'] = $pane;
+  $display->panels['left_sidebar'][0] = 'new-06e03f81-aacd-462e-be56-7cd9bcd2e5dc';
+  $pane = new stdClass();
+  $pane->pid = 'new-5256bb05-29d5-48a9-8b9b-0746183781f9';
   $pane->panel = 'left_sidebar';
   $pane->type = 'block';
   $pane->subtype = 'views-97901ca14a2faa2d9226b388a049b52f';
@@ -336,24 +347,25 @@ search/node',
   $pane->style = array(
     'settings' => NULL,
   );
-  $pane->css = array();
+  $pane->css = array(
+    'css_id' => '',
+    'css_class' => 'pane-exp-node-search-filters',
+  );
   $pane->extras = array();
-  $pane->position = 0;
+  $pane->position = 1;
   $pane->locks = array();
-  $pane->uuid = 'c4d01991-6425-4508-ba37-2b0688c66f10';
-  $display->content['new-c4d01991-6425-4508-ba37-2b0688c66f10'] = $pane;
-  $display->panels['left_sidebar'][0] = 'new-c4d01991-6425-4508-ba37-2b0688c66f10';
+  $pane->uuid = '5256bb05-29d5-48a9-8b9b-0746183781f9';
+  $display->content['new-5256bb05-29d5-48a9-8b9b-0746183781f9'] = $pane;
+  $display->panels['left_sidebar'][1] = 'new-5256bb05-29d5-48a9-8b9b-0746183781f9';
   $pane = new stdClass();
   $pane->pid = 'new-d998c42f-f7b2-4140-91d3-b1e3d049c04c';
   $pane->panel = 'left_sidebar';
-  $pane->type = 'campaign';
-  $pane->subtype = 'campaign';
+  $pane->type = 'ding_campaign_plus';
+  $pane->subtype = 'ding_campaign_plus';
   $pane->shown = TRUE;
   $pane->access = array();
   $pane->configuration = array(
-    'ding_campaign_count' => 3,
-    'ding_campaign_offset' => 0,
-    'ding_campaign_style' => 'ding_campaign_full_width',
+    'style' => 'ribbon',
     'context' => array(
       0 => 'empty',
       1 => 'empty',
@@ -364,26 +376,39 @@ search/node',
     'override_title_text' => '',
     'override_title_heading' => 'h2',
   );
-  $pane->cache = array();
+  $pane->cache = array(
+    'method' => '0',
+    'settings' => array(),
+  );
   $pane->style = array(
     'settings' => NULL,
   );
   $pane->css = array();
   $pane->extras = array();
-  $pane->position = 1;
+  $pane->position = 2;
   $pane->locks = array();
   $pane->uuid = 'd998c42f-f7b2-4140-91d3-b1e3d049c04c';
   $display->content['new-d998c42f-f7b2-4140-91d3-b1e3d049c04c'] = $pane;
-  $display->panels['left_sidebar'][1] = 'new-d998c42f-f7b2-4140-91d3-b1e3d049c04c';
+  $display->panels['left_sidebar'][2] = 'new-d998c42f-f7b2-4140-91d3-b1e3d049c04c';
   $pane = new stdClass();
-  $pane->pid = 'new-8f2151c4-efcf-418f-aed1-77e9cdf62a70';
+  $pane->pid = 'new-30887f55-09fc-4d34-b8df-9c06d0b6a36e';
   $pane->panel = 'main_content';
   $pane->type = 'views_panes';
   $pane->subtype = 'ding_multiple_search-panel_pane_1';
   $pane->shown = TRUE;
   $pane->access = array();
-  $pane->configuration = array();
-  $pane->cache = array();
+  $pane->configuration = array(
+    'arguments' => array(
+      'search_api_views_fulltext' => '%keywords',
+    ),
+    'override_title' => 0,
+    'override_title_text' => '',
+    'override_title_heading' => 'h2',
+  );
+  $pane->cache = array(
+    'method' => '0',
+    'settings' => array(),
+  );
   $pane->style = array(
     'settings' => NULL,
   );
@@ -391,9 +416,9 @@ search/node',
   $pane->extras = array();
   $pane->position = 0;
   $pane->locks = array();
-  $pane->uuid = '8f2151c4-efcf-418f-aed1-77e9cdf62a70';
-  $display->content['new-8f2151c4-efcf-418f-aed1-77e9cdf62a70'] = $pane;
-  $display->panels['main_content'][0] = 'new-8f2151c4-efcf-418f-aed1-77e9cdf62a70';
+  $pane->uuid = '30887f55-09fc-4d34-b8df-9c06d0b6a36e';
+  $display->content['new-30887f55-09fc-4d34-b8df-9c06d0b6a36e'] = $pane;
+  $display->panels['main_content'][0] = 'new-30887f55-09fc-4d34-b8df-9c06d0b6a36e';
   $display->hide_title = PANELS_TITLE_NONE;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
@@ -446,8 +471,6 @@ search/node',
   $display->cache = array();
   $display->title = '';
   $display->uuid = 'c39b388c-6d1e-4855-8976-3579c119887e';
-  $display->storage_type = 'page_manager';
-  $display->storage_id = 'search_user__panel_context_68a02d76-90da-41b3-99ca-5b98f987794c';
   $display->content = array();
   $display->panels = array();
   $pane = new stdClass();
@@ -619,7 +642,7 @@ search/node',
   $pane->cache = array(
     'method' => 'lazy',
     'settings' => array(
-      'load_strategy' => 'page-loaded',
+      'load_strategy' => 'pane-visible',
       'show_spinner' => 1,
       'load_text' => '',
     ),
@@ -659,7 +682,7 @@ search/node',
   $pane->cache = array(
     'method' => 'lazy',
     'settings' => array(
-      'load_strategy' => 'page-loaded',
+      'load_strategy' => 'pane-visible',
       'show_spinner' => 0,
       'load_text' => '',
     ),
@@ -997,28 +1020,6 @@ search/node',
   $display->content['new-f06a4c37-1ed2-4a64-8502-7b8d4d0619b0'] = $pane;
   $display->panels['header'][1] = 'new-f06a4c37-1ed2-4a64-8502-7b8d4d0619b0';
   $pane = new stdClass();
-  $pane->pid = 'new-37d18c98-64ec-448f-ac62-ad0cc199fe06';
-  $pane->panel = 'header';
-  $pane->type = 'block';
-  $pane->subtype = 'ding_wayf-login';
-  $pane->shown = TRUE;
-  $pane->access = array();
-  $pane->configuration = array(
-    'override_title' => 0,
-    'override_title_text' => '',
-  );
-  $pane->cache = array();
-  $pane->style = array(
-    'settings' => NULL,
-  );
-  $pane->css = array();
-  $pane->extras = array();
-  $pane->position = 2;
-  $pane->locks = array();
-  $pane->uuid = '37d18c98-64ec-448f-ac62-ad0cc199fe06';
-  $display->content['new-37d18c98-64ec-448f-ac62-ad0cc199fe06'] = $pane;
-  $display->panels['header'][2] = 'new-37d18c98-64ec-448f-ac62-ad0cc199fe06';
-  $pane = new stdClass();
   $pane->pid = 'new-94a239e5-00e0-4807-917f-df52c53405e7';
   $pane->panel = 'navigation';
   $pane->type = 'block';
@@ -1150,8 +1151,6 @@ search/node',
   $display->cache = array();
   $display->title = '';
   $display->uuid = '92a45db0-147b-411f-8833-8377a52f5198';
-  $display->storage_type = 'page_manager';
-  $display->storage_id = 'site_template_search_blank';
   $display->content = array();
   $display->panels = array();
   $pane = new stdClass();
@@ -1183,72 +1182,4 @@ search/node',
   $export['site_template_search_blank'] = $handler;
 
   return $export;
-}
-
-/**
- * Implements hook_default_page_manager_pages().
- */
-function ding_frontend_default_page_manager_pages() {
-  $page = new stdClass();
-  $page->disabled = FALSE; /* Edit this to true to make a default page disabled initially */
-  $page->api_version = 1;
-  $page->name = 'frontpage';
-  $page->task = 'page';
-  $page->admin_title = 'Frontpage';
-  $page->admin_description = 'The frontpage';
-  $page->path = 'front';
-  $page->access = array(
-    'type' => 'none',
-    'settings' => NULL,
-  );
-  $page->menu = array();
-  $page->arguments = array();
-  $page->conf = array(
-    'admin_paths' => FALSE,
-  );
-  $page->default_handlers = array();
-  $handler = new stdClass();
-  $handler->disabled = FALSE; /* Edit this to true to make a default handler disabled initially */
-  $handler->api_version = 1;
-  $handler->name = 'page_frontpage_panel_context';
-  $handler->task = 'page';
-  $handler->subtask = 'frontpage';
-  $handler->handler = 'panel_context';
-  $handler->weight = 0;
-  $handler->conf = array(
-    'title' => 'Panel',
-    'no_blocks' => 0,
-    'pipeline' => 'standard',
-    'css_id' => '',
-    'css' => '',
-    'contexts' => array(),
-    'relationships' => array(),
-  );
-  $display = new panels_display();
-  $display->layout = 'twocol_stacked';
-  $display->layout_settings = array();
-  $display->panel_settings = array(
-    'style_settings' => array(
-      'default' => NULL,
-      'top' => NULL,
-      'left' => NULL,
-      'right' => NULL,
-      'bottom' => NULL,
-    ),
-  );
-  $display->cache = array();
-  $display->title = '';
-  $display->uuid = '53235402-2696-463b-b032-a277a53a3126';
-  $display->storage_type = 'page_manager';
-  $display->storage_id = 'page_frontpage_panel_context';
-  $display->content = array();
-  $display->panels = array();
-  $display->hide_title = PANELS_TITLE_FIXED;
-  $display->title_pane = '0';
-  $handler->conf['display'] = $display;
-  $page->default_handlers[$handler->name] = $handler;
-  $pages['frontpage'] = $page;
-
-  return $pages;
-
 }

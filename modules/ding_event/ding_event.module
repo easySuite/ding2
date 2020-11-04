@@ -35,6 +35,13 @@ function ding_event_menu() {
 }
 
 /**
+ * Implements hook_menu_alter().
+ */
+function ding_event_menu_alter(&$items) {
+  $items['node/%node/clone/%clone_token']['type'] = MENU_LOCAL_TASK;
+}
+
+/**
  * Implements hook_field_formatter_info().
  */
 function ding_event_field_formatter_info() {
@@ -254,8 +261,9 @@ function ding_event_views_pre_execute(&$view) {
         ->conditions()[0]['field']
         ->conditions()[4];
     }
+
     $date_condition['field'] .= ' OR (fdelf.field_ding_event_list_filter_value = :filter'
-                              . ' AND ' . str_replace('.field_ding_event_date_value,', '.field_ding_event_date_value2,', $date_condition['field']) . ')';
+                             . ' AND ' . str_replace('.field_ding_event_date_value,', '.field_ding_event_date_value2,', $date_condition['field']) . ')';
     $date_condition['value'][':filter'] = 'show_all';
   }
 }
@@ -371,112 +379,6 @@ function ding_event_form_views_exposed_form_alter(&$form, &$form_state) {
 }
 
 /**
- * Implements hook date_popup_process_alter().
- */
-function ding_event_date_popup_process_alter(&$element, &$form_state, $context) {
-  // Add placeholder in event view.
-  if (isset($form_state['view']) && $form_state['view']->name == 'ding_event' && $form_state['view']->current_display == 'ding_event_list') {
-    $element['date']['#attributes']['placeholder'] = t('Select a date');
-  }
-}
-
-function ding_event_metatag_metatags_view_alter(&$output, $instance, $options) {
-  if ($instance == 'panels:ding_event_node_view') {
-    $node = menu_get_object();
-    $node_view = node_view($node);
-    $metatag = '';
-
-    // Metatag elements.
-    $lead_out = $node->title;
-    $location_out = '';
-    $date_out = '';
-    $price_out = ', ' . t('free', array(), array('context' => 'Price'));
-
-    // Lead.
-    $lead = field_get_items('node', $node, 'field_ding_event_lead');
-    if (!empty($lead)) {
-      $lead_out = $lead[0]['value'];
-    }
-
-    // Location.
-    $library_gid = field_get_items('node', $node, 'og_group_ref', 'target_id');
-    $location = field_get_items('node', $node, 'field_ding_event_location');
-    if (isset($library_gid) && empty($location[0]['name_line'])) {
-      $library_node = node_load($library_gid[0]['target_id']);
-      $location_out = ', ' . $library_node->title;
-    }
-
-    if (!empty($location[0]['name_line'])) {
-      $location_out = ', ' . $location[0]['name_line'];
-    }
-
-    // Date.
-    $date = field_get_items('node', $node, 'field_ding_event_date');
-    $date_out = ', ' . format_date(strtotime($date[0]['value']), 'ding_date_and_time');
-
-    // Price.
-    $price = field_get_items('node', $node, 'field_ding_event_price', 'value');
-    if (!empty($price)) {
-      $price_out = ', ' . $price[0]['value'] . ' ' . variable_get('ding_event_currency_type', 'Kr');
-    }
-
-    $output['description']['#attached']['drupal_add_html_head'][0][0]['#value'] = $lead_out . $location_out . $date_out . $price_out;
-  }
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-function ding_event_preprocess_node(&$variables) {
-  if ($variables['type'] == 'ding_event' && $variables['view_mode'] == 'full') {
-    // Fields to be processed.
-    $fields = array(
-      'field_ding_event_category',
-      'field_ding_event_date',
-      'field_ding_event_target',
-    );
-
-    // Process fields.
-    foreach ($fields as $field) {
-      if (!empty($variables['content'][$field])) {
-        $attributes = array();
-        switch ($variables['content'][$field]['#field_name']) {
-          case 'field_ding_event_category':
-            $category = $variables['content']['field_ding_event_category']['#items'][0]['tid'];
-
-            $attributes = array(
-              'event_category_term_node_tid_depth[]' => $category,
-            );
-            break;
-
-          case 'field_ding_event_date':
-            $date_value = $variables['content']['field_ding_event_date']['#items'][0]['value'];
-            $date_value = format_date(strtotime($date_value), 'custom', 'd-m-Y');
-
-            $attributes = array(
-              'date[value][date]' => $date_value,
-              'field_ding_event_date_value_1[value][date]' => $date_value,
-            );
-            break;
-
-          case 'field_ding_event_target':
-            $target = $variables['content']['field_ding_event_target']['#items'][0]['tid'];
-
-            $attributes = array(
-              'field_ding_event_target_tid[]' => $target,
-            );
-            break;
-        }
-
-        // Form and return markup.
-        $link_text = $variables['content'][$field][0]['#markup'];
-        $variables['content'][$field][0]['#markup'] = l($link_text, 'arrangementer', array('query' => array($attributes), 'html' => TRUE));
-      }
-    }
-  }
-}
-
-/**
  * Implements hook_preprocess_HOOK().
  */
 function ding_event_preprocess_views_exposed_form(&$variables) {
@@ -552,6 +454,160 @@ function ding_event_preprocess_views_exposed_form(&$variables) {
       unset($variables['widgets']['filter-field_ding_event_date_value']->label);
       $variables['widgets']['filter-field_ding_event_date_value']->widget = $render;
       unset($variables['widgets']['filter-field_ding_event_date_value_1']);
+    }
+  }
+}
+
+/**
+ * Implements hook date_popup_process_alter().
+ */
+function ding_event_date_popup_process_alter(&$element, &$form_state, $context) {
+  // Add placeholder in event view.
+  if (isset($form_state['view']) && $form_state['view']->name == 'ding_event' && $form_state['view']->current_display == 'ding_event_list') {
+    $element['date']['#attributes']['placeholder'] = t('Select a date');
+  }
+}
+
+/**
+ * Implements hook_metatag_metatags_view_alter().
+ */
+function ding_event_metatag_metatags_view_alter(&$output, $instance, $options) {
+  if ($instance == 'panels:ding_event_node_view') {
+    $node = menu_get_object();
+    $node_view = node_view($node);
+    $metatag = array();
+
+    // Metatag elements.
+    $metatag['lead_out'] = $node->title;
+    $metatag['location_out'] = '';
+    $metatag['date_out'] = '';
+    $metatag['price_out'] = t('Free', array(), array('context' => 'Price'));
+
+    // Lead.
+    $lead = field_get_items('node', $node, 'field_ding_event_lead');
+    if (!empty($lead)) {
+      $metatag['lead_out'] = $lead[0]['value'];
+    }
+
+    // Location.
+    $library_gid = field_get_items('node', $node, 'og_group_ref', 'target_id');
+    $location = field_get_items('node', $node, 'field_ding_event_location');
+    if (isset($library_gid) && empty($location[0]['name_line'])) {
+      $library_node = node_load($library_gid[0]['target_id']);
+      $metatag['location_out'] = $library_node->title;
+    }
+
+    if (!empty($location[0]['name_line'])) {
+      $metatag['location_out'] = $location[0]['name_line'];
+    }
+
+    // Date.
+    // Getting the time as a rendered field.
+    // This takes care of the actual "styling" of the date, such as creating
+    // an interval between two times (15:00 - 16:00) if necessary and also
+    // takes care of timezones.
+    $date = field_view_field('node', $node, 'field_ding_event_date', array(
+      'label' => 'hidden',
+      'type' => 'date_default',
+      'settings' => array(
+        'format_type' => 'ding_date_and_time',
+        'fromto' => 'both',
+      ),
+    ));
+
+    // Seeing as we're only interested in a string, we'll strip out any HTML.
+    if (!empty($date[0]['#markup'])) {
+      $metatag['date_out'] = strip_tags($date[0]['#markup']);
+    }
+
+    // Price.
+    $price = field_get_items('node', $node, 'field_ding_event_price', 'value');
+
+    if (!empty($price[0]['value'])) {
+      $metatag['price_out'] = t('Price') . ': ' . $price[0]['value'];
+
+      // If its a numeric price, we'll suffix the currency also.
+      // Seeing as its a textfield it could technically be anything.
+      if (is_numeric($price[0]['value'])) {
+        $metatag['price_out'] .= ' ' . variable_get('ding_event_currency_type', 'kr.');
+      }
+    }
+
+    $output['description']['#attached']['drupal_add_html_head'][0][0]['#value'] = implode(', ', array_filter($metatag));
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function ding_event_preprocess_node(&$variables) {
+  if ($variables['type'] != 'ding_event') {
+    return;
+  }
+
+  // Handle display of event price.
+  $node_wrapper = entity_metadata_wrapper('node', $variables['node']);
+  $price = $node_wrapper->field_ding_event_price->value();
+
+  if (!empty($price)) {
+    $variables['event_price'] = $price;
+    // The price field is a text field and we should only show currency if the
+    // price is numeric.
+    if (is_numeric($price)) {
+      $variables['event_price'] .= ' ' . variable_get('ding_event_currency_type', 'kr.');
+    }
+  }
+  // If the price is empty use "Free" text instead.
+  else {
+    $variables['event_price'] = t('Free', array(), array('context' => 'Price'));
+  }
+
+  if ($variables['type'] == 'ding_event' && $variables['view_mode'] == 'full') {
+    // Fields to be processed.
+    $fields = array(
+      'field_ding_event_category',
+      'field_ding_event_date',
+      'field_ding_event_target',
+    );
+
+    // Process fields.
+    foreach ($fields as $field) {
+      if (!empty($variables['content'][$field])) {
+        $attributes = array();
+        switch ($variables['content'][$field]['#field_name']) {
+          case 'field_ding_event_category':
+            $category = $variables['content']['field_ding_event_category']['#items'][0]['tid'];
+
+            $attributes = array(
+              'event_category_term_node_tid_depth[]' => $category,
+            );
+            break;
+
+          case 'field_ding_event_date':
+            $date_value = $variables['content']['field_ding_event_date']['#items'][0]['value'];
+            $dateobject = new DateTime($date_value);
+            $dateobject->add(new DateInterval('PT2H'));
+            $date_value = format_date($dateobject->getTimestamp(), 'custom', 'd-m-Y');
+
+            $attributes = array(
+              'date[value][date]' => $date_value,
+              'field_ding_event_date_value_1[value][date]' => $date_value,
+            );
+            break;
+
+          case 'field_ding_event_target':
+            $target = $variables['content']['field_ding_event_target']['#items'][0]['tid'];
+
+            $attributes = array(
+              'field_ding_event_target_tid[]' => $target,
+            );
+            break;
+        }
+
+        // Form and return markup.
+        $link_text = $variables['content'][$field][0]['#markup'];
+        $variables['content'][$field][0]['#markup'] = l($link_text, 'arrangementer', array('query' => array($attributes), 'html' => TRUE));
+      }
     }
   }
 }

@@ -4,6 +4,11 @@
 @import '../../base.scss';
 
 .node-ding-event {
+  // Display links in body text with underline.
+  .field-name-field-ding-event-body a {
+    text-decoration: underline;
+  }
+
   // ==========================================================================
   // Teaser
   // ==========================================================================
@@ -103,19 +108,27 @@
         padding-right: 0;
       }
     }
-    .event-list-image {
+    .event-list-image-container {
       position: absolute;
       z-index: 1;
+      top: 0;
+      left: 0;
       width: 100%;
-      height: 200px;
-      overflow: hidden;
-      background-size: cover;
-      background-position: center center;
+      padding-top: 56.25%; // 16:9 format
 
-      // Mobile
       @include media($mobile) {
         display: none;
       }
+    }
+    .event-list-image {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-size: cover;
+      background-position: center center;
     }
     .library {
       .field-item {
@@ -127,10 +140,14 @@
     }
     &.has-image {
       .inner {
-        padding: 0 $box-padding 10px $box-padding;
+        padding: 56.25% $box-padding 10px $box-padding; // 56.25% equals height of image
+
+        @include media($mobile) {
+          padding: 0 $box-padding 10px $box-padding;
+        }
       }
       .event-text {
-        padding-top: 215px;
+        padding-top: 15px;
 
         // Mobile
         @include media($mobile) {
@@ -140,6 +157,7 @@
     }
     // Hover for non touch devices
     .no-touch & {
+      &.is-hovered,
       &:hover {
         .background {
           @include transition(
@@ -236,17 +254,50 @@
         .button {
           @include span-columns(3 of 5);
           margin: 20px 0;
-          color: $white;
-          background: $color-primary;
+          color: $black;
 
           // Tablet
           @include media($tablet) {
             @include span-columns(5 of 5);
           }
+
+          &.ticket-available {
+            background-color: $green;
+            color: $white;
+
+            &:hover {
+              background-color: $green-text;
+              color: lighten($white, 15);
+            }
+          }
+
+          &.ticket-notice {
+            background-color: $yellow;
+
+            &:hover {
+              background-color: $yellow;
+              color: $black;
+            }
+          }
+
+          &.ticket-warning {
+            background: $red;
+            color: $white;
+
+            &:hover {
+              background-color: $red;
+              color: $white;
+            }
+          }
+
+          &:hover {
+            background-color: $grey-medium;
+            color: $black;
+          }
         }
       }
       > .right {
-        @include span-columns(5);
+        @include span-columns(6);
 
         // Tablet
         @include media($tablet) {
@@ -258,17 +309,6 @@
           @include span-columns(12);
         }
       }
-    }
-
-    h1 {
-      @include font('display');
-      margin-bottom: 0;
-      color: $charcoal;
-    }
-
-    h2 {
-      @include font('display-small');
-      margin: 20px 0 5px;
     }
 
     .field {
@@ -303,32 +343,6 @@
         @include media($tablet) {
           padding-left: getColumn(2 of 5);
         }
-      }
-    }
-    .field-name-field-place2book-tickets {
-      position: relative;
-      width: 100%;
-      float: left;
-    }
-    .place2book-tickets-label {
-      @include font('base-bold');
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100px;
-
-      // Tablet
-      @include media($tablet) {
-        @include span-columns(2 of 5);
-      }
-    }
-    .place2book-tickets-info {
-      width: 100%;
-      padding-left: 100px;
-
-      // Tablet
-      @include media($tablet) {
-        padding-left: getColumn(2 of 5);
       }
     }
     .field-name-field-ding-event-files {

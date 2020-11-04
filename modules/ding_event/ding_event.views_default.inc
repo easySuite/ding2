@@ -54,7 +54,7 @@ function ding_event_views_default_views() {
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['label'] = 'Empty text';
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
-  $handler->display->display_options['empty']['area']['content'] = 'No events where found.';
+  $handler->display->display_options['empty']['area']['content'] = 'No events were found.';
   $handler->display->display_options['empty']['area']['format'] = 'ding_wysiwyg';
   /* Relationship: OG membership: OG membership from Node */
   $handler->display->display_options['relationships']['og_membership_rel']['id'] = 'og_membership_rel';
@@ -259,6 +259,7 @@ function ding_event_views_default_views() {
   $handler->display->display_options['exposed_form']['type'] = 'better_exposed_filters';
   $handler->display->display_options['exposed_form']['options']['expose_sort_order'] = FALSE;
   $handler->display->display_options['exposed_form']['options']['autosubmit'] = TRUE;
+  $handler->display->display_options['exposed_form']['options']['autosubmit_hide'] = FALSE;
   $handler->display->display_options['exposed_form']['options']['bef'] = array(
     'general' => array(
       'input_required' => 0,
@@ -718,7 +719,7 @@ function ding_event_views_default_views() {
   $handler->display->display_options['filters']['field_ding_event_target_tid']['field'] = 'field_ding_event_target_tid';
   $handler->display->display_options['filters']['field_ding_event_target_tid']['exposed'] = TRUE;
   $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['operator_id'] = 'field_ding_event_target_tid_op';
-  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['label'] = 'Event Target';
+  $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['label'] = 'Event target';
   $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['operator'] = 'field_ding_event_target_tid_op';
   $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['identifier'] = 'field_ding_event_target_tid';
   $handler->display->display_options['filters']['field_ding_event_target_tid']['expose']['multiple'] = TRUE;
@@ -805,6 +806,16 @@ function ding_event_views_default_views() {
     'multiple_from' => '',
     'multiple_to' => '',
   );
+  $handler->display->display_options['defaults']['sorts'] = FALSE;
+  /* Sort criterion: Content: Sticky */
+  $handler->display->display_options['sorts']['sticky']['id'] = 'sticky';
+  $handler->display->display_options['sorts']['sticky']['table'] = 'node';
+  $handler->display->display_options['sorts']['sticky']['field'] = 'sticky';
+  $handler->display->display_options['sorts']['sticky']['order'] = 'DESC';
+  /* Sort criterion: Content: Date -  start date (field_ding_event_date) */
+  $handler->display->display_options['sorts']['field_ding_event_date_value']['id'] = 'field_ding_event_date_value';
+  $handler->display->display_options['sorts']['field_ding_event_date_value']['table'] = 'field_data_field_ding_event_date';
+  $handler->display->display_options['sorts']['field_ding_event_date_value']['field'] = 'field_ding_event_date_value';
   $handler->display->display_options['defaults']['arguments'] = FALSE;
   $handler->display->display_options['defaults']['filter_groups'] = FALSE;
   $handler->display->display_options['defaults']['filters'] = FALSE;
@@ -1235,7 +1246,7 @@ function ding_event_views_default_views() {
   $handler->display->display_options['empty']['area']['field'] = 'area';
   $handler->display->display_options['empty']['area']['label'] = 'Empty text';
   $handler->display->display_options['empty']['area']['empty'] = TRUE;
-  $handler->display->display_options['empty']['area']['content'] = 'No events where found in the group.';
+  $handler->display->display_options['empty']['area']['content'] = 'No events were found in the group.';
   $handler->display->display_options['empty']['area']['format'] = 'ding_wysiwyg';
   $handler->display->display_options['defaults']['relationships'] = FALSE;
   /* Relationship: OG membership group */
@@ -1700,6 +1711,18 @@ function ding_event_views_default_views() {
   $handler->display->display_options['row_plugin'] = 'entityreference_fields';
   $handler->display->display_options['defaults']['row_options'] = FALSE;
   $handler->display->display_options['defaults']['relationships'] = FALSE;
+  /* Relationship: Nodequeue: Queue */
+  $handler->display->display_options['relationships']['nodequeue_rel']['id'] = 'nodequeue_rel';
+  $handler->display->display_options['relationships']['nodequeue_rel']['table'] = 'node';
+  $handler->display->display_options['relationships']['nodequeue_rel']['field'] = 'nodequeue_rel';
+  $handler->display->display_options['relationships']['nodequeue_rel']['label'] = 'library listing';
+  $handler->display->display_options['relationships']['nodequeue_rel']['limit'] = 1;
+  $handler->display->display_options['relationships']['nodequeue_rel']['names'] = array(
+    'ding_library_listing' => 'ding_library_listing',
+    'ding_groups_listning' => 0,
+    'ding_groups_frontpage_listing' => 0,
+    'ding_tabroll_frontpage' => 0,
+  );
   $handler->display->display_options['defaults']['fields'] = FALSE;
   /* Field: Title */
   $handler->display->display_options['fields']['title']['id'] = 'title';
@@ -1717,6 +1740,11 @@ function ding_event_views_default_views() {
   $handler->display->display_options['fields']['title']['element_default_classes'] = FALSE;
   $handler->display->display_options['fields']['title']['hide_alter_empty'] = FALSE;
   $handler->display->display_options['defaults']['sorts'] = FALSE;
+  /* Sort criterion: Nodequeue: Position */
+  $handler->display->display_options['sorts']['position']['id'] = 'position';
+  $handler->display->display_options['sorts']['position']['table'] = 'nodequeue_nodes';
+  $handler->display->display_options['sorts']['position']['field'] = 'position';
+  $handler->display->display_options['sorts']['position']['relationship'] = 'nodequeue_rel';
   $handler->display->display_options['defaults']['arguments'] = FALSE;
   $handler->display->display_options['defaults']['filter_groups'] = FALSE;
   $handler->display->display_options['defaults']['filters'] = FALSE;
@@ -1745,7 +1773,7 @@ function ding_event_views_default_views() {
     t('Stigende'),
     t('Faldende'),
     t('Empty text'),
-    t('No events where found.'),
+    t('No events were found.'),
     t('OG membership from node'),
     t('<div class="event-list-date-wrapper">
   <span class="event-list-day">[field_ding_event_date]</span>
@@ -1785,7 +1813,7 @@ function ding_event_views_default_views() {
     t('To'),
     t('Event category'),
     t('Select library'),
-    t('Event Target'),
+    t('Event target'),
     t('Event panes'),
     t('Event list (frontpage)'),
     t('Events'),
@@ -1804,7 +1832,7 @@ function ding_event_views_default_views() {
     t('« first'),
     t('next ›'),
     t('last »'),
-    t('No events where found in the group.'),
+    t('No events were found in the group.'),
     t('RSS library event list'),
     t('Simple event list'),
     t('RSS event list'),
@@ -1817,6 +1845,7 @@ function ding_event_views_default_views() {
     t('Original Image'),
     t('Cropped Image'),
     t('Event: Libraries list'),
+    t('library listing'),
   );
   $export['ding_event'] = $view;
 

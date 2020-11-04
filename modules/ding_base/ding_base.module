@@ -25,6 +25,13 @@ function ding_base_menu() {
     'file path' => drupal_get_path('module', 'system'),
   );
 
+  $items['ding_base/taxonomy/autocomplete'] = array(
+    'title' => 'Autocomplete taxonomy',
+    'page callback' => 'ding_base_taxonomy_autocomplete',
+    'access arguments' => array('access content'),
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
@@ -596,7 +603,7 @@ function ding_base_file_presave($file) {
         case IMAGETYPE_PNG:
           $image = imagecreatefrompng($file->destination);
           imagedestroy(imagecreatefrompng($file->destination));
-          imagepng($image, $file->destination, 100);
+          imagepng($image, $file->destination, 7);
           break;
         default:
           break;
@@ -611,7 +618,7 @@ function ding_base_file_presave($file) {
   }
 }
 
-/**     
+/**
  * Implements hook_field_widget_form_alter().
  */
 function ding_base_field_widget_form_alter(&$elements, &$form_state, $context) {
@@ -791,4 +798,241 @@ function ding_base_validate_email($email) {
 
   $domain = strtoupper(substr($email, strrpos($email, '.') + 1));
   return empty($tld_list) || in_array($domain, $tld_list);
+}
+
+/**
+ * Implements hook_views_query_alter().
+ *
+ * Enabling Domain Access module support for content views.
+ */
+function ding_base_views_query_alter(&$view, &$query) {
+  if (module_exists('domain')) {
+    $domain = domain_get_domain();
+
+    $enabled_views = views_get_enabled_views();
+
+    $content_modules = [
+      'ding_eresource',
+      'ding_event',
+      'ding_news',
+      'ding_library',
+      'ding_groups',
+    ];
+
+    $processed_views = [];
+    foreach ($enabled_views as $module) {
+      if (in_array($module->name, $content_modules)) {
+        $display_names = array_keys($module->display);
+        $processed_views[] = $display_names;
+      }
+    }
+
+    $inlined = call_user_func_array('array_merge', $processed_views);
+    foreach ($inlined as $item) {
+      if ($view->current_display == $item) {
+        $query->add_table('domain_access');
+
+        $query->add_where_expression(
+          'filter',
+          "node.nid=domain_access.nid AND ((domain_access.realm = 'domain_id' AND domain_access.gid=***CURRENT_DOMAIN***) OR (domain_access.realm = 'domain_site' AND domain_access.gid = :domain_id))",
+          ['domain_id' => $domain['domain_id']],
+          'formula'
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_views_default_views_alter().
+ *
+ * Adding custom Taxonomy Terms filter to admin_views_node view.
+ */
+function ding_base_views_default_views_alter(&$views) {
+  if (isset($views['admin_views_node'])) {
+    $view = &$views['admin_views_node'];
+    $filter_options = [
+      'id' => 'ding_base_term_name',
+      'table' => 'taxonomy_term_data',
+      'field' => 'name',
+      'relationship' => 'term_node_tid',
+      'group_type' => 'group',
+      'operator' => "contains",
+      'value' => '',
+      'group' => 1,
+      'exposed' => TRUE,
+      'required' => FALSE,
+      'type' => 'text',
+      'expose' => [
+        'operator_id' => 'name_op',
+        'label' => t('Terms'),
+        'operator' => 'name_op',
+        'identifier' => 'ding_base_term_name',
+      ],
+    ];
+
+    $filters = $view->display['default']->display_options['filters'];
+
+    if (empty($filters['name'])) {
+      // There is no such filter so we have to add it.
+      $views['admin_views_node']->display['default']->display_options['filters']['name'] = $filter_options;
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function ding_base_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'views_exposed_form' && $form_state['view']->name == 'admin_views_node') {
+    $form['ding_base_term_name']['#type'] = 'textfield';
+    $form['ding_base_term_name']['#id'] = 'edit-ding-base-term-name';
+
+    $form['ding_base_term_name']['#attached']['js'][] = [
+      'data' => drupal_get_path('module', 'ding_base') . '/js/ding_base.prevent_auto_submit.js',
+      'type' => 'file',
+    ];
+
+    // If no vocabulary selected, disable "Terms" filter.
+    if ($form_state['input']['vid'] == 'All') {
+      $form['ding_base_term_name']['#attributes'] = [
+        'disabled' => TRUE,
+      ];
+    }
+    else {
+      $vid = $form_state['input']['vid'];
+      $form['ding_base_term_name']['#autocomplete_path'] = 'ding_base/taxonomy/autocomplete/' . $vid;
+      $form['ding_base_term_name']['#description'] = t('Autocomplete with terms of selected vocabulary');
+      $form['ding_base_term_name']['#attributes'] = [
+        'class' => [
+          'ctools-auto-submit-exclude',
+        ],
+      ];
+    }
+  }
+  elseif (strpos($form_id, 'webform_client_form') === 0) {
+    // Add a notice about not inserting personal on every webform. The link is
+    // hardcoded since we currently don't have any central place for setting
+    // up a privacy poplicy page, and we use translation here primarly for
+    // administrators to be able to change the link.
+    $privacy_notice = t('<strong>NOTICE</strong>: NEVER insert personal data of any kind in the formular. Read more in our <a href="/persondata">privacy policy</a>.');
+    $form['submitted']['privacy_notice'] = [
+      '#type' => 'item',
+      '#markup' => '<p>' . $privacy_notice . '</p>',
+      // Ensure notice is placed at the bottom just above submit button.
+      '#weight' => 50,
+    ];
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Used for changing order of filter fields, so the "Terms" filter is positioned
+ * right after "Vocabulary" filter.
+ */
+function ding_base_preprocess_views_exposed_form(&$variables) {
+  if (isset($variables['form']) && $variables['form']['#id'] == 'views-exposed-form-admin-views-node-system-1') {
+    $widgets = $variables['widgets'];
+
+    // Get widgets keys for further processing.
+    $widgets_keys = array_keys($widgets);
+
+    // Switch key with value, to have an numeric value.
+    $widgets_keys = array_flip($widgets_keys);
+
+    // Getting Vocabulary filter position.
+    $vid_position = $widgets_keys['filter-vid'];
+    // Set needed position to Taxonomy terms filter field.
+    $widgets_keys['filter-name'] = $vid_position + 1;
+
+    // Modifying positions.
+    foreach ($widgets_keys as $key => $pos) {
+      if ($pos >= $widgets_keys['filter-name'] && $key != 'filter-name') {
+        $widgets_keys[$key] = $pos + 1;
+      }
+    }
+
+    // Flip array to get numeric values as keys.
+    $normalize = array_flip($widgets_keys);
+
+    // Sort array by numeric keys.
+    ksort($normalize, SORT_ASC);
+
+    // Prepare ordered array.
+    $normalized = array_flip($normalize);
+
+    // Order widgets objects by correctly positioned structure.
+    $widgets = array_merge($normalized, $widgets);
+
+    // Return widgets back in variables.
+    $variables['widgets'] = $widgets;
+  }
+}
+
+/**
+ * Admin content "Terms" filter autocomplete callback.
+ */
+function ding_base_taxonomy_autocomplete($vid, $tag) {
+  if (!empty($vid)) {
+    $tags = db_select('taxonomy_term_data', 't')
+      ->fields('t', ['tid', 'name'])
+      ->condition('vid', $vid)
+      ->condition('t.name', '%' . db_like($tag) . '%', 'LIKE')
+      ->execute()
+      ->fetchAll();
+
+    $items = [];
+    foreach ($tags as $item) {
+      $items[$item->name] = $item->name;
+    }
+
+    drupal_json_output($items);
+  }
+}
+
+/**
+ * Implements hook_mail_alter().
+ */
+function ding_base_mail_alter(&$message) {
+  // To protect against personal data from webform submissions getting send
+  // unencrypted in mail to various mail servers, we alter every webform
+  // submission mail and replace any [submission:values] tokens with
+  // [submission:url] token. Administrators must then visit the submission
+  // URL to see/download the data, and the mail will only serve as a
+  // notification of a new submission and not as a method of data transfer.
+  if ($message['id'] == 'webform_submission') {
+    $params = $message['params'];
+    $email = $params['email'];
+    $node = $params['node'];
+    $submission = $params['submission'];
+
+    // Get the original mail template without replaced tokens.
+    // Copied from: webform_submission_send_mail().
+    if ($email['template'] == 'default') {
+      $email['message'] = theme(
+        ['webform_mail_' . $node->nid, 'webform_mail', 'webform_mail_message'],
+        ['node' => $node, 'submission' => $submission, 'email' => $email]
+      );
+    }
+    else {
+      $email['message'] = $email['template'];
+    }
+
+    $count = 0;
+    // We can also have more specific submission values tokens of the form
+    // [submission:values:?] that reference a specific component on the form,
+    // so we use a regular expression.
+    $email['message'] = preg_replace('/\[submission:values.*\]/', '[submission:url]',  $email['message'], -1, $count);
+
+    // Replace tokens in the message (again) if any replacements was performed.
+    if ($count > 0) {
+      // Copied from: webform_submission_send_mail().
+      $email['message'] = webform_replace_tokens($email['message'], $node, $submission, $email, (boolean) $email['html']);
+
+      // Insert new message in body replacing the old completely.
+      $message['body'] = [];
+      $message['body'][] = $email['message'];
+    }
+  }
 }

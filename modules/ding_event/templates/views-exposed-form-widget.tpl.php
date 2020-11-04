@@ -9,7 +9,6 @@ $element_name = $element['#name'] . '[]';
 $element_id = $element['#id'];
 ?>
 
-
 <div class="views-exposed-form-widget accordion-wrapper" id="<?php print $element_id; ?>">
   <?php if (isset($title)): ?>
     <div class="accordion-filter-header">
@@ -35,5 +34,5 @@ $element_id = $element['#id'];
         </li>
       <?php endforeach; ?>
     </ul>
-  </div>  
+  </div>
 </div>

@@ -77,10 +77,41 @@ function ding_library_default_page_manager_handlers() {
   $display->cache = array();
   $display->title = '%node:title';
   $display->uuid = 'a6f6496f-682d-4e38-b2a8-18197fe211fd';
-  $display->storage_type = 'page_manager';
-  $display->storage_id = 'node_view_panel_context_3';
   $display->content = array();
   $display->panels = array();
+  $pane = new stdClass();
+  $pane->pid = 'new-a0800396-bb75-4844-a1b8-70c2bba077d6';
+  $pane->panel = 'attachment_1_1';
+  $pane->type = 'ding_campaign_plus';
+  $pane->subtype = 'ding_campaign_plus';
+  $pane->shown = TRUE;
+  $pane->access = array();
+  $pane->configuration = array(
+    'style' => 'ribbon',
+    'context' => array(
+      0 => 'argument_entity_id:node_1',
+      1 => 'argument_entity_id:node_1',
+      2 => 'empty',
+      3 => 'empty',
+    ),
+    'override_title' => 0,
+    'override_title_text' => '',
+    'override_title_heading' => 'h2',
+  );
+  $pane->cache = array(
+    'method' => '0',
+    'settings' => array(),
+  );
+  $pane->style = array(
+    'settings' => NULL,
+  );
+  $pane->css = array();
+  $pane->extras = array();
+  $pane->position = 0;
+  $pane->locks = array();
+  $pane->uuid = 'a0800396-bb75-4844-a1b8-70c2bba077d6';
+  $display->content['new-a0800396-bb75-4844-a1b8-70c2bba077d6'] = $pane;
+  $display->panels['attachment_1_1'][0] = 'new-a0800396-bb75-4844-a1b8-70c2bba077d6';
   $pane = new stdClass();
   $pane->pid = 'new-e75bb4dd-8e1f-4738-b12c-d02f04cd587b';
   $pane->panel = 'attachment_1_1';
@@ -224,14 +255,12 @@ function ding_library_default_page_manager_handlers() {
   $pane = new stdClass();
   $pane->pid = 'new-04a9649f-6193-45ac-b407-cb4dbf501cc9';
   $pane->panel = 'left_sidebar';
-  $pane->type = 'campaign';
-  $pane->subtype = 'campaign';
+  $pane->type = 'ding_campaign_plus';
+  $pane->subtype = 'ding_campaign_plus';
   $pane->shown = TRUE;
   $pane->access = array();
   $pane->configuration = array(
-    'ding_campaign_count' => 3,
-    'ding_campaign_offset' => 0,
-    'ding_campaign_style' => 'ding_campaign_full_width',
+    'style' => 'ribbon',
     'context' => array(
       0 => 'argument_entity_id:node_1',
       1 => 'argument_entity_id:node_1',
@@ -242,7 +271,10 @@ function ding_library_default_page_manager_handlers() {
     'override_title_text' => '',
     'override_title_heading' => 'h2',
   );
-  $pane->cache = array();
+  $pane->cache = array(
+    'method' => '0',
+    'settings' => array(),
+  );
   $pane->style = array(
     'settings' => NULL,
   );
@@ -492,7 +524,7 @@ function ding_library_default_page_manager_pages() {
   $page->task = 'page';
   $page->admin_title = 'Ding libraries';
   $page->admin_description = 'Detailed list of all local libraries on the site.';
-  $page->path = 'libraries/!tid';
+  $page->path = 'libraries';
   $page->access = array(
     'type' => 'none',
     'settings' => NULL,
@@ -509,14 +541,7 @@ function ding_library_default_page_manager_pages() {
       'weight' => '0',
     ),
   );
-  $page->arguments = array(
-    'tid' => array(
-      'id' => '',
-      'identifier' => '',
-      'argument' => '',
-      'settings' => array(),
-    ),
-  );
+  $page->arguments = array();
   $page->conf = array(
     'admin_paths' => FALSE,
   );
@@ -585,96 +610,8 @@ function ding_library_default_page_manager_pages() {
   $display->content = array();
   $display->panels = array();
   $pane = new stdClass();
-  $pane->pid = 'new-e7967ca9-f93b-4310-a62f-d89f3dc41e1a';
-  $pane->panel = 'left_sidebar';
-  $pane->type = 'block';
-  $pane->subtype = 'views-8864516496a00dfb10f2689ae726989f';
-  $pane->shown = TRUE;
-  $pane->access = array();
-  $pane->configuration = array(
-    'inherit_path' => 1,
-    'override_title' => 0,
-    'override_title_text' => '',
-    'override_title_heading' => 'h2',
-  );
-  $pane->cache = array();
-  $pane->style = array(
-    'settings' => NULL,
-  );
-  $pane->css = array();
-  $pane->extras = array();
-  $pane->position = 0;
-  $pane->locks = array();
-  $pane->uuid = 'e7967ca9-f93b-4310-a62f-d89f3dc41e1a';
-  $display->content['new-e7967ca9-f93b-4310-a62f-d89f3dc41e1a'] = $pane;
-  $display->panels['left_sidebar'][0] = 'new-e7967ca9-f93b-4310-a62f-d89f3dc41e1a';
-  $pane = new stdClass();
-  $pane->pid = 'new-49f02804-78f5-4b07-9eba-cf2a35be97d6';
-  $pane->panel = 'left_sidebar';
-  $pane->type = 'taxonomy_menu';
-  $pane->subtype = 'taxonomy_menu';
-  $pane->shown = TRUE;
-  $pane->access = array();
-  $pane->configuration = array(
-    'slug' => 'libraries',
-    'default_link_text' => 'All types',
-    'dropdown' => 0,
-    'vocabulary' => 'library_type',
-    'base' => '',
-    'context' => array(
-      0 => 'empty',
-      1 => 'empty',
-    ),
-    'override_title' => 0,
-    'override_title_text' => '',
-    'override_title_heading' => 'h2',
-  );
-  $pane->cache = array();
-  $pane->style = array(
-    'settings' => NULL,
-  );
-  $pane->css = array();
-  $pane->extras = array();
-  $pane->position = 1;
-  $pane->locks = array();
-  $pane->uuid = '49f02804-78f5-4b07-9eba-cf2a35be97d6';
-  $display->content['new-49f02804-78f5-4b07-9eba-cf2a35be97d6'] = $pane;
-  $display->panels['left_sidebar'][1] = 'new-49f02804-78f5-4b07-9eba-cf2a35be97d6';
-  $pane = new stdClass();
-  $pane->pid = 'new-ceda6888-188a-4ed3-8205-2f520ea7432a';
-  $pane->panel = 'left_sidebar';
-  $pane->type = 'campaign';
-  $pane->subtype = 'campaign';
-  $pane->shown = TRUE;
-  $pane->access = array();
-  $pane->configuration = array(
-    'ding_campaign_count' => 3,
-    'ding_campaign_offset' => 0,
-    'ding_campaign_style' => 'ding_campaign_full_width',
-    'context' => array(
-      0 => 'empty',
-      1 => 'empty',
-      2 => 'empty',
-      3 => 'empty',
-    ),
-    'override_title' => 0,
-    'override_title_text' => '',
-    'override_title_heading' => 'h2',
-  );
-  $pane->cache = array();
-  $pane->style = array(
-    'settings' => NULL,
-  );
-  $pane->css = array();
-  $pane->extras = array();
-  $pane->position = 2;
-  $pane->locks = array();
-  $pane->uuid = 'ceda6888-188a-4ed3-8205-2f520ea7432a';
-  $display->content['new-ceda6888-188a-4ed3-8205-2f520ea7432a'] = $pane;
-  $display->panels['left_sidebar'][2] = 'new-ceda6888-188a-4ed3-8205-2f520ea7432a';
-  $pane = new stdClass();
   $pane->pid = 'new-1e2eec2e-7d03-48ca-b59c-76ce5247dff7';
-  $pane->panel = 'main_content';
+  $pane->panel = 'attachment_1_1';
   $pane->type = 'views_panes';
   $pane->subtype = 'ding_library-ding_library_libraries_list';
   $pane->shown = TRUE;
@@ -694,7 +631,7 @@ function ding_library_default_page_manager_pages() {
   $pane->locks = array();
   $pane->uuid = '1e2eec2e-7d03-48ca-b59c-76ce5247dff7';
   $display->content['new-1e2eec2e-7d03-48ca-b59c-76ce5247dff7'] = $pane;
-  $display->panels['main_content'][0] = 'new-1e2eec2e-7d03-48ca-b59c-76ce5247dff7';
+  $display->panels['attachment_1_1'][0] = 'new-1e2eec2e-7d03-48ca-b59c-76ce5247dff7';
   $display->hide_title = PANELS_TITLE_FIXED;
   $display->title_pane = '0';
   $handler->conf['display'] = $display;
@@ -816,8 +753,6 @@ function ding_library_default_page_manager_pages() {
   $display->cache = array();
   $display->title = '';
   $display->uuid = '895bbe6b-994e-46a3-8ef1-3c2b968fcf51';
-  $display->storage_type = 'page_manager';
-  $display->storage_id = 'page_ding_library_about_panel_context';
   $display->content = array();
   $display->panels = array();
   $pane = new stdClass();
@@ -845,13 +780,12 @@ function ding_library_default_page_manager_pages() {
   $pane = new stdClass();
   $pane->pid = 'new-71b33eb2-cf7e-4599-a7fb-2958933fe904';
   $pane->panel = 'left_sidebar';
-  $pane->type = 'campaign';
-  $pane->subtype = 'campaign';
+  $pane->type = 'ding_campaign_plus';
+  $pane->subtype = 'ding_campaign_plus';
   $pane->shown = TRUE;
   $pane->access = array();
   $pane->configuration = array(
-    'ding_campaign_count' => 3,
-    'ding_campaign_offset' => 0,
+    'style' => 'ribbon',
     'context' => array(
       0 => 'argument_slug_1',
       1 => 'empty',
@@ -860,7 +794,6 @@ function ding_library_default_page_manager_pages() {
     ),
     'override_title' => 0,
     'override_title_text' => '',
-    'ding_campaign_image_style' => 'ding_campaign_p_25',
     'override_title_heading' => 'h2',
   );
   $pane->cache = array(
@@ -885,6 +818,39 @@ function ding_library_default_page_manager_pages() {
   $pane->uuid = '71b33eb2-cf7e-4599-a7fb-2958933fe904';
   $display->content['new-71b33eb2-cf7e-4599-a7fb-2958933fe904'] = $pane;
   $display->panels['left_sidebar'][1] = 'new-71b33eb2-cf7e-4599-a7fb-2958933fe904';
+  $pane = new stdClass();
+  $pane->pid = 'new-21ba5c19-fa7d-477a-bb0a-bdca76f678dd';
+  $pane->panel = 'left_sidebar';
+  $pane->type = 'ding_campaign_plus';
+  $pane->subtype = 'ding_campaign_plus';
+  $pane->shown = TRUE;
+  $pane->access = array();
+  $pane->configuration = array(
+    'style' => 'box',
+    'context' => array(
+      0 => 'argument_slug_1',
+      1 => 'argument_slug_1',
+      2 => 'empty',
+      3 => 'empty',
+    ),
+    'override_title' => 0,
+    'override_title_text' => '',
+    'override_title_heading' => 'h2',
+  );
+  $pane->cache = array(
+    'method' => '0',
+    'settings' => array(),
+  );
+  $pane->style = array(
+    'settings' => NULL,
+  );
+  $pane->css = array();
+  $pane->extras = array();
+  $pane->position = 2;
+  $pane->locks = array();
+  $pane->uuid = '21ba5c19-fa7d-477a-bb0a-bdca76f678dd';
+  $display->content['new-21ba5c19-fa7d-477a-bb0a-bdca76f678dd'] = $pane;
+  $display->panels['left_sidebar'][2] = 'new-21ba5c19-fa7d-477a-bb0a-bdca76f678dd';
   $pane = new stdClass();
   $pane->pid = 'new-bd3bb4dd-dc12-4b88-9d1a-a61d32542553';
   $pane->panel = 'main_content';

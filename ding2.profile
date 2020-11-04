@@ -46,13 +46,9 @@ function ding2_form_alter(&$form, &$form_state, $form_id) {
     array_walk_recursive($form, '_ding2_remove_form_requirements');
 
     // Set default values in ting search form to help aegir/bulk installations.
-    if ($form_id == 'ting_admin_ting_settings') {
-      $form['ting']['ting_search_url']['#default_value'] = 'http://opensearch.addi.dk/3.0/';
-      $form['ting']['ting_recommendation_url']['#default_value'] = 'http://openadhl.addi.dk/1.1/';
-    }
-
-    if ($form_id == 'ting_covers_admin_addi_settings_form') {
-      $form['addi']['addi_wsdl_url']['#default_value'] = 'http://moreinfo.addi.dk/2.11';
+    if ($form_id == 'opensearch_admin_settings') {
+      $form['opensearch']['opensearch_url']['#default_value'] = 'https://opensearch.addi.dk/b3.5_5.2/';
+      $form['opensearch']['opensearch_recommendation_url']['#default_value'] = 'http://openadhl.addi.dk/1.1/';
     }
   }
 }
@@ -184,11 +180,14 @@ function ding2_import_ding2_translations(&$install_state) {
  * Reverts features and adds some basic pages.
  */
 function ding2_add_settings(&$install_state) {
-  // Set page not found.
-  ding2_set_page_not_found();
+  // Add customerror pages.
+  ding2_set_customerror_pages();
 
   // Set cookie page.
   ding2_set_cookie_page();
+
+  // Set EU cookie compliance settings.
+  ding2_set_eu_cookie_compliance_settings();
 
   // Add menu item to secondary menu.
   $link = array(
@@ -365,6 +364,8 @@ function ding2_module_selection_form($form, &$form_state) {
     'bpi' => st('BPI'),
     'ding_debt' => st('Ding payment'),
     'ding_dibs' => st('Dibs payment gateway'),
+    'ding_user_form' => st('Enable normal user login (you should only select this if you are not using adgangsplatformen)'),
+    'ding_adgangsplatformen' => st('Single sign-on with Adgangsplatformen'),
   );
 
   $form['modules'] = array(
@@ -382,6 +383,7 @@ function ding2_module_selection_form($form, &$form_state) {
       'ding_contact',
       'ding_debt',
       'ding_dibs',
+      'ding_user_form',
     ),
   );
 
@@ -658,9 +660,28 @@ function ding2_module_list_as_operations($module_list) {
  */
 function ding2_module_enable(&$install_state) {
   $modules = variable_get('ding_module_selected', array());
-  $modules[] = 'l10n_update';
-  $modules[] = 'ting_infomedia';
-  $modules[] = 'ding_eresource';
+  // Modules we don't have an explicit dependency on but still want enabled by
+  // default. If the user later on does not need the module it can be disabled
+  // manually.
+  $modules = array_merge(array(
+    'opensearch',
+    'l10n_update',
+    'ting_fulltext',
+    'ting_infomedia',
+    'ting_field_search',
+    'ting_smart_search',
+    'ding_eresource',
+    'ding_app_content_rss',
+    'ding_app_variables',
+    'ding_campaign_plus',
+    'ding_campaign_plus_auto',
+    'ding_campaign_plus_basic',
+    'ding_campaign_plus_facet',
+    'ding_campaign_plus_object',
+    'ding_campaign_plus_search',
+    'ding_webtrekk',
+    'mimemail',
+  ), $modules);
 
   $operations = ding2_module_list_as_operations($modules);
 
@@ -707,81 +728,24 @@ function ding2_add_administrators_role($uid) {
 }
 
 /**
- * Adds a new static page to the site and set it as the default 404 page.
- */
-function ding2_set_page_not_found() {
-  $node = new stdClass();
-  $node->uid = 1;
-
-  $node->title = 'Siden blev ikke fundet';
-  $node->type = 'ding_page';
-  $node->language = 'und';
-  $node->field_ding_page_body = array(
-    'und' => array(
-      array(
-        'value' => '<div class="field-teaser">UPS! Vi kan ikke finde den side du søger.</div><p><strong>Hvad gik galt?</strong><br />Der kan være flere årsager til, at vi ikke kan finde det du leder efter:</p><p>- Stavefejl: Måske har du stavet forkert, da du skrev søgeordet. Eller der er en stavefejl i det link, du har fulgt.</p><p>- Siden er flyttet/slettet: Måske findes siden ikke længere eller den er blevet&nbsp;flyttet.</p><p><br /><strong>Bibliotek.dk</strong><br />Prøv den landsdækkende base <a href="http://bibliotek.dk/" target="_blank" title="Bibliotek.dk">bibliotek.dk</a>. Bibliotek.dk er en gratis service, hvor du kan se, hvad der er blevet udgivet i Danmark, og hvad der findes på danske biblioteker. Databasen opdateres dagligt.<br />Du kan bestille materialer til afhentning på dit lokale bibliotek. Du skal være registreret bruger på Odense Centralbibliotek.</p><p><br /><strong>Kom videre -&nbsp;kontakt&nbsp;dit bibliotek</strong><br />Vælg <a href="http://oc.fynbib.dk/biblioteker">&#39;Biblioteker&#39;</a> i menuen ovenfor og find kontakt oplysninger på den ønskede afdeling.</p>',
-        'format' => 'ding_wysiwyg',
-        'safe_value' => '<div class="field-teaser">UPS! Vi kan ikke finde den side du søger.</div><p><strong>Hvad gik galt?</strong><br />Der kan være flere årsager til, at vi ikke kan finde det du leder efter:</p><p>- Stavefejl: Måske har du stavet forkert, da du skrev søgeordet. Eller der er en stavefejl i det link, du har fulgt.</p><p>- Siden er flyttet/slettet: Måske findes siden ikke længere eller den er blevet flyttet.</p><p><br /><strong>Bibliotek.dk</strong><br />Prøv den landsdækkende base <a href="http://bibliotek.dk/" target="_blank" title="Bibliotek.dk">bibliotek.dk</a>. Bibliotek.dk er en gratis service, hvor du kan se, hvad der er blevet udgivet i Danmark, og hvad der findes på danske biblioteker. Databasen opdateres dagligt.<br />Du kan bestille materialer til afhentning på dit lokale bibliotek. Du skal være registreret bruger på Odense Centralbibliotek.</p><p><br /><strong>Kom videre - kontakt dit bibliotek</strong><br />Vælg <a href="http://oc.fynbib.dk/biblioteker">\'Biblioteker\'</a> i menuen ovenfor og find kontakt oplysninger på den ønskede afdeling.</p>',
-      ),
-    ),
-  );
-  $node->field_ding_page_lead = array(
-    'und' => array(
-      array(
-        'value' => '- men denne side kan måske hjælpe dig videre',
-        'format' => NULL,
-        'safe_value' => '- men denne side kan måske hjælpe dig videre',
-      ),
-    ),
-  );
-  $node->path = array(
-    'alias' => 'siden-ikke-fundet',
-    'language' => 'und',
-  );
-
-  node_save($node);
-
-  // Set the 404 page.
-  variable_set('site_404', 'siden-ikke-fundet');
-}
-
-/**
  * Add page with std. cookie information.
  */
 function ding2_set_cookie_page() {
-
-  $eu_cookie_compliance_da['popup_enabled'] = TRUE;
-  $eu_cookie_compliance_da['popup_clicking_confirmation'] = FALSE;
-  $eu_cookie_compliance_da['popup_info']['value'] = '<p>Vi bruger cookies på hjemmesiden for at forbedre din oplevelse.</p><p>Læs mere her: <a href="' . url('cookies') . '">Hvad er cookies?</a></p>';
-  $eu_cookie_compliance_da['popup_info']['format'] = 'ding_wysiwyg';
-  $eu_cookie_compliance_da['popup_agree_button_message'] = 'Jeg accepterer brugen af cookies';
-  $eu_cookie_compliance_da['popup_disagree_button_message'] = 'Læs mere';
-  $eu_cookie_compliance_da['popup_find_more_button_message'] = 'Mere info';
-  $eu_cookie_compliance_da['popup_hide_button_message'] = 'Luk';
-  $eu_cookie_compliance_da['popup_agreed'][value] = '<p>Tak fordi du accepterer cookies</p><p>Du kan nu lukke denne besked, eller læse mere om cookies.</p>';
-  $eu_cookie_compliance_da['popup_agreed']['format'] = 'ding_wysiwyg';
-  $eu_cookie_compliance_da['popup_link'] = 'cookies';
-  $eu_cookie_compliance_da['popup_link_new_window'] = FALSE;
-  $eu_cookie_compliance_da['popup_bg_hex'] = '0D0D26';
-  $eu_cookie_compliance_da['popup_text_hex'] = 'FFFFFF';
-  $eu_cookie_compliance_da['popup_position'] = FALSE;
-  $eu_cookie_compliance_da['popup_agreed_enabled'] = FALSE;
-  $eu_cookie_compliance_da['popup_height'] = '';
-  $eu_cookie_compliance_da['popup_width'] = '100%';
-  $eu_cookie_compliance_da['popup_delay'] = 1;
-
-  // Set cookie compliance variables
-  variable_set('eu_cookie_compliance_da', $eu_cookie_compliance_da);
-  variable_set('eu_cookie_compliance_cookie_lifetime', 365);
-
   $body = '<p><strong>Hvad er cookies?</strong></p>
-          <p>En cookie er en lille tekstfil, som lægges på din computer, smartphone, ipad eller lignende med det formål at indhente data. Den gør det muligt for os at måle trafikken på vores site og opsamle viden om f.eks. antal besøg på vores hjemmeside, hvilken browser der bliver brugt, hvilke sider der bliver klikket på, og hvor lang tid der bruges på siden. Alt sammen for at vi kan forbedre brugeroplevelsen og udvikle nye services.</p>
-          <p>Når du logger ind for at se lånerstatus, reservere m.m. sættes en såkaldt sessions-cookie. Denne cookie forsvinder, når du logger ud.</p>
-          <p><strong>Afvis eller slet cookies</strong></p>
-          <p>Du kan altid afvise cookies på din computer ved at ændre indstillingerne i din browser. Du skal dog være opmærksom på, at hvis du slår cookies fra, kan du ikke bruge de funktioner, som forudsætter, at hjemmesiden kan huske dine valg.<br>Alle browsere tillader, at du sletter cookies enkeltvis eller alle på en gang. Hvordan du gør det, afhænger af, hvilken browser du anvender.<br>På Erhvervsstyrelsens hjemmeside kan du finde vejledninger i at afvise og slette cookies i forskellige browsertyper. (<a class="external" href="http://erhvervsstyrelsen.dk/cookies">http://erhvervsstyrelsen.dk/cookies</a>)</p>
-          <p><strong>Webtrends</strong></p>
-          <p>Vi bruger Webtrends til at føre statistik over trafikken på hjemmesiden. Al indsamlet statistik er anonym.<br>- Webtrends - om brug af cookies på websider (<a class="external" href="http://webtrends.com/terms-policies/privacy/cookie-policy">http://webtrends.com/terms-policies/privacy/cookie-policy</a>)<br>- Hvis du vil fravælge cookies fra Webtrends kan du læse mere på <a class="external" href="http://kb.webtrends.com/articles/Information/Opting-out-of-Tracking-Cookies-1365447872915">http://kb.webtrends.com/articles/Information/Opting-out-of-Tracking-Cookies-1365447872915</a> (engelsk) eller trykke på linket <a class="external" href="https://ondemand.webtrends.com/support/optout.asp?action=out">https://ondemand.webtrends.com/support/optout.asp?action=out</a>. For at aktivere cookies igen kan du trykke på linket <a class="external" href="https://ondemand.webtrends.com/support/optout.asp?action=in">https://ondemand.webtrends.com/support/optout.asp?action=in</a></p>
-          <p><strong>Hvorfor informerer Biblioteket om cookies?</strong></p><p>Ifølge "Bekendtgørelse om krav til information og samtykke ved lagring af eller adgang til oplysninger i slutbrugerens terminaludstyr" BEK nr 1148 af 09/12/2011 (<a class="external" href="https://www.retsinformation.dk/Forms/R0710.aspx?id=139279">https://www.retsinformation.dk/Forms/R0710.aspx?id=139279</a>) er alle danske hjemmesider forpligtet til at informere om, hvorvidt de anvender cookies. Det sker, så brugeren kan beslutte, om de fortsat ønsker at besøge hjemmesiden, eller om de evt. ønsker at blokere for cookies.</p>';
+    <p>En cookie er en lille tekstfil, som lægges på din computer, smartphone, ipad eller lignende med det formål at indhente data. Den gør det muligt for os at måle trafikken på vores site og opsamle viden om f.eks. antal besøg på vores hjemmeside, hvilken browser der bliver brugt, hvilke sider der bliver klikket på, og hvor lang tid der bruges på siden. Alt sammen for at vi kan forbedre brugeroplevelsen og udvikle nye services.</p>
+    <p><strong>Hvorfor informerer Biblioteket om cookies?</strong></p><p>Ifølge "Bekendtgørelse om krav til information og samtykke ved lagring af eller adgang til oplysninger i slutbrugerens terminaludstyr" BEK nr 1148 af 09/12/2011 (<a class="external" href="https://www.retsinformation.dk/Forms/R0710.aspx?id=139279">https://www.retsinformation.dk/Forms/R0710.aspx?id=139279</a>) er alle danske hjemmesider forpligtet til at informere om, hvorvidt de anvender cookies. Det sker, så brugeren kan beslutte, om de fortsat ønsker at besøge hjemmesiden, eller om de evt. ønsker at blokere for cookies.</p>
+    <p><strong>Afvis cookies</strong></p>
+    <p>Du kan vælge at afvise cookies ved at trykke "Afvis" i den popup, der vises første gang du besøger vores hjemmeside. Har du tidligere besøgt hjemmesiden og accepteret cookies, kan du tilbagekalde ved at trykke "Privatlivsindstillinger" i bunden og herefter trykke på knappen "Tilbagekald samtykke".</p>
+    <p>Når du afviser blokerer vi alle cookies. Der er dog undtagelser. Strengt nødvendige cookies, som hjemmesiden ikke fungerer korrekt uden, accepterer du automatisk ved brug af hjemmesiden og vil ikke blive påvirket af, at du afviser cookies. Hvis du logger ind som låner eller opretter dig accepterer du samtidig også brug af vores session-cookie (mere om denne i nedenstående) og denne vil ligeledes heller ikke blive påvirket af dit valg om at afvise cookies.</p>
+    <h3>Hvilke cookies bruger vi?</h3>
+    <p><strong>Session-cookie</strong></p>
+    <p>Når du logger ind for at se lånerstatus, reservere m.m. sættes en såkaldt sessions-cookie. Denne cookie forsvinder, når du logger ud igen. Denne cookie er en forudsætning for, at vi kan tilbyde denne funktionalitet, så du når logger ind, accepterer du samtidig også at vi indstiller denne cookie. Den er dermed ikke påvirket af dit valg om at afvise cookies som forklaret i ovenstående. Når du opretter dig som bruger på biblioteket, skal du samtidig også accepterer vores privatlivspolitik, der indeholder yderligere information om, hvordan vi behandler dine data, når du logger ind.</p>
+    <p><strong>Nødvendige cookies</strong></p>
+    <p>Nødvendige cookies hjælper med at gøre en hjemmeside brugbar og den kan ikke fungerer korrekt uden. Du accepterer dermed disse cookies, når du bruger vores hjemmeside, og de vil blive indstillet selvom du afviser. Disse cookies indeholder ingen personfølsomme oplsyninger.</p>
+    <p><strong>Funktionelle cookies</strong></p>
+    <p>Visse stedet bruger vi cookies til at forbedre funktionalitet som f.eks. at huske dine valg, så du ikke skal trykke på samme knap om og om igen. Når du afviser cookies vil disse ikke blive indstillet, og det kan dermed betyde foringelse af brugeroplevelsen.</p>
+    <p><strong>Statistik cookies</strong></p>
+    <p>Vi bruger cookies til at føre statistik over trafikken på hjemmesiden. Al indsamlet statistik gemmes anonymiseret. Vi bruger dette statistik til at undersøge brugsadfærd med det formål at forbedre kvaliteten af indhold og brugeroplevelsen på hjemmesiden. Afviser du cookies vil denne tracking blive blokeret.</p>';
 
   $page_lead = 'Vi vil gerne tilbyde vores brugere en overskuelig og brugervenlig hjemmeside. For at sikre os, at indholdet på siden er relevant og til at finde rundt i, benytter vi os af cookies. Cookies giver os vigtige informationer om, hvordan vores side bliver brugt, hvilke sider der bliver set mest, hvor længe vores brugere bliver på siderne osv.';
 
@@ -790,15 +754,6 @@ function ding2_set_cookie_page() {
   $node->title = 'Cookies på hjemmesiden';
   $node->type = 'ding_page';
   $node->language = 'und';
-  $node->field_ding_page_body = array(
-    'und' => array(
-      array(
-        'value' => $body,
-        'format' => 'ding_wysiwyg',
-        'safe_value' => $body,
-      ),
-    ),
-  );
   $node->field_ding_page_lead = array(
     'und' => array(
       array(
@@ -813,10 +768,139 @@ function ding2_set_cookie_page() {
     'language' => 'und',
   );
 
-  // Create the node.
-  node_save($node);
+  $paragraph = new ParagraphsItemEntity(array('field_name' => 'field_ding_page_paragraphs', 'bundle' => 'ding_paragraphs_text'));
+  $paragraph->is_new = TRUE;
+  $paragraph->field_ding_paragraphs_text[LANGUAGE_NONE][0]['value'] = $body;
+  $paragraph->field_ding_paragraphs_text[LANGUAGE_NONE][0]['format'] = 'ding_wysiwyg';
+  $paragraph->setHostEntity('node', $node);
+
+  // This will also save the node.
+  $paragraph->save();
 
   // Permissions, see: ding_permissions module
   // display EU Cookie Compliance popup: anonymous user, authenticated user
   // administer EU Cookie Compliance popup: administrators, local administrator
+}
+
+/**
+ * Get the nid of the current node used as cookie page.
+ *
+ * @return mixed
+ *   The node ID of the cookie page node.
+ *   FALSE if no cookie page node was found.
+ */
+function ding2_get_cookie_node_nid() {
+  $path = drupal_lookup_path('source', 'cookies');
+  if ($path && strpos($path, 'node/') === 0) {
+    $path = explode('/', $path);
+    return $path[1];
+  }
+  return FALSE;
+}
+
+/**
+ * Sets the standard ding2 settings for EU cookie compliance module.
+ */
+function ding2_set_eu_cookie_compliance_settings() {
+  // Ensure that translation variables are enabled for EU Cookie Compliance.
+  $controller = variable_realm_controller('language');
+  $old_variables = $controller->getEnabledVariables();
+  $old_list = variable_children($old_variables);
+  $variables = array_merge($old_list, array('eu_cookie_compliance'));
+  $controller->setRealmVariable('list', $variables);
+
+  // Set cookie compliance variables.
+  $eu_cookie_compliance = i18n_variable_get('eu_cookie_compliance', 'da', []);
+
+  // Ding2 whitelisted cookies. If more are needed: add to array and call this
+  // function again in an update.
+  $whitelisted_cookies = [
+    'has_js',
+  ];
+
+  // Ensure we don't override any whitelisted cookies added by administrators or
+  // other modules.
+  if (empty($eu_cookie_compliance['whitelisted_cookies'])) {
+    $eu_cookie_compliance['whitelisted_cookies'] = implode("\r\n", $whitelisted_cookies);
+  }
+  else {
+    foreach ($whitelisted_cookies as $cookie) {
+      if (strpos($eu_cookie_compliance['whitelisted_cookies'], $cookie) === FALSE) {
+        $eu_cookie_compliance['whitelisted_cookies'] .= "\r\n" . $cookie;
+      }
+    }
+  }
+
+  $eu_cookie_compliance = array_merge($eu_cookie_compliance, [
+    'method' => 'opt_in',
+    'show_disagree_button' => 1,
+    'popup_enabled' => TRUE,
+    'popup_info' => [
+      'value' => '<h2>Hjælp os med at forbedre oplevelsen på hjemmesiden ved at acceptere cookies.</h2>',
+      'format' => 'ding_wysiwyg',
+    ],
+    'popup_agreed' => array(
+      // We do not use the module in a mode where text is displayed after the
+      // user agrees but the module expects a value so set an empty string.
+      'value' => '',
+      'format' => 'ding_wysiwyg',
+    ),
+    'popup_agree_button_message' => 'Jeg accepterer brugen af cookies',
+    'popup_agreed_enabled' => FALSE,
+    'popup_disagree_button_message' => 'Mere info',
+    'disagree_button_label' => 'Afvis',
+    'withdraw_enabled' => 1,
+    'withdraw_message' => [
+      'value' => '<h2>Vi bruger cookies på hjemmesiden for at forbedre din oplevelse</h2><p>Du har givet os samtykke. Tryk her for at tilbagekalde.</p>',
+      'format' => 'ding_wysiwyg',
+    ],
+    'withdraw_tab_button_label' => 'Privatlivsindstillinger',
+    'withdraw_action_button_label' => 'Tilbagekald samtykke',
+    // This will make the popup use the bottom position.
+    'popup_position' => FALSE,
+    'popup_link' => 'cookies',
+    'popup_bg_hex' => '0D0D26',
+    'popup_text_hex' => 'FFFFFF',
+    'popup_height' => '',
+    'popup_width' => '100%',
+    'popup_delay' => 1000,
+    'exclude_admin_pages' => TRUE,
+    'consent_storage_method' => 'provider',
+    // Use the name of the latest ding2 update hook to change the provider
+    // settings to ensure that users have to agree again.
+    'cookie_name' => 'cookie-agreed-7083',
+  ]);
+  i18n_variable_set('eu_cookie_compliance', $eu_cookie_compliance, 'da');
+}
+
+/**
+ * Setup customerror pages for 403 and 404 status codes.
+ */
+function ding2_set_customerror_pages() {
+  // Set the 403 page.
+  $content_403 = array(
+    'value' => '<h3>Adgang nægtet</h3><p>Du har ikke adgang til at tilgå siden.</p>',
+    'format' => 'ding_wysiwyg',
+  );
+  variable_set('customerror_403_title', 'Adgang nægtet');
+  variable_set('customerror_403', $content_403);
+  variable_set('site_403', 'customerror/403');
+
+  // Set the 403 for authenticated users.
+  $content_403_authenticated = array(
+    'value' => '<h3>' . t('access denied: insufficient permissions') . '</h3><p>' . t('access denied: insufficient permissions') . '</p>',
+    'format' => 'plain_text',
+  );
+  variable_set('customerror_403_authenticated_title',
+    t('access denied: insufficient permissions'));
+  variable_set('customerror_403_authenticated', $content_403_authenticated);
+
+  // Set the 404 page.
+  $content_404 = array(
+    'value' => '<h3 class="field-teaser">UPS! Vi kan ikke finde den side du søger.</h3><p><strong>Hvad gik galt?</strong><br />Der kan være flere årsager til, at vi ikke kan finde det du leder efter:</p><p>- Stavefejl: Måske har du stavet forkert, da du skrev søgeordet. Eller der er en stavefejl i det link, du har fulgt.</p><p>- Siden er flyttet/slettet: Måske findes siden ikke længere eller den er blevet flyttet.</p><p><br /><strong>Bibliotek.dk</strong><br />Prøv den landsdækkende base <a href="http://bibliotek.dk/" target="_blank" title="Bibliotek.dk">bibliotek.dk</a>. Bibliotek.dk er en gratis service, hvor du kan se, hvad der er blevet udgivet i Danmark, og hvad der findes på danske biblioteker. Databasen opdateres dagligt.<br />Du kan bestille materialer til afhentning på dit lokale bibliotek. Du skal være registreret bruger på biblioteket.</p><p><br /><strong>Kom videre - kontakt dit bibliotek</strong><br />Find kontakt oplysninger på <a href="/biblioteker">\'den ønskede afdeling\'</a>.</p>',
+    'format' => 'ding_wysiwyg',
+  );
+  variable_set('customerror_404_title', 'Siden blev ikke fundet');
+  variable_set('customerror_404', $content_404);
+  variable_set('site_404', 'customerror/404');
 }

@@ -10,7 +10,7 @@
  */
 function ting_field_info() {
   return array(
-    // ting_object
+    // ting_object.
     'ting_title' => array(
       'label' => t('Ting object title'),
       'description' => t('Ting object title'),
@@ -71,7 +71,7 @@ function ting_field_info() {
         'add_widget' => TRUE,
       ),
     ),
-    // ting_collection
+    // ting_collection.
     'ting_primary_object' => array(
       'label' => t('Ting collection primary object'),
       'description' => t('Ting collection primary object'),
@@ -130,7 +130,7 @@ function ting_field_load($entity_type, $entities, $field, $instances, $langcode,
   // Transform entities into a multiple field.
   if ($field['type'] == 'ting_entities') {
     foreach ($entities as $id => $entity) {
-      foreach ($entity->entities as $ent) {
+      foreach ($entity->getEntities() as $ent) {
         $items[$id][] = array(
           'id' => $ent->id,
         );
@@ -159,6 +159,7 @@ function ting_field_formatter_info() {
       'settings' => array(
         'link_type' => 'none',
         'prefix_type' => 'no',
+        'element' => 'h2',
       ),
     ),
     'ting_type_default' => array(
@@ -229,6 +230,22 @@ function ting_field_formatter_settings_form($field, $instance, $view_mode, $form
 
   switch ($field['type']) {
     case 'ting_title':
+      // Provide default for fields that predate the element_type option.
+      $settings += array(
+        'element' => 'h2',
+      );
+
+      $element['element'] = array(
+        '#type' => 'radios',
+        '#title' => t('HTML element'),
+        '#options' => array(
+          'h2' => 'H2',
+          'h3' => 'H3',
+          '' => t('None'),
+        ),
+        '#default_value' => $settings['element'],
+      );
+
       $element['link_type'] = array(
         '#type' => 'radios',
         '#title' => t('Link title to'),
@@ -249,6 +266,7 @@ function ting_field_formatter_settings_form($field, $instance, $view_mode, $form
         ),
         '#default_value' => $settings['prefix_type'],
       );
+
       break;
 
     case 'ting_entities':
@@ -287,6 +305,12 @@ function ting_field_formatter_settings_summary($field, $instance, $view_mode) {
   $summary = '';
   switch ($field['type']) {
     case 'ting_title':
+      // Provide default for fields that predate the element_type option.
+      $settings += array(
+        'element' => 'h2',
+      );
+      $summary .= t('<strong>Element:</strong> @element', array('@element' => $settings['element']));
+      $summary .= '</br>';
       $summary .= t('<strong>Link type:</strong> @type', array('@type' => $settings['link_type']));
       $summary .= '</br>';
       $summary .= t('<strong>Prefix with type</strong>: @type', array('@type' => $settings['prefix_type']));
@@ -317,7 +341,7 @@ function ting_field_formatter_view($entity_type, $entity, $field, $instance, $la
 
   // Entity listing is a special case.
   if ($display['type'] == 'ting_entities_default') {
-    $entities = $entity->entities;
+    $entities = $entity->getEntities();
     // Skip the first.
     if ($display['settings']['hide_primary']) {
       array_shift($entities);
@@ -335,9 +359,14 @@ function ting_field_formatter_view($entity_type, $entity, $field, $instance, $la
     return $element;
   }
 
+  /* @var \TingEntity $entity */
   foreach ($items as $delta => $item) {
     switch ($display['type']) {
       case 'ting_title_default':
+        // Provide default for fields that predate the element_type option.
+        $display['settings'] += array(
+          'element' => 'h2',
+        );
         /*
          * This doesn't work due to the way objects gets cached at the
          * moment. Until that is fixed, link all objects to collections when
@@ -366,7 +395,7 @@ function ting_field_formatter_view($entity_type, $entity, $field, $instance, $la
           }
 
           $collection_titles = array_map(
-            function($collection_entity) {
+            function ($collection_entity) {
               return $collection_entity->title;
             },
             $collection->entities
@@ -391,25 +420,30 @@ function ting_field_formatter_view($entity_type, $entity, $field, $instance, $la
           $title = check_plain($title);
         }
 
-        $is_book = '';
-        if (isset($entity)) {
-          $_string = $entity->type;
+        // Append the language as a suffix to the title for certain material
+        // types if the material language is not the default language.
+        /* @var \TingEntity $entity */
+        $title_suffix_types = variable_get('ting_language_type_title_suffix', []);
+        $default_language = variable_get('ting_language_default');
+        $is_title_suffix_type = (!empty($title_suffix_types[strtolower($entity->getType())]));
+        $language = $entity->getLanguage();
+        $has_language = !empty($language);
+        $is_default_language = $language == $default_language;
 
-          if (isset($_string) && preg_match('~\bBog\b~', $_string) != FALSE) {
-            $is_book = TRUE;
-          }
-
-          $lang = $entity->getLanguage();
-          if ($is_book && $lang != 'Dansk') {
-            $title = $title . ' (' . $lang . ')';
-          }
+        if ($is_title_suffix_type && $has_language && !$is_default_language) {
+          $title .= " ($language)";
         }
 
         $element[$delta] = array(
-          '#prefix' => $prefix . '<h2>',
-          '#suffix' => '</h2>',
+          '#prefix' => $prefix,
           '#markup' => $title,
         );
+
+        if (!empty($display['settings']['element'])) {
+          $element_name = $display['settings']['element'];
+          $element[$delta]['#prefix'] .= '<' . $element_name . '>';
+          $element[$delta]['#suffix'] = '</' . $element_name . '>';
+        }
 
         break;
 
@@ -426,17 +460,21 @@ function ting_field_formatter_view($entity_type, $entity, $field, $instance, $la
         break;
 
       case 'ting_series_default':
-        if ($entity->serieTitle) {
+        if ($entity->getSeriesTitles()) {
           // The search string used is configurable because the data well is not
           // fully implemented regarding series. As default we search both in
           // the series title register and the description field because many
           // series only have data in the description field. This will probably
           // change with new versions of the data well.
-          foreach($entity->serieTitle as  $title) {
-            $search_term = str_replace('@serietitle', drupal_strtolower($title[0]), variable_get('ting_search_register_serie_title', 'phrase.titleSeries="@serietitle"'));
+          foreach ($entity->getSeriesTitles() as $title) {
+            $series_title = $title[0];
             $series_number = isset($title[1]) ? ' : ' . check_plain($title[1]) . ' ; ' : ' ; ';
+
+            $replacement = array('@serietitle' => drupal_strtolower($series_title));
+            $search_string = variable_get('ting_search_register_serie_title', 'phrase.titleSeries="@serietitle"');
+            $link = ting_field_search_link(trim($series_title), $search_string, $replacement, array('attributes' => array('class' => array('series'))));
             $element[$delta][] = array(
-              '#markup' => l(trim($title[0]), 'search/ting/' . $search_term, array('attributes' => array('class' => array('series')))) . $series_number,
+              '#markup' => $link . $series_number,
             );
           }
         }
@@ -454,22 +492,48 @@ function ting_field_formatter_view($entity_type, $entity, $field, $instance, $la
         break;
 
       case 'ting_author_default':
-        $creators = array();
-        foreach ($entity->creators as $i => $creator) {
-          $creators[] = l($creator, 'search/ting/phrase.creator="' . $creator . '"', array('attributes' => array('class' => array('author'))));
-        }
+        // Build an array containing different formats of each creator name.
+        // This will allow administrators to use the format that suits their
+        // needs best e.g. if one wants to use a facet where the name is
+        // inverted.
+        $creators = array_map(function ($creator, $inverted_creator) {
+          return ['default' => $creator, 'inverted' => $inverted_creator];
+        }, $entity->getCreators(), $entity->getInvertedCreators());
+
+        // Array mapped with replacement string as key and the author name as
+        // the value.
+        $replace_array = array_map(function ($creator) {
+          return [
+            '@author' => $creator['default'],
+            '@author_inverted' => $creator['inverted'],
+          ];
+        }, $creators);
+        $search_string = variable_get('ting_search_register_author', 'phrase.creator="@author"');
+
+        // The links with the correct author name depending on whether @author
+        // or @author_inverted is used.
+        $creator_links = array_map(function ($creator, $replacements) use ($search_string) {
+          $options = array(
+            'attributes' => array(
+              'class' => array('author'),
+            ),
+          );
+          return ting_field_search_link($creator['default'], $search_string, $replacements, $options);
+        }, $creators, $replace_array);
+
         $markup_string = '';
         if (count($creators)) {
           if ($entity->date != '') {
-            $markup_string = t('By !author_link (@year)', array(
-              '!author_link' => implode(', ', $creators),
+            $replacements = array(
+              '!author_link' => implode(', ', $creator_links),
               // So wrong, but appears to be the way the data is.
               '@year' => $entity->date,
-              ));
+            );
+            $markup_string = t('By !author_link (@year)', $replacements);
           }
           else {
             $markup_string = t('By !author_link', array(
-              '!author_link' => implode(', ', $creators),
+              '!author_link' => implode(', ', $creator_links),
             ));
           }
         }
@@ -482,13 +546,18 @@ function ting_field_formatter_view($entity_type, $entity, $field, $instance, $la
         break;
 
       case 'ting_subjects_default':
-        if (count($entity->subjects) == TRUE) {
-          $subjects = array();
-          foreach ($entity->subjects as $subject) {
-            $subjects[] = l($subject, 'search/ting/phrase.subject="' . $subject . '"', array('attributes' => array('class' => array('subject'))));
-          }
+        if (!empty($entity->getSubjects())) {
+          $search_string = variable_get('ting_search_register_subject', 'phrase.subject="@subject"');
+          $subject_links = array_map(function ($subject) use ($search_string) {
+            $replacement = array('@subject' => $subject);
+            $options = array(
+              'attributes' => array('class' => array('subject')),
+            );
+            return ting_field_search_link($subject, $search_string, $replacement, $options);
+          }, $entity->getSubjects());
+
           $element[$delta] = array(
-            '#markup' => implode(' ', $subjects),
+            '#markup' => implode(' ', $subject_links),
           );
         }
         break;
@@ -514,4 +583,38 @@ function ting_field_formatter_view($entity_type, $entity, $field, $instance, $la
   }
 
   return $element;
+}
+
+/**
+ * Build a link to a search result.
+ *
+ * @param string $text
+ *   The link text for the link.
+ * @param string $search_string
+ *   The string containing the search elements.
+ *   This contains search string and
+ *   query elements separated by a ? separator. Text before the separator is
+ *   treated as the search string. Text after the separator is treated as the
+ *   query string and parsed via parse_str(). This can be used to specify
+ *   facets.
+ *   The search string may contain variables to be replaced with field values.
+ * @param string[] $replacements
+ *   An array of replacements. Keys are variable names that should be translated
+ *   with corresponding values.
+ * @param array $options
+ *   Additional options to be passed to the link.
+ *
+ * @return string
+ *   An HTML string containing a link to the search result.
+ */
+function ting_field_search_link($text, $search_string, array $replacements = [], array $options = []) {
+  $search_string_parts = preg_split('/\?/', $search_string, 2);
+  list($path_suffix, $query_string) = array_pad($search_string_parts, 2, '');
+  $path = 'search/ting/' . strtr($path_suffix, $replacements);
+  $query_string = strtr($query_string, $replacements);
+  parse_str($query_string, $query);
+  return l($text, $path, array_merge_recursive(
+    $options,
+    array('query' => $query)
+  ));
 }

@@ -187,6 +187,9 @@ function fbs_field_widget_form(&$form, &$form_state, $field, $instance, $langcod
           '#date_format' => 'd-m-Y',
           '#date_label_position' => 'invisible',
           '#default_value' => $default_value,
+          '#attributes' => array(
+            'autocomplete' => 'off',
+          ),
         );
       }
 

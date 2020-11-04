@@ -54,17 +54,14 @@ function bpi_http_push_action_form($nid) {
   );
 
   $form['configurations']['bpi_push_images'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('Push with images'),
+    '#type' => 'select',
+    '#title' => t('Push with image'),
+    '#options' => array(
+      BPI_WITHOUT_IMAGES => t('Not approved for sharing'),
+      BPI_WITH_IMAGES => t('Approved for sharing'),
+    ),
     '#description' => t('You should have permission to publish the images before selecting this option.'),
-    '#default_value' => FALSE,
-  );
-
-  $form['configurations']['bpi_push_ccl'] = array(
-    '#type' => 'checkbox',
-    '#title' => t('I want to be anonymous'),
-    '#description' => t('If checked the content will be pushed as anonymous to BPI.'),
-    '#default_value' => FALSE,
+    '#empty_option' => t('- choose -'),
   );
 
   $form['configurations']['bpi_push_refs'] = array(
@@ -89,7 +86,6 @@ function bpi_http_push_action_form($nid) {
       $form['vocabularies']['bpi_push_category']['#default_value'] = $data['category'];
       $form['vocabularies']['bpi_push_audience']['#default_value'] = $data['audience'];
       $form['configurations']['bpi_push_images']['#default_value'] = $data['with_images'];
-      $form['configurations']['bpi_push_ccl']['#default_value'] = !$data['authorship'];
       $form['configurations']['bpi_push_refs']['#default_value'] = $data['with_refs'];
       $form['configurations']['bpi_push_editable']['#default_value'] = $data['editable'];
     }
@@ -160,13 +156,11 @@ function bpi_convert_to_bpi($node, $category, $audience, $with_images = FALSE, $
   if ($with_refs) {
     // Function field_get_items returns data with 2 different structure, depending from stage when it was called.
     $items = field_get_items('node', $node, variable_get('bpi_field_materials', ''));
-    foreach ($items as $item) {
+    foreach ((array) $items as $item) {
       // First case, we have completly saved node, when it returns ding_object_id.
       if (!empty($item['ting_object_id'])) {
         $id = $item['ting_object_id'];
-        // Filter out id's with "katalog" PID, as they only makes sens on
-        // current site.
-        if (!preg_match('/katalog/', $id)) {
+        if (bpi_material_is_sharable($id)) {
           $materials_drupal[] = $id;
         }
       }
@@ -181,7 +175,7 @@ function bpi_convert_to_bpi($node, $category, $audience, $with_images = FALSE, $
           $ting_data = current($data);
           $ting_object = entity_load_single('ting_object', $ting_data['entity_id']);
           if ($ting_object) {
-            if (!preg_match('/katalog/', $ting_object->ding_entity_id)) {
+            if (bpi_material_is_sharable($ting_object->ding_entity_id)) {
               $materials_drupal[] = $ting_object->ding_entity_id;
             }
           }
@@ -213,7 +207,7 @@ function bpi_convert_to_bpi($node, $category, $audience, $with_images = FALSE, $
   $bpi_content['audience'] = $audience;
   $bpi_content['related_materials'] = $materials_drupal;
   $bpi_content['editable'] = (int) $editable;
-  $bpi_content['authorship'] = ($authorship) ? FALSE : TRUE;
+  $bpi_content['authorship'] = !$authorship;
   $bpi_content['assets'] = array();
 
   if ($with_images) {
@@ -245,13 +239,6 @@ function bpi_convert_to_bpi($node, $category, $audience, $with_images = FALSE, $
       }
     }
   }
-  else {
-    $bpi_content['body'] = preg_replace(
-      '~(<p>)?<img.+?/>(</p>)?~is',
-      '',
-      $bpi_content['body']
-    );
-  }
 
   $tags = array();
   $tags_field_name = variable_get('bpi_field_tags', '');
@@ -268,6 +255,24 @@ function bpi_convert_to_bpi($node, $category, $audience, $with_images = FALSE, $
     }
   }
   $bpi_content['tags'] = implode(',', $tags);
+
+  // Allow modules to alter the content sent to bpi.
+  $context = array(
+    'with_refs' => $with_refs,
+    'with_images' => $with_images,
+  );
+  drupal_alter('bpi_convert_to_bpi', $bpi_content, $node, $context);
+
+  // Images (assets) may have been (incorrectly) added to content by modules
+  // implementing hook_bpi_convert_to_bpi_alter().
+  if (!$with_images) {
+    $bpi_content['assets'] = array();
+    $bpi_content['body'] = preg_replace(
+      '~(<p>)?<img.+?/>(</p>)?~is',
+      '',
+      $bpi_content['body']
+    );
+  }
 
   return $bpi_content;
 }

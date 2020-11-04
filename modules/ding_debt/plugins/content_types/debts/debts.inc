@@ -26,7 +26,7 @@ function ding_debt_debts_content_type_render($subtype, $conf, $panel_args, $cont
   $block->delta  = 'debts';
   $block->title = t('My debts');
 
-  $debts = ding_provider_invoke_page('debt', 'list', $account);
+  $debts = ding_provider_invoke('debt', 'list', $account);
 
   if (count($debts) == TRUE) {
     foreach ($debts as $debt) {
@@ -76,6 +76,12 @@ function ding_debt_debts_form($form, &$form_state, $debts, $has_invoiced_fees, $
       '#value' => $debts,
     );
 
+    $form['accept_terms'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('I accept the terms of service'),
+      '#required' => TRUE,
+    );
+
     $provider = ding_provider_get_provider_module_name('payment');
     if (!empty($provider)) {
       $form['pay_selected'] = array(
@@ -84,6 +90,11 @@ function ding_debt_debts_form($form, &$form_state, $debts, $has_invoiced_fees, $
         '#value' => t('Pay selected debts'),
         '#suffix' => '</div>',
         '#submit' => array('ding_debt_debts_form_submit_pay_selected'),
+        '#states' => array(
+          'disabled' => array(
+            ':input[name="accept_terms"]' => array('checked' => FALSE),
+          ),
+        ),
       );
 
       $form['pay_all'] = array(
@@ -92,6 +103,11 @@ function ding_debt_debts_form($form, &$form_state, $debts, $has_invoiced_fees, $
         '#value' => t('Pay all debts'),
         '#suffix' => '</div>',
         '#submit' => array('ding_debt_debts_form_submit_pay_all'),
+        '#states' => array(
+          'disabled' => array(
+            ':input[name="accept_terms"]' => array('checked' => FALSE),
+          ),
+        ),
       );
     }
   }
@@ -111,7 +127,7 @@ function ding_debt_form_details(&$form, $debts, $has_invoiced_fees, $total_amoun
       '#material_type' => $debt->material_type,
       '#information' => array(
         'fee_date' => array(
-          'label' => t('Created date'),
+          'label' => t('Fee date'),
           'data' => format_date(strtotime(check_plain($debt->date)), 'ding_material_lists_date'),
           'class' => 'fee-date',
           '#weight' => 0,
@@ -124,7 +140,7 @@ function ding_debt_form_details(&$form, $debts, $has_invoiced_fees, $total_amoun
         ),
         'amount' => array(
           'label' => t('Amount'),
-          'data' => $debt->is_invoice ? number_format(($debt->amount - $debt->amount_paid), 2, ',', ' ') . ' ' . t('Kr') . ' <span class="note">*</span>' : number_format(($debt->amount - $debt->amount_paid), 2, ',', ' ') . ' ' . t('Kr'),
+          'data' => $debt->is_invoice ? number_format(($debt->amount - $debt->amount_paid), 2, ',', ' ') . ' ' . t('kr.') . ' <span class="note">*</span>' : number_format(($debt->amount - $debt->amount_paid), 2, ',', ' ') . ' ' . t('kr.'),
           'class' => 'fee_amount',
           '#weight' => 8,
         ),
@@ -151,7 +167,7 @@ function ding_debt_form_details(&$form, $debts, $has_invoiced_fees, $total_amoun
     '#type' => 'item',
     '#prefix' => '<div class="total-amount">',
     '#suffix' => '</div>',
-    '#markup' => t('Total') . ': <span class="amount">' . number_format($total_amount, 2, ',', ' ') . ' ' . t('Kr') . '</span>',
+    '#markup' => t('Total') . ': <span class="amount">' . number_format($total_amount, 2, ',', ' ') . ' ' . t('kr.') . '</span>',
   );
 
   if ($has_invoiced_fees) {
@@ -219,4 +235,3 @@ function ding_debt_debts_perform_payment($debts, $amount, &$form_state) {
     }
   }
 }
-

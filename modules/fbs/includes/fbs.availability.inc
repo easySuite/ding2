@@ -11,7 +11,7 @@
  *   Array of ting object ids (faust).
  *
  * @return array
- *   Avaliability info.
+ *   Availability info.
  */
 function fbs_availability_items($provider_ids) {
   $avails = array();
@@ -25,7 +25,10 @@ function fbs_availability_items($provider_ids) {
 
   $result = array();
   foreach ($avails as $item) {
-    $result[$item->recordId] = array('available' => $item->available, 'reservable' => $item->reservable);
+    $result[$item->recordId] = array(
+      'available' => $item->available,
+      'reservable' => $item->reservable,
+    );
   }
 
   return $result;
@@ -48,6 +51,25 @@ function fbs_availability_holdings($provider_ids) {
   }
   catch (Exception $e) {
     watchdog_exception('fbs', $e);
+  }
+
+  module_load_include('inc', 'opensearch', 'opensearch.client');
+
+  // Translate all the fausts to datawell pids at once.
+  $datawell_pids = ding_provider_build_entity_id($provider_ids);
+
+  // Find out with the types of objects we need and load them all at once.
+  $entities = [];
+  $suffix_type = variable_get('fbs_holdings_suffix_type', 'shelf_mark');
+  if ($suffix_type == 'simple') {
+    // Here the entities are keyed by local entity id, so build an array keyed
+    // by datawell pids for easier access.
+    foreach (ding_entity_load_multiple($datawell_pids) as $entity) {
+      $entities[$entity->ding_entity_id] = $entity;
+    }
+  }
+  elseif ($suffix_type == 'shelf_mark') {
+    $entities = opensearch_get_objects_marcxchange($datawell_pids);
   }
 
   $result = array();
@@ -94,11 +116,8 @@ function fbs_availability_holdings($provider_ids) {
         $result_holding['placement'][] = $material_description[0]->materialGroupName;
       }
 
-      module_load_include('client.inc', 'ting');
-      $entity_id = ding_provider_build_entity_id($provider_ids[0]);
-      $suffix_type = variable_get('fbs_holdings_suffix_type', 'shelf_mark');
-
-      if ($suffix_type == 'simple' && $entity = ding_entity_load($entity_id)) {
+      if ($suffix_type == 'simple' && isset($entities[$datawell_pids[$item->recordId]])) {
+        $entity = $entities[$datawell_pids[$item->recordId]];
         // Get DK5 classification.
         if ($classification = $entity->getClassification()) {
           $result_holding['placement'][] = $classification;
@@ -109,57 +128,81 @@ function fbs_availability_holdings($provider_ids) {
           $result_holding['placement'][] = $creator[0];
         }
       }
-      elseif ($suffix_type == 'shelf_mark' && $entity = ting_get_object_marcxchange($entity_id)) {
-        $suffix = '';
-        $field652m = fbs_get_marc_field($entity, '652', 'm');
-        $field652o = fbs_get_marc_field($entity, '652', 'o');
+      elseif ($suffix_type == 'shelf_mark' && isset($entities[$datawell_pids[$item->recordId]])) {
+        $entity = $entities[$datawell_pids[$item->recordId]];
 
-        // Special handling for music:
-        // Field 039.a and 039.b is used for data about music shelf_mark, so we
-        // use this as an indicator for music materials.
+        // For non-fiction and music a special prefix is used.
+        $prefix = '';
+
+        // Look for the marc field to get DK5 classification from. We require
+        // that either 'm' or 'o' subfield is present and prefer 652. If this is
+        // not the case we'll try the outdated marc field 654 for DK5.
+        $field_dk5 = fbs_get_marc_field($entity, '652');
+        if (empty($field_dk5['m']) && empty($field_dk5['o'])) {
+          $field_dk5 = fbs_get_marc_field($entity, '654');
+        }
+
+        // The DK5 classification that we need to consider can both be present
+        // in subfield 'm' and 'o' of field 652. So we extract them both here
+        // for later use.
+        $field_dk5_m = !empty($field_dk5['m']) ? reset($field_dk5['m']) : '';
+        $field_dk5_o = !empty($field_dk5['o']) ? reset($field_dk5['o']) : '';
+
+        // Music is a special case, so we need to check that first. Field 039.a
+        // is present on music materials, so we can use this is an indicator.
         if ($field039a = fbs_get_marc_field($entity, '039', 'a')) {
-          $suffix .= fbs_translate_marc($field039a, '039.a');
+          $prefix .= fbs_translate_marc($field039a, '039.a');
 
           // We'll also append additional subfields if present.
           if ($field039b = fbs_get_marc_field($entity, '039', 'b')) {
-            $suffix .= ' ' . fbs_translate_marc($field039b, '039.b');
+            $prefix .= ' ' . fbs_translate_marc($field039b, '039.b');
           }
         }
-        // Use the 'sk' marker to determine if this is non-fiction.
-        // It seems to present in both the 'm' and 'o' subfield so we check them
-        // to be sure.
-        else if ($field652m != 'sk' && $field652o != 'sk') {
-          // DK5 classification.
-          $suffix .= $field652m;
-
-          // Additonal descriptors from the DK5 classification.
-          if ($field652b = fbs_get_marc_field($entity, '652', 'b')) {
-            $suffix .= ' ' . $field652b;
+        // Non-fiction: Look for the 'sk' marker in both 'm' and 'o' subfield.
+        // If it's not present in any of these, we consider the material be to
+        // be non-fiction and we should use the special prefix for non-fiction
+        // materials.
+        elseif ($field_dk5_m !== 'sk' && $field_dk5_o !== 'sk') {
+          // There can be multiple 652 fields with their own subfields and some
+          // of them will have the same subfields. It's therefore important that
+          // we use data from the subfields of the same field that we got the
+          // DK5 classification from. We can achieve this be remembering the
+          // index of 652 field we end up using.
+          // See: TingMarcResult::process()
+          $field_dk5_index = 0;
+          // Get the DK5 classification. Prefer subfield 'm'. Fallback to 'o'.
+          if ($field_dk5_m) {
+            $prefix .= $field_dk5_m;
+            $field_dk5_index = key($field_dk5['m']);
           }
-          else if ($field652a = fbs_get_marc_field($entity, '652', 'a')) {
-            $suffix .= ' ' . $field652a;
-            if ($field652h = fbs_get_marc_field($entity, '652', 'h')) {
-              $suffix .= ', ' . $field652h;
+          elseif ($field_dk5_o) {
+            $prefix .= $field_dk5_o;
+            $field_dk5_index = key($field_dk5['o']);
+          }
+
+          // Additional descriptors from the DK5 classification. Note that we
+          // ensure to use data from the correct subfields of the field we got
+          // the DK5 classification from.
+          if (!empty($field_dk5['b'][$field_dk5_index])) {
+            $prefix .= ' ' . $field_dk5['b'][$field_dk5_index];
+          }
+          elseif (!empty($field_dk5['a'][$field_dk5_index])) {
+            $prefix .= ' ' . $field_dk5['a'][$field_dk5_index];
+            if (!empty($field_dk5['h'][$field_dk5_index])) {
+              $prefix .= ', ' . $field_dk5['h'][$field_dk5_index];
             }
           }
         }
 
-        // Generate and append the standard suffix for ALMA shelf_mark. We prefer
-        // marc fields in the following order:
+        // The shelf mark is generated from a prioritized list of candidates.
         $candidates = array(
           '100.a',
           '110.a',
-          '239.a',
+          '239.t',
           '245.a',
         );
 
         if ($shelf_mark = fbs_pick_marc_field($entity, $candidates)) {
-          // If we found a shelf_mark and there's already something in suffix,
-          // remember to add a seperator.
-          if ($suffix) {
-            $suffix .= ' > ';
-          }
-
           $words = explode(' ', $shelf_mark);
           $shelf_mark = FALSE;
 
@@ -179,10 +222,11 @@ function fbs_availability_holdings($provider_ids) {
           // A neat little trick for mb_ucfirst:
           // http://stackoverflow.com/questions/2517947/ucfirst-function-for-multibyte-character-encodings#answer-14161325.
           $shelf_mark = mb_strtoupper(mb_substr($shelf_mark, 0, 1)) . mb_strtolower(mb_substr($shelf_mark, 1));
-          $suffix .= $shelf_mark;
         }
 
-        $result_holding['placement'][] = $suffix;
+        // Generate and append the final holdings suffix.
+        $holdings_suffix = ($prefix ? $prefix . ' > ' : '') . $shelf_mark;
+        $result_holding['placement'][] = $holdings_suffix;
       }
 
       $placement_string = implode(' > ', $result_holding['placement']);
@@ -253,7 +297,6 @@ function fbs_availability_holdings($provider_ids) {
       }
       $result[$item->recordId]['issues'] = $issues;
     }
-
   }
 
   return $result;
@@ -296,8 +339,14 @@ function fbs_translate_marc($code, $field) {
   if ($field == '039.a') {
     $translations = _fbs_get_marc_039a_translations();
   }
-  else if ($field == '039.b') {
-    $translations = _fbs_get_marc_039b_translations();
+  elseif ($field == '039.b') {
+    // Danmarc only defines a few custom codes for areas that are not country.
+    // The rest of the codes are ISO 3166-1 alpha-2, which we can get from
+    // Drupal.
+    // See: http://www.kat-format.dk/danMARC2/Danmarc2.22.htm#pgfId=1574621
+    include_once DRUPAL_ROOT . '/includes/locale.inc';
+    $translations = array_merge(_fbs_get_marc_039b_translations(), country_get_list());
+    $code = drupal_strtoupper($code);
   }
 
   return isset($translations[$code]) ? $translations[$code] : NULL;
@@ -322,7 +371,7 @@ function _fbs_get_marc_039a_translations() {
     'eti' => 'ET INSTRUMENT',
     'eta' => 'ET INSTRUMENT. ANTOLOGIER',
     'vok' => 'VOKALMUSIK',
-    'voa' => 'VOKALMUSIK. ANTOLOGIERø',
+    'voa' => 'VOKALMUSIK. ANTOLOGIER',
     'opr' => 'OPERAER',
     'opa' => 'OPERAER. ANTOLOGIER',
     'otm' => 'OPERETTER/MUSICALS',
@@ -348,232 +397,26 @@ function _fbs_get_marc_039a_translations() {
 }
 
 /**
- * Helper function to hold marc field 039.b machine code translations.
+ * Helper function to hold additional country codes defined by marc.
  *
  * See: http://www.kat-format.dk/danMARC2/Danmarc2.22.htm#pgfId=1574621
+ * Note that we have them capitalized to be able treat them the same way as the
+ * capitalized country codes we get from Drupal.
  */
 function _fbs_get_marc_039b_translations() {
-  return array(
-    'ad' => 'Andorra',
-    'ae' => 'Forenede Arabiske Emirater',
-    'af' => 'Afghanistan',
-    'ag' => 'Antigua og Barbuda',
-    'ai' => 'Anguilla',
-    'al' => 'Albanien',
-    'am' => 'Armenien',
-    'ao' => 'Angola',
-    'aq' => 'Antarktis',
-    'ar' => 'Argentina',
-    'as' => 'Amerikansk Samoa',
-    'at' => 'Østrig',
-    'au' => 'Australien',
-    'aw' => 'Aruba',
-    'az' => 'Aserbajdsjan',
-    'ba' => 'Bosnien-Hercegovina',
-    'bb' => 'Barbados',
-    'bd' => 'Bangladesh',
-    'be' => 'Belgien',
-    'bf' => 'Burkina Faso',
-    'bg' => 'Bulgarien',
-    'bh' => 'Bahrein',
-    'bi' => 'Burundi',
-    'bj' => 'Benin',
-    'bm' => 'Bermuda',
-    'bn' => 'Brunei',
-    'bo' => 'Bolivia',
-    'bq' => 'Bonaire, Sint Eustatius og  Saba',
-    'br' => 'Brasilien',
-    'bs' => 'Bahamas',
-    'bt' => 'Bhutan',
-    'bv' => 'Bouvetøen',
-    'bw' => 'Botswana',
-    'by' => 'Hviderusland (Belarus)',
-    'bz' => 'Belize',
-    'ca' => 'Canada',
-    'cc' => 'Kokosøerne',
-    'cf' => 'Centralafrikanske Republik',
-    'cg' => 'Congo',
-    'ch' => 'Svejts',
-    'ci' => 'Elfenbenskysten',
-    'ck' => 'Cookøerne',
-    'cl' => 'Chile',
-    'cm' => 'Cameroun',
-    'cn' => 'Kina',
-    'co' => 'Colombia',
-    'cr' => 'Costa Rica',
-    'cu' => 'Cuba',
-    'cv' => 'Kap Verde',
-    'cw' => 'Curaçao',
-    'cx' => 'Christmas Island',
-    'gb' => 'Storbritannien',
-    'gd' => 'Grenada',
-    'ge' => 'Georgien',
-    'gf' => 'Fransk Guyana',
-    'gh' => 'Ghana',
-    'gi' => 'Gibraltar',
-    'gl' => 'Grønland',
-    'gm' => 'Gambia',
-    'gn' => 'Guinea',
-    'gp' => 'Guadeloupe',
-    'gq' => 'Ækvatorialguinea',
-    'gr' => 'Grækenland',
-    'gs' => 'South Georgia og De Sydlige ',
-    'Sa' => 'dwichøer',
-    'gt' => 'Guatemala',
-    'gu' => 'Guam',
-    'gw' => 'Guinea-Bissau',
-    'gy' => 'Guyana',
-    'hk' => 'Hongkong',
-    'hm' => 'Heard- og McDonaldøerne',
-    'hn' => 'Honduras',
-    'hr' => 'Kroatien',
-    'ht' => 'Haiti',
-    'hu' => 'Ungarn',
-    'id' => 'Indonesien',
-    'ie' => 'Irland',
-    'il' => 'Israel',
-    'in' => 'Indien',
-    'io' => 'Britiske Territorium i Det Indiske Ocean',
-    'iq' => 'Irak',
-    'ir' => 'Iran',
-    'is' => 'Island',
-    'it' => 'Italien',
-    'jm' => 'Jamaica',
-    'jo' => 'Jordan',
-    'jp' => 'Japan',
-    'ke' => 'Kenya',
-    'kg' => 'Kirgisistan',
-    'kh' => 'Cambodja',
-    'ki' => 'Kiribati',
-    'km' => 'Comorerne',
-    'kn' => 'St. Christopher og Nevis',
-    'kp' => 'Nordkorea',
-    'kr' => 'Sydkorea',
-    'kw' => 'Kuwait',
-    'ky' => 'Caymanøerne',
-    'kz' => 'Kasakhstan',
-    'la' => 'Laos',
-    'lb' => 'Libanon',
-    'lc' => 'St. Lucia',
-    'li' => 'Liechtenstein',
-    'lk' => 'Sri Lanka',
-    'lr' => 'Liberia',
-    'ls' => 'Lesotho',
-    'lt' => 'Litauen',
-    'lu' => 'Luxembourg',
-    'lv' => 'Letland',
-    'ly' => 'Libyen',
-    'ma' => 'Marokko',
-    'mc' => 'Monaco',
-    'md' => 'Moldova',
-    'mg' => 'Madagaskar',
-    'mh' => 'Marshalløerne',
-    'mk' => 'Makedonien, Den tidligere jugoslaviske republik',
-    'ml' => 'Mali',
-    'mm' => 'Myanmar',
-    'mn' => 'Mongoliet',
-    'mo' => 'Macao',
-    'mp' => 'Nordmarianerne',
-    'mq' => 'Martinique',
-    'mr' => 'Mauretanien',
-    'ms' => 'Montserrat',
-    'mt' => 'Malta',
-    'mu' => 'Mauritius',
-    'mv' => 'Maldiverne',
-    'mw' => 'Malawi',
-    'mx' => 'Mexico',
-    'my' => 'Malaysia',
-    'mz' => 'Mozambique',
-    'na' => 'Namibia',
-    'nc' => 'Ny Caledonien',
-    'ne' => 'Niger',
-    'nf' => 'Norfolk Island',
-    'ng' => 'Nigeria',
-    'ni' => 'Nicaragua',
-    'nl' => 'Holland',
-    'no' => 'Norge',
-    'np' => 'Nepal',
-    'nr' => 'Nauru',
-    'nu' => 'Niue',
-    'nz' => 'New Zealand',
-    'om' => 'Oman',
-    'pa' => 'Panama',
-    'pe' => 'Peru',
-    'pf' => 'Fransk Polynesien',
-    'pg' => 'Papua Ny Guinea',
-    'ph' => 'Filippinerne',
-    'pk' => 'Pakistan',
-    'pl' => 'Polen',
-    'pm' => 'Saint Pierre et Miquelon',
-    'pn' => 'Pitcairn',
-    'pr' => 'Puerto Rico',
-    'ps' => 'Palæstina',
-    'pt' => 'Portugal',
-    'pw' => 'Palau',
-    'py' => 'Paraguay',
-    'qa' => 'Qatar',
-    're' => 'Réunion',
-    'ro' => 'Rumænien',
-    'ru' => 'Rusland',
-    'rw' => 'Rwanda',
-    'sa' => 'Saudi-Arabien',
-    'sb' => 'Salomonøerne',
-    'sc' => 'Seychellerne',
-    'sd' => 'Sudan',
-    'se' => 'Sverige',
-    'sg' => 'Singapore',
-    'sh' => 'Sankt Helena',
-    'si' => 'Slovenien',
-    'sj' => 'Svaldbard og Jan Mayen',
-    'sk' => 'Slovakiet',
-    'sl' => 'Sierra Leone',
-    'sm' => 'San Marino',
-    'sn' => 'Senegal',
-    'so' => 'Somalia',
-    'sr' => 'Surinam',
-    'ss' => 'Sydsudan',
-    'st' => 'Sao Tomé og Principe',
-    'sv' => 'El Salvador',
-    'sx' => 'Sint Maarten (Hollandsk del)',
-    'sy' => 'Syrien',
-    'sz' => 'Swaziland',
-    'tc' => 'Turks- og Caicosøerne',
-    'td' => 'Tchad',
-    'tf' => 'Franske Territorier, Sydlige',
-    'tg' => 'Togo',
-    'th' => 'Thailand',
-    'tj' => 'Tadsjikistan',
-    'tk' => 'Tokelau',
-    'tm' => 'Turkmenistan',
-    'tn' => 'Tunesien',
-    'to' => 'Tonga',
-    'tp' => 'Østtimor',
-    'tr' => 'Tyrkiet',
-    'tt' => 'Trinidad og Tobago',
-    'tv' => 'Tuvalu',
-    'tw' => 'Taiwan',
-    'tz' => 'Tanzania',
-    'ua' => 'Ukraine',
-    'ug' => 'Uganda',
-    'um' => 'Amerikanske Oversøiske Øer, Mindre',
-    'us' => 'USA',
-    'uy' => 'Uruguay',
-    'uz' => 'Usbekistan',
-    'va' => 'Vatikanstaten',
-    'vc' => 'St. Vincent og Grenadinerne',
-    've' => 'Venezuela',
-    'vg' => 'Jomfruøerne, Britiske',
-    'vi' => 'Jomfruøerne, Amerikanske',
-    'vn' => 'Vietnam',
-    'vu' => 'Vanuatu',
-    'wf' => 'Wallis-og Futunaøerne',
-    'ws' => 'Samoa',
-    'ye' => 'Yemen',
-    'yt' => 'Mayotte',
-    'yu' => 'Jugoslavien samt Serbien og Montenegro',
-    'za' => 'Sydafrika',
-    'zm' => 'Zambia',
-    'zr' => 'Zaire',
-    'zw' => 'Zimbabwe',
+  return array (
+    'ÅB' => 'De Små Antiller',
+    'ÅC' => 'Oceanien',
+    'ÅE' => 'Europa',
+    'ÅF' => 'Forindien',
+    'ÅH' => 'Hawaii',
+    'ÅI' => 'Asien',
+    'ÅM' => 'Mellemamerika',
+    'ÅN' => 'Norden',
+    'ÅO' => 'Nordameria',
+    'ÅR' => 'Afrika',
+    'ÅS' => 'Skotland',
+    'ÅT' => 'Tibet',
+    'ÅY' => 'Sydamerika',
   );
 }

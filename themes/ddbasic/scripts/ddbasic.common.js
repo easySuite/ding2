@@ -19,6 +19,8 @@
    * Toggle opening hours
    */
   function toggle_opening_hours() {
+    var hasOpeningHours = Drupal.settings.hasOwnProperty('ding_ddbasic_opening_hours');
+
     // Create toggle link
     $('.js-opening-hours-toggle-element').each(function () {
       var
@@ -33,11 +35,21 @@
         text.push(Drupal.t('Opening hours'));
       }
 
-      $('<a />', {
-        'class' : 'opening-hours-toggle js-opening-hours-toggle js-collapsed collapsed',
-        'href' : Drupal.t('#toggle-opening-hours'),
-        'text' : text.join(', ')
-      }).insertBefore(this);
+      if (hasOpeningHours && Drupal.settings.ding_ddbasic_opening_hours.hasOwnProperty('expand_all_libraries')) {
+        // Expand all opening hours on library pages
+        $('<a />', {
+          'class' : 'opening-hours-toggle js-opening-hours-toggle js-collapsed js-expanded collapsed',
+          'href' : Drupal.t('#toggle-opening-hours'),
+          'text' : text.join(', ')
+        }).insertBefore(this);
+      } else {
+        // Collapse all opening hours on library pages
+        $('<a />', {
+          'class' : 'opening-hours-toggle js-opening-hours-toggle js-collapsed collapsed',
+          'href' : Drupal.t('#toggle-opening-hours'),
+          'text' : text.join(', ')
+        }).insertBefore(this);
+      }
     });
 
     // Set variables
@@ -63,8 +75,8 @@
       event.preventDefault();
     });
 
-    // Expand opening hours on library pages.
-    if (Drupal.settings.ding_ddbasic_opening_hours && Drupal.settings.ding_ddbasic_opening_hours.expand_on_library) {
+    // Expand opening hours on first library on library pages.
+    if (hasOpeningHours && Drupal.settings.ding_ddbasic_opening_hours.hasOwnProperty('expand_on_first_library')) {
       element.triggerHandler('click');
     }
   }
@@ -94,23 +106,6 @@
   }
 
   /**
-   * Hide listed empty elements.
-   */
-  function hideElement() {
-    var selectors = [
-      '.layout-wrapper'
-    ];
-
-    for (var i = selectors.length - 1; i >= 0; i--) {
-      var $el = $(selectors[i]);
-
-      if($.trim($el.html()) === '') {
-        $el.hide();
-      }
-    }
-  }
-
-  /**
    * Sets sarousel image as background.
    */
   function setCarouselBg() {
@@ -128,9 +123,6 @@
 
     // Carousel bg
     setCarouselBg();
-
-    // Hide empty elements
-    hideElement();
 
     // Toggle opening hours.
     toggle_opening_hours();
@@ -154,16 +146,10 @@
     ].forEach(function(e) {
         var selector = e;
         $(selector).each(function() {
-          if ($(this).parent().find(selector).size() < 2) {
+          if ($(this).parent().find(selector).length < 2) {
             $(this).addClass('js-og-single-content-type');
           }
       });
-    });
-
-    $('.layout-wrapper').each(function() {
-      if ($(this).children().length == 0) {
-        $(this).css('display', 'none');
-      }
     });
   });
 
@@ -171,12 +157,73 @@
   Drupal.behaviors.ding_submenu = {
     attach: function(context, settings) {
 
-      $('.sub-menu-title', context).click(function(evt) {
+      $('.sub-menu-title', context).unbind().click(function(evt) {
         if ($('.is-tablet').is(':visible')) {
           evt.preventDefault();
           $(this).parent().find('ul').slideToggle("fast");
         }
       });
+    }
+  };
+
+  /**
+   * Make clicks on anchor links to stop on correct position.
+   */
+  Drupal.behaviors.findTopForAnchor = {
+    attach: function (context, settings) {
+      var offset = $('#page')[0].offsetTop;
+      var queryString = window.location.hash;
+
+      function scrollToAnchor(anchorId) {
+        var target, anchorObject = $(anchorId);
+        if (anchorObject.length !== 0) {
+          target = anchorObject.offset().top - offset - 61;
+        }
+        else {
+          return false;
+        }
+
+        $('html, body').animate({scrollTop: target}, 'fast', function () {
+          window.location.hash = anchorId;
+        });
+      }
+
+      if (queryString !== "") {
+        scrollToAnchor(queryString);
+      }
+
+      $('article a[href^="#"]').click(function (event) {
+        event.preventDefault();
+        var anchorId = $(this).attr('href');
+        scrollToAnchor(anchorId);
+        return false;
+      });
+    }
+  };
+
+  // Nodelist "Promoted Nodes".
+  Drupal.behaviors.ding_nodelist_promoted_nodes = {
+    attach: function (context, settings) {
+      var pnNodelistPanes = $('.pane-ding-nodelist .ding_nodelist', context);
+      if (pnNodelistPanes.length > 0) {
+        $(pnNodelistPanes).each(function (i, block) {
+          // "Promoted nodes" items classes list.
+          var classes = ['first-left-block', 'first-right-block', 'last-left-block', 'last-right-block'];
+          classes.forEach(function (value) {
+            // Attach mouseover/click handler to every item wrapper.
+            var itemWrapper = $('.' + value, block);
+            itemWrapper.on('mouseover click', function (event) {
+              // Always display pointer cursor.
+              itemWrapper.css('cursor', 'pointer');
+              // If click event; use data-href value on current item wrapper as link
+              // to new page.
+              if (event.type === 'click') {
+                window.location.href = $(this).data('href');
+              }
+            });
+          });
+        });
+      }
     }
   };
 

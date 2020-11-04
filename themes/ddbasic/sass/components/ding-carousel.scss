@@ -14,6 +14,9 @@
     width: auto;
     padding-top: 0;
   }
+  ul {
+    padding-left: 0;
+  }
   .carousel-list-tabs {
     margin: 0;
     text-align: left;
@@ -64,18 +67,16 @@
   .carousel-select {
     display: none;
     width: 100%;
-    padding-right: 160px;
     float: left;
-    margin-top: -54px;
+    position: relative;
+    padding: 0;
+    margin: 0;
+    margin-bottom: 20px;
+    height: auto;
 
     // Tablet
     @include media($tablet) {
       display: block;
-    }
-
-    // Mobile
-    @include media($mobile) {
-      padding-right: 0;
     }
   }
 }
@@ -87,23 +88,34 @@
   &.hidden {
     display: none;
   }
-
+  ul {
+    padding-left: 0;
+  }
   .slick-slider {
     position: relative;
     clear: left;
-    min-height: 418px; // Prevent page from jumping when content is loaded in
-    max-height: 418px;
+    min-height: 318px; // Prevent page from jumping when content is loaded in
+    max-height: 318px;
+
+    //If ting-object-no-overlay
+    @at-root .ting-object-no-overlay#{&} {
+      max-height: none;
+    }
 
     // Tablet
     @include media($tablet) {
       padding-top: 0;
       min-height: 363px; // Prevent page from jumping when content is loaded in
       max-height: 363px;
-
     }
 
     .slick-list {
-      max-height: 418px;
+      max-height: 332px;
+
+      //If ting-object-no-overlay
+      @at-root .ting-object-no-overlay#{&} {
+        max-height: none;
+      }
 
       @include media($tablet) {
         max-height: 363px;
@@ -112,16 +124,17 @@
 
     .slick-track {
       .slick-slide {
-        width: 260px;
+        width: 194px;
         margin-right: 28px;
         text-align: left;
+        margin-bottom: 0;
 
         &:last-child {
           margin-right: 0;
         }
 
         img {
-          height: 380px !important;
+          height: 284px !important;
           display: block;
         }
 
@@ -140,7 +153,7 @@
 
       .placeholder {
         @include linear-gradient(to top, $grey-light 30px, $grey-medium 100%);
-        min-height: 336px;
+        min-height: 266px;
 
         .icon-spinner {
           position: relative;
@@ -204,6 +217,13 @@
           text-indent: 0;
         }
 
+        &:focus {
+          // Mimicking native outline styling.
+          outline: 1px dotted $color-primary;
+          outline: 5px auto -webkit-focus-ring-color;
+        }
+
+        &:focus,
         &:hover {
           cursor: pointer;
           &::after {
@@ -216,6 +236,7 @@
           cursor: default;
           opacity: $disabled;
 
+          &:focus,
           &:hover {
             &::after {
               background-color: $color-secondary;
@@ -224,6 +245,20 @@
           }
         }
       }
+    }
+  }
+}
+
+.ding-carousel-actions {
+  position: relative;
+  width: calc(100% - 166px);
+  bottom: 84px;
+  .more-link {
+    margin-right: 15px;
+  }
+  form {
+    @include media($mobile) {
+      display: none;
     }
   }
 }

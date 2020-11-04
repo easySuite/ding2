@@ -54,7 +54,6 @@ function fbs_reservation_list($account, $requested_type = NULL, $reset = FALSE) 
         $type = $reservation->state == 'interLibraryReservation' ? DING_RESERVATION_INTERLIBRARY_LOANS : $type;
 
         $ding_reservation = array(
-          'ding_entity_id' => $ids[$reservation->recordId],
           'id' => $reservation->reservationId,
           'pickup_branch_id' => $reservation->pickupBranch,
           'created' => $reservation->dateOfReservation,
@@ -62,6 +61,16 @@ function fbs_reservation_list($account, $requested_type = NULL, $reset = FALSE) 
           // Required by ding_reservation.
           'reservation_type' => $type,
         );
+
+        // With the FBS provider we have to use FBS data for ILL, since we can't
+        // rely on the record ID being unique in these cases.
+        if (isset($reservation->ilBibliographicRecord)) {
+          $ding_reservation['display_name'] = $reservation->ilBibliographicRecord->title;
+          $ding_reservation['author'] = $reservation->ilBibliographicRecord->author;
+        }
+        elseif (isset($ids[$reservation->recordId])) {
+          $ding_reservation['ding_entity_id'] = $ids[$reservation->recordId];
+        }
 
         if ($type === DING_RESERVATION_READY) {
           $ding_reservation['pickup_date'] = $reservation->pickupDeadline;
@@ -96,11 +105,6 @@ function fbs_reservation_list($account, $requested_type = NULL, $reset = FALSE) 
           }
         }
 
-        // Handle inter library loans.
-        if (!empty($reservation->ilBibliographicRecord)) {
-          $ding_reservation['display_name'] = $reservation->ilBibliographicRecord->title;
-        }
-
         $results[$type][$ding_reservation['id']] = new DingProviderReservation($ding_reservation['id'], $ding_reservation);
       }
 
@@ -130,13 +134,12 @@ function fbs_reservation_list($account, $requested_type = NULL, $reset = FALSE) 
  *
  * @param object $account
  *   User to reserve for.
- * @param string $record_ids
+ * @param string $record_id
  *   Id of ting object to reserve.
  * @param array $options
  *   Reservation options.
- *
  */
-function fbs_reservation_create($account, $record_id, $options) {
+function fbs_reservation_create($account, $record_id, array $options) {
   $batch = new FBS\Model\CreateReservationBatch();
   $batch->reservations = array();
 
@@ -202,7 +205,7 @@ function fbs_reservation_create($account, $record_id, $options) {
       case 'success':
       default:
         watchdog('fbs', 'Unexpected state "@state" on failed reservaiton', array('@state' => $result->result), WATCHDOG_WARNING);
-        throw new DingProviderUserException(t('Unknown error from library system while attempting to reserve.'));
+        throw new DingProviderEnduserException(t('Unknown error from library system while attempting to reserve.'));
     };
   }
 }
@@ -220,7 +223,7 @@ function fbs_reservation_create($account, $record_id, $options) {
  * @return bool
  *   TRUE if no errors else FALSE.
  */
-function fbs_reservation_update($account, $reservation_ids, $options) {
+function fbs_reservation_update($account, array $reservation_ids, array $options) {
   $batch = new FBS\Model\UpdateReservationBatch();
   $batch->reservations = array();
   foreach ($reservation_ids as $reservation_id) {
@@ -253,8 +256,8 @@ function fbs_reservation_update($account, $reservation_ids, $options) {
  *
  * @param object $account
  *   User to delete reservations for.
- * @param array $reservation_id
- *   Reservations to delete.
+ * @param string $reservation_id
+ *   ID of the reservation to delete.
  *
  * @return bool
  *   TRUE if no errors else FALSE.
@@ -326,10 +329,14 @@ function fbs_reservation_branch_name($branch_id) {
  *   The default options.
  */
 function fbs_reservation_default_options($account) {
+  // Get values.
+  $interest_period = fbs_reservation_default_interest_period($account);
+
   $patron_info = fbs_get_patron_info($account);
+
   return array(
     'fbs_preferred_branch' => $patron_info['preferred_branch'],
-    'interest_period' => variable_get('fbs_default_interest_period', 180),
+    'interest_period' => $interest_period,
   );
 }
 
@@ -357,9 +364,12 @@ function fbs_reservation_options($account, $default_branch = NULL) {
     $preferred_branch = $default_branch;
   }
 
+  $interest_period = fbs_reservation_default_interest_period($account);
+  $periods = fbs_interest_periods();
+
   $form = array();
   $form += ding_reservation_default_options_branch('fbs_preferred_branch', $preferred_branch, fbs_user_branches($account));
-  $form += ding_reservation_interest_period_selector('interest_period', variable_get('fbs_default_interest_period', 180), fbs_interest_periods());
+  $form += ding_reservation_interest_period_selector('interest_period', $interest_period, $periods);
 
   return $form;
 }
@@ -372,18 +382,35 @@ function fbs_reservation_options($account, $default_branch = NULL) {
  * @param array $values
  *   Form values.
  */
-function fbs_reservation_options_submit($account, $values) {
+function fbs_reservation_options_submit($account, array $values) {
   fbs_update_preferred_branch($account, $values['fbs_preferred_branch']);
 }
 
 /**
- * Implements provider reservation, default_interst_period.
+ * Implements hook_default_interest_period().
  *
- * @return int
- *   Default interest period for user.
+ * Tries to find the users default interest period based on the users profile2
+ * provider profile.
  */
-function fbs_reservation_default_interest_period() {
-  return variable_get('fbs_default_interest_period', 180);
+function fbs_reservation_default_interest_period($account = NULL) {
+  $account = is_null($account) ? $GLOBALS['user'] : $account;
+  $profile = ding_user_provider_profile($account);
+
+  // Check that an profile exists. If this is as user create process it will not
+  // exists (nemid login).
+  $value = NULL;
+  if ($profile !== FALSE) {
+    // Get interest period from the profile.
+    $wrapper = entity_metadata_wrapper('profile2', $profile);
+    $value = $wrapper->field_fbs_interest_period->value();
+  }
+
+  // If no period is selected, try getting default value.
+  if (is_null($value) || empty($value)) {
+    $value = variable_get('fbs_default_interest_period', 180);
+  }
+
+  return $value;
 }
 
 /**
@@ -396,4 +423,48 @@ function fbs_reservation_pickup_branches() {
   $branches = fbs_branches();
 
   return $branches;
+}
+
+/**
+ * Implements provider reservation, is_reservable.
+ */
+function fbs_reservation_is_reservable($provider_ids) {
+  $return = [];
+
+  // We get the full holdings since we both need to check reservability and
+  // whether FBS considers the object a periodical.
+  try {
+    $results = fbs_service()->Catalog->getHoldings(
+      fbs_service()->agencyId,
+      $provider_ids
+    );
+  }
+  catch (Exception $e) {
+    watchdog_exception('fbs', $e);
+    return $return;
+  }
+
+  foreach ($results as $result) {
+    $holdings = reset($result->holdings);
+    // If the record doesn't have any materials there's nothing to reserve and
+    // we can safely set FALSE This can happen for online posts from the library
+    // catalog.
+    if (empty($holdings->materials)) {
+      $return[$result->recordId] = FALSE;
+    }
+    else {
+      // Find out if there's any material with periodical information. If that's
+      // the case we return issues in fbs_availability_holdings() and periodical
+      // holdings will be shown. We will therefore mark the main post as not
+      // reservable if we find any.
+      $periodical_materials = array_map(function ($material) {
+        return !empty($material->periodical);
+      }, $holdings->materials);
+      $periodical_materials = array_filter($periodical_materials);
+
+      $return[$result->recordId] = ($result->reservable && empty($periodical_materials));
+    }
+  }
+
+  return $return;
 }

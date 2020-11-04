@@ -163,6 +163,7 @@ input[type="radio"] {
     display: block;
     padding: 7px 0 1px 42px;
     position: relative;
+    font-weight: normal;
     &::before {
       content: '';
       position: absolute;
@@ -319,6 +320,7 @@ select {
   border: none;
   background-color: transparent;
   &:focus {
+    text-decoration: underline;
     outline: none;
   }
   &::-ms-expand {

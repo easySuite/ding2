@@ -126,3 +126,18 @@ function ddbasic_account_count_reservation_not_ready($account = NULL) {
 
   return $reservations[$account->uid];
 }
+
+/**
+ * Function to truncate strings.
+ *
+ * Consider special danish characters on string length calculation and truncate.
+ */
+function add_ellipsis($string, $length = 200, $end = '...') {
+  if (drupal_strlen($string) > $length) {
+    $length -= drupal_strlen($end);
+    $string  = drupal_substr($string, 0, $length);
+    $string .= '<span class="truncation">' . $end . '</span>';
+  }
+
+  return $string;
+}

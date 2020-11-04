@@ -29,18 +29,6 @@
         });
       }
 
-      // If there's any reservation buttons, switch to holdings. We have
-      // periodicals that's a bit off an odd one in that they can both
-      // have issues, which means that the reservation button for the
-      // main object should be disabled, or not have any issues, which
-      // means that it should be left alone. So we need to fetch full
-      // holdings in order to determine whether the material is a
-      // periodical. This is a bit of a hack, but it's the quickest way
-      // of fixing the problem right now.
-      if ($('.reserve-button').size() > 0) {
-        settings.ding_availability_mode = 'holdings';
-      }
-
       $.each(html_ids, function (index, id) {
         $('#' + id).addClass('pending');
       });
@@ -48,7 +36,7 @@
       // Fetch availability.
       if (ids.length > 0) {
         var mode = settings.ding_availability_mode ? settings.ding_availability_mode : 'items';
-        var path = settings.basePath + 'ding_availability/' + mode + '/' + ids.join(',');
+        var path = settings.basePath + settings.pathPrefix + 'ding_availability/' + mode + '/' + ids.join(',');
         $.ajax({
           dataType: "json",
           url: path,
@@ -68,6 +56,8 @@
                 ding_availability_update_holdings(id, entity_ids);
               }
             });
+
+            $(document).trigger('ding_availability_update_holdings');
           },
           error: function () {
             $('div.loader').remove();
@@ -103,40 +93,9 @@
     element.removeClass('pending').addClass('processed');
 
     $.each(entity_ids, function (index, entity_id) {
-      // Reserve button.
-      var reserve_button = element.parents('.ting-object:first, .material-item:first').find('a[id$=' + entity_id + '].reserve-button');
-
       if (Drupal.DADB[entity_id]) {
         var available = available || Drupal.DADB[entity_id]['available'];
-        var reservable = reservable || Drupal.DADB[entity_id]['reservable'];
-
-        // Special handling for periodicals.
-        if (typeof Drupal.DADB[entity_id]['is_periodical'] !== 'undefined' &&
-            Drupal.DADB[entity_id]['is_periodical']) {
-          // The main object of a periodical is neither available nor
-          // reservable, the individual issues is.
-          available = reservable = false;
-        }
-        var classes = [];
-
-        classes.push(available ? 'available' : 'unavailable');
-        classes.push(reservable ? 'reservable' : 'not-reservable');
-
-        $.each(classes, function (i, class_name) {
-          element.addClass(class_name);
-
-          // Add class to reserve button.
-          if (reserve_button.length) {
-            reserve_button.addClass(class_name);
-          }
-        });
-
-        if (available && !reservable) {
-          reserve_button.removeClass('available').addClass('unavailable');
-        }
-      }
-      else {
-        reserve_button.addClass('not-reservable');
+        element.addClass(available ? 'available' : 'unavailable');
       }
     });
   }
@@ -155,9 +114,25 @@
     $.each(entity_ids, function (i, entity_id) {
       if (Drupal.DADB[entity_id] && (Drupal.DADB[entity_id]['holdings'])) {
         // Insert/update holding information for material.
-        $('#' + id).html(Drupal.DADB[entity_id].html);
+        var holdings = Drupal.DADB[entity_id];
+        $('#' + id).html(holdings.html);
+
+        if (holdings.is_periodical) {
+          // Hide all elements.
+          $('.ding-periodical-issues li').children('.item-list').hide();
+
+          // Add class to style the list as being expandable.
+          $('.ding-periodical-fold').addClass('expand expand-more');
+
+          // Attach click event to fold in/out the issues.
+          $('.field-name-ding-availability-holdings .ding-periodical-fold').on("click", function() {
+            $(this).next().toggle();
+            $(this).next().toggleClass('expanded-periodicals');
+            $(this).parent().toggleClass('expanded-periodicals-parent');
+          });
+        }
         // Don't show queue time if item not reservable.
-        if (Drupal.DADB[entity_id].reservable === false) {
+        if (holdings.reservable === false) {
           $('#' + id + ' span.in-queue').hide();
         }
       }

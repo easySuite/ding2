@@ -368,6 +368,11 @@ msgstr "Listebillede"
 #: field:field_ding_event_location:ding_event:label
 msgctxt "field_ding_event_location:ding_event:label"
 msgid "Location"
+msgstr "Adresse"
+
+#: field:field_ding_event_place:ding_event:label
+msgctxt "field_ding_event_place:ding_event:label"
+msgid "Place / Room"
 msgstr "Lokalitet"
 
 #: field:field_ding_event_location:ding_event:description
@@ -1497,3 +1502,113 @@ msgstr "Delt - Andre kan se eller redigere"
 msgctxt "field_ding_list_status:#allowed_values:public"
 msgid "Public - Anybody can view your list from the public link"
 msgstr "Offentlig - Alle kan se listen"
+
+#: field:field_fbs_interest_period:#allowed_values:30
+msgctxt "field_fbs_interest_period:#allowed_values:30"
+msgid "1 Month"
+msgstr "1 måned"
+
+#: field:field_fbs_interest_period:#allowed_values:60
+msgctxt "field_fbs_interest_period:#allowed_values:60"
+msgid "2 Months"
+msgstr "2 måneder"
+
+#: field:field_fbs_interest_period:#allowed_values:90
+msgctxt "field_fbs_interest_period:#allowed_values:90"
+msgid "3 Months"
+msgstr "3 måneder"
+
+#: field:field_fbs_interest_period:#allowed_values:180
+msgctxt "field_fbs_interest_period:#allowed_values:180"
+msgid "6 Months"
+msgstr "6 måneder"
+
+#: field:field_fbs_interest_period:#allowed_values:360
+msgctxt "field_fbs_interest_period:#allowed_values:360"
+msgid "12 Months"
+msgstr "12 måneder"
+
+#: field:field_fbs_interest_period:provider_fbs:label
+msgctxt "field_fbs_interest_period:provider_fbs:label"
+msgid "Interest period"
+msgstr "Interesseperiode"
+
+#: field:field_alternate_search_string:smart_search_string:label
+msgctxt "field_alternate_search_string:smart_search_string:label"
+msgid "Alternative search string"
+msgstr "Alternativ søgestreng"
+
+#: field:field_alternate_search_string:smart_search_string:description
+msgctxt "field_alternate_search_string:smart_search_string:description"
+msgid "Search string sent to the well"
+msgstr "Søgestreng der sendes til brønden"
+
+#: field:field_sss_boost_materials:smart_search_string:label
+msgctxt "field_sss_boost_materials:smart_search_string:label"
+msgid "Promoted materials"
+msgstr "Fremhævede materialer"
+
+#: field:field_sss_boost_materials:smart_search_string:description
+msgctxt "field_sss_boost_materials:smart_search_string:description"
+msgid "Only materials part of the result can be promoted"
+msgstr "Kun materialer der er en del af resultatet kan fremhæves"
+
+#: field:field_sss_hits_per_month:smart_search_string:label
+msgctxt "field_sss_hits_per_month:smart_search_string:label"
+msgid "Searches - 30 days"
+msgstr "Søgninger pr. 30 dage"
+
+#: field:field_sss_hits_per_year:smart_search_string:label
+msgctxt "field_sss_hits_per_year:smart_search_string:label"
+msgid "Searches - year"
+msgstr "Søgninger pr. år"
+
+#: field:field_sss_hits_score:smart_search_string:label
+msgctxt "field_sss_hits_score:smart_search_string:label"
+msgid "Search score"
+msgstr "Søgescore"
+
+#: field:field_sss_hits_score:smart_search_string:description
+msgctxt "field_sss_hits_score:smart_search_string:description"
+msgid "Number of clicks"
+msgstr "Antal click"
+
+#: field:field_field_boost_value:custom_boost_values:label
+msgctxt "field_field_boost_value:custom_boost_values:label"
+msgid "Parameter"
+msgstr "Værdi"
+
+#: field:field_field_boost_weight:custom_boost_values:label
+msgctxt "field_field_boost_weight:custom_boost_values:label"
+msgid "Boost value"
+msgstr "Vægt"
+
+#: field:field_custom_boost_values_p:smart_search_string:label
+msgctxt "field_custom_boost_values_p:smart_search_string:label"
+msgid "Boost values"
+msgstr "Boost værdier"
+
+#: field:field_sss_date:smart_search_string:label
+msgctxt "field_sss_date:smart_search_string:label"
+msgid "Date"
+msgstr "Dato"
+
+#: field:field_sss_sort:smart_search_string:label
+msgctxt "field_sss_sort:smart_search_string:label"
+msgid "Sort"
+msgstr "Sortér"
+
+#: field:field_sss_sort:smart_search_string:description
+msgctxt "field_sss_sort:smart_search_string:description"
+msgid "Forced sort - when chosen, all other settings are overridden"
+msgstr "Gennemtving sortering - udkobler alle andre indstillinger"
+
+#: field:field_status:smart_search_string:label
+msgctxt "field_status:smart_search_string:label"
+msgid "Status"
+msgstr "Status"
+
+#: field:field_status:smart_search_string:description
+msgctxt "field_status:smart_search_string:description"
+msgid "Set date if planned"
+msgstr "Sæt dato hvis planlagt"

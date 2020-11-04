@@ -155,6 +155,8 @@ function ding_event_field_default_field_bases() {
     'locked' => 0,
     'module' => 'date',
     'settings' => array(
+      'cache_count' => 4,
+      'cache_enabled' => 0,
       'granularity' => array(
         'day' => 'day',
         'hour' => 'hour',
@@ -306,6 +308,55 @@ function ding_event_field_default_field_bases() {
     'type' => 'ting_reference',
   );
 
+  // Exported field_base: 'field_ding_event_organizers'.
+  $field_bases['field_ding_event_organizers'] = array(
+    'active' => 1,
+    'cardinality' => -1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_ding_event_organizers',
+    'indexes' => array(
+      'tid' => array(
+        0 => 'tid',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'taxonomy',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => array(
+          'vocabulary' => 'event_organizer',
+          'parent' => 0,
+        ),
+      ),
+      'profile2_private' => FALSE,
+    ),
+    'translatable' => 0,
+    'type' => 'taxonomy_term_reference',
+  );
+
+  // Exported field_base: 'field_ding_event_place'.
+  $field_bases['field_ding_event_place'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_ding_event_place',
+    'indexes' => array(
+      'format' => array(
+        0 => 'format',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'text',
+    'settings' => array(
+      'max_length' => 255,
+      'profile2_private' => FALSE,
+    ),
+    'translatable' => 0,
+    'type' => 'text',
+  );
+
   // Exported field_base: 'field_ding_event_price'.
   $field_bases['field_ding_event_price'] = array(
     'active' => 1,
@@ -313,15 +364,19 @@ function ding_event_field_default_field_bases() {
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_ding_event_price',
-    'indexes' => array(),
+    'indexes' => array(
+      'format' => array(
+        0 => 'format',
+      ),
+    ),
     'locked' => 0,
-    'module' => 'number',
+    'module' => 'text',
     'settings' => array(
       'max_length' => 255,
       'profile2_private' => FALSE,
     ),
     'translatable' => 0,
-    'type' => 'number_integer',
+    'type' => 'text',
   );
 
   // Exported field_base: 'field_ding_event_tags'.
@@ -411,7 +466,7 @@ function ding_event_field_default_field_bases() {
   // Exported field_base: 'field_ding_event_title_image'.
   $field_bases['field_ding_event_title_image'] = array(
     'active' => 1,
-    'cardinality' => 1,
+    'cardinality' => -1,
     'deleted' => 0,
     'entity_types' => array(),
     'field_name' => 'field_ding_event_title_image',
@@ -429,6 +484,88 @@ function ding_event_field_default_field_bases() {
     ),
     'translatable' => 0,
     'type' => 'image',
+  );
+
+  // Exported field_base: 'field_ding_section'.
+  $field_bases['field_ding_section'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_ding_section',
+    'indexes' => array(
+      'tid' => array(
+        0 => 'tid',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'taxonomy',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => array(
+          'vocabulary' => 'section',
+          'parent' => 0,
+        ),
+      ),
+    ),
+    'translatable' => 0,
+    'type' => 'taxonomy_term_reference',
+  );
+
+  // Exported field_base: 'field_event_organizer_link'.
+  $field_bases['field_event_organizer_link'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_event_organizer_link',
+    'indexes' => array(),
+    'locked' => 0,
+    'module' => 'link',
+    'settings' => array(
+      'attributes' => array(
+        'class' => '',
+        'rel' => '',
+        'target' => 'default',
+      ),
+      'display' => array(
+        'url_cutoff' => 80,
+      ),
+      'enable_tokens' => 1,
+      'profile2_private' => FALSE,
+      'title' => 'optional',
+      'title_maxlength' => 128,
+      'title_value' => '',
+      'url' => 0,
+    ),
+    'translatable' => 0,
+    'type' => 'link_field',
+  );
+
+  // Exported field_base: 'field_term_page'.
+  $field_bases['field_term_page'] = array(
+    'active' => 1,
+    'cardinality' => 1,
+    'deleted' => 0,
+    'entity_types' => array(),
+    'field_name' => 'field_term_page',
+    'indexes' => array(
+      'value' => array(
+        0 => 'value',
+      ),
+    ),
+    'locked' => 0,
+    'module' => 'list',
+    'settings' => array(
+      'allowed_values' => array(
+        0 => '',
+        1 => '',
+      ),
+      'allowed_values_function' => '',
+      'profile2_private' => FALSE,
+    ),
+    'translatable' => 0,
+    'type' => 'list_boolean',
   );
 
   // Exported field_base: 'og_group_ref'.

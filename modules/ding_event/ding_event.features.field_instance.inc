@@ -47,6 +47,12 @@ function ding_event_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
     ),
     'entity_type' => 'node',
     'field_name' => 'ding_event_groups_ref',
@@ -85,7 +91,7 @@ function ding_event_field_default_field_instances() {
         'match_operator' => 'CONTAINS',
       ),
       'type' => 'options_select',
-      'weight' => 8,
+      'weight' => 10,
     ),
   );
 
@@ -122,6 +128,12 @@ function ding_event_field_default_field_instances() {
         'weight' => 14,
       ),
       'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_no_overlay' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -194,6 +206,12 @@ function ding_event_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 10,
       ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
     ),
     'entity_type' => 'node',
     'field_name' => 'field_ding_event_category',
@@ -256,6 +274,12 @@ function ding_event_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
     ),
     'entity_type' => 'node',
     'fences_wrapper' => 'div',
@@ -274,7 +298,7 @@ function ding_event_field_default_field_instances() {
       'module' => 'date',
       'settings' => array(
         'display_all_day' => 1,
-        'increment' => 15,
+        'increment' => 5,
         'input_format' => 'm/d/Y - H:i:s',
         'input_format_custom' => '',
         'label_position' => 'above',
@@ -328,6 +352,12 @@ function ding_event_field_default_field_instances() {
         'settings' => array(),
         'type' => 'hidden',
         'weight' => 8,
+      ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
       ),
     ),
     'entity_type' => 'node',
@@ -394,6 +424,12 @@ function ding_event_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
     ),
     'entity_type' => 'node',
     'fences_wrapper' => 'div',
@@ -434,10 +470,9 @@ function ding_event_field_default_field_instances() {
       ),
       'default' => array(
         'label' => 'above',
-        'module' => 'list',
         'settings' => array(),
-        'type' => 'list_default',
-        'weight' => 11,
+        'type' => 'hidden',
+        'weight' => 6,
       ),
       'search_result' => array(
         'label' => 'above',
@@ -452,6 +487,12 @@ function ding_event_field_default_field_instances() {
         'weight' => 0,
       ),
       'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_no_overlay' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -490,12 +531,16 @@ function ding_event_field_default_field_instances() {
         'label' => 'hidden',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 10,
+        'weight' => 8,
       ),
       'search_result' => array(
         'label' => 'hidden',
-        'settings' => array(),
-        'type' => 'hidden',
+        'module' => 'image',
+        'settings' => array(
+          'image_link' => 'content',
+          'image_style' => 'ting_cover_small',
+        ),
+        'type' => 'image',
         'weight' => 2,
       ),
       'teaser' => array(
@@ -516,6 +561,12 @@ function ding_event_field_default_field_instances() {
         'weight' => 1,
       ),
       'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_no_overlay' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -617,7 +668,7 @@ function ding_event_field_default_field_instances() {
           'use_widget_handlers' => 1,
         ),
         'type' => 'addressfield_default',
-        'weight' => 4,
+        'weight' => 5,
       ),
       'search_result' => array(
         'label' => 'hidden',
@@ -643,6 +694,12 @@ function ding_event_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
     ),
     'entity_type' => 'node',
     'fences_wrapper' => 'div',
@@ -661,6 +718,7 @@ function ding_event_field_default_field_instances() {
         ),
         'format_handlers' => array(
           'address' => 'address',
+          'address-hide-country' => 'address-hide-country',
           'name-oneline' => 'name-oneline',
           'organisation' => 0,
           'name-full' => 0,
@@ -688,7 +746,7 @@ function ding_event_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 8,
+        'weight' => 7,
       ),
       'search_result' => array(
         'label' => 'above',
@@ -703,6 +761,12 @@ function ding_event_field_default_field_instances() {
         'weight' => 11,
       ),
       'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_no_overlay' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -726,6 +790,135 @@ function ding_event_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-ding_event-field_ding_event_organizers'.
+  $field_instances['node-ding_event-field_ding_event_organizers'] = array(
+    'bundle' => 'ding_event',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Add one or more organizer(s) to your event. ',
+    'display' => array(
+      'alternative_layout_full' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'inline',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 8,
+      ),
+      'search_result' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_ding_event_organizers',
+    'label' => 'Organizer',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'taxonomy',
+      'settings' => array(
+        'autocomplete_path' => 'taxonomy/autocomplete',
+        'size' => 60,
+      ),
+      'type' => 'taxonomy_autocomplete',
+      'weight' => 8,
+    ),
+  );
+
+  // Exported field_instance: 'node-ding_event-field_ding_event_place'.
+  $field_instances['node-ding_event-field_ding_event_place'] = array(
+    'bundle' => 'ding_event',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => 'Use this to direct your guests to the correct place',
+    'display' => array(
+      'alternative_layout_full' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'inline',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+      'search_result' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'hidden',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 4,
+      ),
+      'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_ding_event_place',
+    'label' => 'Place / Room',
+    'required' => 0,
+    'settings' => array(
+      'text_processing' => 0,
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 7,
+    ),
+  );
+
   // Exported field_instance: 'node-ding_event-field_ding_event_price'.
   $field_instances['node-ding_event-field_ding_event_price'] = array(
     'bundle' => 'ding_event',
@@ -740,16 +933,11 @@ function ding_event_field_default_field_instances() {
         'weight' => 0,
       ),
       'default' => array(
-        'label' => 'hidden',
-        'module' => 'number',
-        'settings' => array(
-          'decimal_separator' => '.',
-          'prefix_suffix' => TRUE,
-          'scale' => 0,
-          'thousand_separator' => ' ',
-        ),
-        'type' => 'number_integer',
-        'weight' => 8,
+        'label' => 'above',
+        'module' => 'text',
+        'settings' => array(),
+        'type' => 'text_default',
+        'weight' => 3,
       ),
       'search_result' => array(
         'label' => 'above',
@@ -769,24 +957,30 @@ function ding_event_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
     ),
     'entity_type' => 'node',
     'field_name' => 'field_ding_event_price',
     'label' => 'Price',
     'required' => 0,
     'settings' => array(
-      'max' => '',
-      'min' => '',
-      'prefix' => '',
       'suffix' => ' kr.',
+      'text_processing' => 0,
       'user_register_form' => FALSE,
     ),
     'widget' => array(
-      'active' => 0,
-      'module' => 'number',
-      'settings' => array(),
-      'type' => 'number',
-      'weight' => 7,
+      'active' => 1,
+      'module' => 'text',
+      'settings' => array(
+        'size' => 60,
+      ),
+      'type' => 'text_textfield',
+      'weight' => 8,
     ),
   );
 
@@ -824,6 +1018,12 @@ function ding_event_field_default_field_instances() {
         'weight' => 12,
       ),
       'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_no_overlay' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -868,7 +1068,7 @@ function ding_event_field_default_field_instances() {
         'module' => 'taxonomy',
         'settings' => array(),
         'type' => 'taxonomy_term_reference_plain',
-        'weight' => 6,
+        'weight' => 7,
       ),
       'rss' => array(
         'label' => 'hidden',
@@ -894,11 +1094,17 @@ function ding_event_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 11,
       ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
     ),
     'entity_type' => 'node',
     'field_name' => 'field_ding_event_target',
     'label' => 'Target',
-    'required' => 0,
+    'required' => 1,
     'settings' => array(
       'user_register_form' => FALSE,
     ),
@@ -950,6 +1156,12 @@ function ding_event_field_default_field_instances() {
         'type' => 'hidden',
         'weight' => 0,
       ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
     ),
     'entity_type' => 'node',
     'field_name' => 'field_ding_event_ticket_link',
@@ -983,7 +1195,7 @@ function ding_event_field_default_field_instances() {
       'module' => 'link',
       'settings' => array(),
       'type' => 'link_field',
-      'weight' => 9,
+      'weight' => 11,
     ),
   );
 
@@ -1022,6 +1234,12 @@ function ding_event_field_default_field_instances() {
         'weight' => 13,
       ),
       'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_no_overlay' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -1086,6 +1304,69 @@ function ding_event_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance: 'node-ding_event-field_ding_section'.
+  $field_instances['node-ding_event-field_ding_section'] = array(
+    'bundle' => 'ding_event',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'alternative_layout_full' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'default' => array(
+        'label' => 'inline',
+        'module' => 'taxonomy',
+        'settings' => array(),
+        'type' => 'taxonomy_term_reference_link',
+        'weight' => 9,
+      ),
+      'search_result' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_no_overlay' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'node',
+    'field_name' => 'field_ding_section',
+    'label' => 'Section',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'match_operator' => 'CONTAINS',
+      ),
+      'type' => 'options_select',
+      'weight' => 41,
+    ),
+  );
+
   // Exported field_instance: 'node-ding_event-og_group_ref'.
   $field_instances['node-ding_event-og_group_ref'] = array(
     'bundle' => 'ding_event',
@@ -1106,7 +1387,7 @@ function ding_event_field_default_field_instances() {
           'link' => 1,
         ),
         'type' => 'entityreference_label',
-        'weight' => 5,
+        'weight' => 6,
       ),
       'search_result' => array(
         'label' => 'hidden',
@@ -1124,6 +1405,12 @@ function ding_event_field_default_field_instances() {
         'weight' => 5,
       ),
       'teaser_highlight' => array(
+        'label' => 'above',
+        'settings' => array(),
+        'type' => 'hidden',
+        'weight' => 0,
+      ),
+      'teaser_no_overlay' => array(
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
@@ -1171,15 +1458,107 @@ function ding_event_field_default_field_instances() {
     ),
   );
 
+  // Exported field_instance:
+  // 'taxonomy_term-event_organizer-field_event_organizer_link'.
+  $field_instances['taxonomy_term-event_organizer-field_event_organizer_link'] = array(
+    'bundle' => 'event_organizer',
+    'default_value' => NULL,
+    'deleted' => 0,
+    'description' => '',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'link',
+        'settings' => array(),
+        'type' => 'link_default',
+        'weight' => 0,
+      ),
+    ),
+    'entity_type' => 'taxonomy_term',
+    'field_name' => 'field_event_organizer_link',
+    'label' => 'Event organizer link',
+    'required' => 0,
+    'settings' => array(
+      'absolute_url' => 1,
+      'attributes' => array(
+        'class' => '',
+        'configurable_class' => 0,
+        'configurable_title' => 0,
+        'rel' => '',
+        'target' => 'default',
+        'title' => '',
+      ),
+      'display' => array(
+        'url_cutoff' => 80,
+      ),
+      'enable_tokens' => 1,
+      'rel_remove' => 'default',
+      'title' => 'none',
+      'title_label_use_field_label' => 0,
+      'title_maxlength' => 128,
+      'title_value' => '',
+      'url' => 0,
+      'user_register_form' => FALSE,
+      'validate_url' => 1,
+    ),
+    'widget' => array(
+      'active' => 0,
+      'module' => 'link',
+      'settings' => array(),
+      'type' => 'link_field',
+      'weight' => 1,
+    ),
+  );
+
+  // Exported field_instance: 'taxonomy_term-section-field_term_page'.
+  $field_instances['taxonomy_term-section-field_term_page'] = array(
+    'bundle' => 'section',
+    'default_value' => array(
+      0 => array(
+        'value' => 1,
+      ),
+    ),
+    'deleted' => 0,
+    'description' => 'Create a term page',
+    'display' => array(
+      'default' => array(
+        'label' => 'above',
+        'module' => 'list',
+        'settings' => array(),
+        'type' => 'list_default',
+        'weight' => 1,
+      ),
+    ),
+    'entity_type' => 'taxonomy_term',
+    'field_name' => 'field_term_page',
+    'label' => 'Term page',
+    'required' => 0,
+    'settings' => array(
+      'user_register_form' => FALSE,
+    ),
+    'widget' => array(
+      'active' => 1,
+      'module' => 'options',
+      'settings' => array(
+        'display_label' => 1,
+      ),
+      'type' => 'options_onoff',
+      'weight' => 32,
+    ),
+  );
+
   // Translatables
   // Included for use with string extractors like potx.
+  t('Add one or more organizer(s) to your event. ');
   t('An external link to a site where the user can sign up for the event or buy tickets to the event. The link is printet out as a button. If the event has a price the text on the button will be "Bestil billet(ter)" - if not, the text will be "Deltag i arrangementet". If Place2book is used, this field should not be used.');
   t('Body');
   t('Book ticket/Participate in event');
   t('Category');
+  t('Create a term page');
   t('Date');
   t('Display this event in the selected group (temapage).');
   t('Event list filter');
+  t('Event organizer link');
   t('Events show the value "Gratis", if the field is set to 0. If there\'s multiple ticket types, you can set the value as lowest - highest price in the field, like "30 - 50"');
   t('Files');
   t('Groups');
@@ -1189,11 +1568,16 @@ function ding_event_field_default_field_instances() {
   t('Location');
   t('Materials');
   t('Optional. If provided, the location address will be shown instead of the address of the associated library when presenting info on the event.');
+  t('Organizer');
+  t('Place / Room');
   t('Price');
+  t('Section');
   t('Select the libraries this content should be associated with.');
   t('Tags');
   t('Target');
+  t('Term page');
   t('Title image');
+  t('Use this to direct your guests to the correct place');
 
   return $field_instances;
 }

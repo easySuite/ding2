@@ -38,6 +38,16 @@ function template_preprocess_ding_ddbasic_opening_hours_week(&$variables) {
   );
   $instances = array_filter($instances, '_opening_hours_exclude_blocked');
 
+  $category_tids = array_unique(array_map(function (stdClass $instance) {
+    return $instance->category_tid;
+  }, $instances));
+
+  // If there are no instances we have no knowledge of what categories are in
+  // use, and we will fallback to the default category only.
+  if (empty($instances)) {
+    $category_tids = [NULL];
+  }
+
   // Add closed days.
   for ($day = $timespan[0]; $day <= $timespan[1]; $day += DING_DDBASIC_OPENING_HOURS_ONE_DAY) {
     $date = date('Y-m-d', $day);
@@ -49,16 +59,21 @@ function template_preprocess_ding_ddbasic_opening_hours_week(&$variables) {
     }
 
     if ($closed === TRUE) {
-      $instances[] = (object) array(
-        'instance_id' => -1,
-        'nid' => $variables['node']->nid,
-        'start_time' => '0',
-        'end_time' => '0',
-        'category_tid' => NULL,
-        'date' => $date,
-        'closed' => TRUE,
-        'notice' => t('Closed'),
-      );
+      // If a day is closed then generate closed instanced for each available
+      // category.
+      $closed_instances = array_map(function ($category_tid) use ($variables, $date) {
+        return (object) [
+          'instance_id' => -1,
+          'nid' => $variables['node']->nid,
+          'start_time' => '0',
+          'end_time' => '0',
+          'category_tid' => $category_tid,
+          'date' => $date,
+          'closed' => true,
+          'notice' => t('Closed'),
+        ];
+      }, $category_tids);
+      $instances = array_merge($instances, $closed_instances);
     }
   }
 
@@ -161,8 +176,11 @@ function template_preprocess_ding_ddbasic_opening_hours_week(&$variables) {
   $variables['classes_array'][] = 'opening-hours-week-' . $variables['node']->nid;
   $variables['classes_array'][] = 'opening-hours-week';
 
-  if (variable_get('ding_ddbasic_opening_hours_expand_on_library', FALSE)) {
-    drupal_add_js(array('ding_ddbasic_opening_hours' => array('expand_on_library' => TRUE)), 'setting');
+  if (variable_get('ding_ddbasic_opening_hours_expand_setting') == 'expand_on_first') {
+    drupal_add_js(array('ding_ddbasic_opening_hours' => array('expand_on_first_library' => TRUE)), 'setting');
+  }
+  elseif (variable_get('ding_ddbasic_opening_hours_expand_setting') == 'expand_all') {
+    drupal_add_js(array('ding_ddbasic_opening_hours' => array('expand_all_libraries' => TRUE)), 'setting');
   }
 }
 
@@ -177,6 +195,8 @@ function theme_ding_ddbasic_opening_hours_all($variables) {
  * Preprocessor for ding_ddbasic_opening_hours_all.
  */
 function template_preprocess_ding_ddbasic_opening_hours_all(&$variables) {
+  module_load_include('inc', 'opening_hours', 'includes/opening_hours.pages');
+
   $today = strtotime('today');
 
   if (!empty($variables['today'])) {
@@ -200,6 +220,7 @@ function template_preprocess_ding_ddbasic_opening_hours_all(&$variables) {
     date('Y-m-d', $today),
     date('Y-m-d', $today)
   );
+  $instances = array_filter($instances, '_opening_hours_exclude_blocked');
 
   // Fill in closed instances.
   foreach ($order as $library_nid) {

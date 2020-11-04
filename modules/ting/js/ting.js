@@ -9,7 +9,7 @@
   Drupal.behaviors.ting = {
     attach: function (context) {
       // TODO: These selectors might be outdated.
-      $('a.js-search-overlay', context).live('click', function () {
+      $('a.js-search-overlay', context).on('click', function () {
         var link = $(this);
         if (link.attr('href').charAt(0) !== '#') {
           // Only show overlay for non-local links.
@@ -17,15 +17,8 @@
         }
       });
 
-      // Ensure overlay on collection view links.
-      $('.ting-collection-wrapper a[href*="/ting/"]', context).live('click', function () {
-        if ($(this).not('[target="_blank"]').length) {
-          Drupal.TingSearchOverlay();
-        }
-      });
-
-      // Ensure overlay on object view links.
-      $('.ting-object-wrapper a[href*="/ting/"]', context).live('click', function () {
+      // Ensure search overlay on search links in a ting object view.
+      $('.ting-object a[href^="/search/ting/"]', context).on('click', function() {
         if ($(this).not('[target="_blank"]').length) {
           Drupal.TingSearchOverlay();
         }

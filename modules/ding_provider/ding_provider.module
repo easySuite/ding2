@@ -4,6 +4,8 @@
  * Implements a common interface to backend providers.
  */
 
+use Ting\TingObject;
+
 /**
  * Implements hook_menu().
  */
@@ -52,6 +54,16 @@ function ding_provider_menu() {
     }
   }
 
+  // Expire provider sessions lightweight cron callback.
+  $items['ding_provider/expire_sessions/cron'] = array(
+    'title' => 'Lightweight expire session cron',
+    'description' => 'Run the lightweight expire inacitve provider sessions cron job',
+    'page callback' => 'ding_provider_expire_sessions_cron',
+    'access callback' => 'ding_provider_expire_sessions_cron_access',
+    'access arguments' => array(3),
+    'type' => MENU_CALLBACK,
+  );
+
   return $items;
 }
 
@@ -85,6 +97,17 @@ function ding_provider_permission() {
     'administer ding provider' => array(
       'title' => t('Administer Ding provider'),
       'description' => t('Allow role to configure provider settings.'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_ding_provider_user().
+ */
+function ding_provider_ding_provider_user() {
+  return array(
+    'search' => array(
+      'required' => TRUE,
     ),
   );
 }
@@ -156,9 +179,13 @@ function ding_provider_implements($type, $hook) {
  * the provider function, or throws DingProviderAuthException if not
  * authenticated.
  *
- * @see ding_provider_invoke_page()
  * @see ding_provider_get_form()
  * @see ding_provider_ajax_form_callback()
+ *
+ * @throws DingProviderDoesntImplement
+ *   If the provider do not implement the hook.
+ * @throws DingProviderNoProvider
+ *   If the current provider don't supports the hook.
  */
 function ding_provider_invoke($type, $hook) {
   $args = func_get_args();
@@ -170,12 +197,17 @@ function ding_provider_invoke($type, $hook) {
     return call_user_func_array($function, $args);
   }
   else {
-    watchdog('ding_provider', 'Provider invoke request to unknown fucntion (%function)', array('%function' => $function), WATCHDOG_ERROR);
+    watchdog('ding_provider', 'Provider invoke request to unknown function (%function)', array('%function' => $function), WATCHDOG_ERROR);
   }
 }
 
 /**
  * Get a form from a provider.
+ *
+ * @throws DingProviderDoesntImplement
+ *   If the provider do not implement the hook.
+ * @throws DingProviderNoProvider
+ *   If the current provider don't supports the hook.
  */
 function ding_provider_form($type, $form_id) {
   $args = func_get_args();
@@ -197,6 +229,10 @@ function ding_provider_form($type, $form_id) {
  * @see ding_provider_invoke()
  * @see ding_provider_get_form()
  * @see ding_provider_ajax_form_callback()
+ *
+ * @deprecated Use ding_provider_invoke() as the user authentication redirect do
+ * not work correctly due to changes in the frontend. Also the default
+ * authentication page is now used for non-provider users login.
  */
 function ding_provider_invoke_page($type, $hook) {
   $args = func_get_args();
@@ -210,14 +246,18 @@ function ding_provider_invoke_page($type, $hook) {
     }
   }
   catch (Exception $e) {
-    if ($e instanceof DingProviderUserException) {
+    if ($e instanceof DingProviderEnduserException) {
       // Rethrow user exceptions.
       throw $e;
     }
     elseif ($e instanceof DingProviderAuthException) {
       // Redirect to auth page.
-      if (module_exists('ding_user') && ($authpage = ding_user_auth_page())) {
-        // @todo redirect to auth page
+      if (module_exists('ding_user')) {
+        $authpage = 'user/login';
+        if (user_is_logged_in()) {
+          global $user;
+          $authpage = 'user/' . $user->uid . '/authenticate';
+        }
         drupal_goto($authpage, array('query' => ding_provider_get_destination()));
       }
     }
@@ -239,7 +279,6 @@ function ding_provider_invoke_page($type, $hook) {
  * thrown, and restart form processing on successful authentication.
  *
  * @see ding_provider_invoke()
- * @see ding_provider_invoke_page()
  * @see ding_provider_ajax_form_callback()
  */
 function ding_provider_get_form($form_id) {
@@ -288,21 +327,11 @@ function ding_provider_build_form($form_id, &$form_state) {
     return $form;
   }
   catch (Exception $e) {
-    if ($e instanceof DingProviderUserException) {
+    if ($e instanceof DingProviderEnduserException) {
       // Rethrow user exceptions.
       throw $e;
     }
-    elseif ($e instanceof DingProviderAuthException) {
-      if (module_exists('ding_user') && ($authpage = ding_user_auth_page())) {
-        // Something needs auth, save state and redirect to authentication page.
-        $expire = 3600;
-        $input = $form_state['method'] == 'get' ? $_GET : $_POST;
-        $input['#ding_provider_messages'] = drupal_get_messages();
-        cache_set('ding_provider_' . $form_id, $input, 'cache_form', REQUEST_TIME + $expire);
-        $options = array('query' => ding_provider_get_destination(array('dp_form_id' => $form_id)));
-        drupal_goto($authpage, $options);
-      }
-    }
+
     watchdog('ding_provider', 'Uncaught exception in ding_provider_build_form: @message', array('@message' => $e->getMessage()), WATCHDOG_ERROR);
     // Redirect to error page.
     drupal_goto('ding_provider_error');
@@ -316,7 +345,6 @@ function ding_provider_build_form($form_id, &$form_state) {
  * the AJAX request on successful submission.
  *
  * @see ding_provider_invoke()
- * @see ding_provider_invoke_page()
  * @see ding_provider_get_form()
  */
 function ding_provider_ajax_form_callback() {
@@ -362,7 +390,7 @@ function ding_provider_ajax_form_callback() {
     }
   }
   catch (Exception $e) {
-    if ($e instanceof DingProviderUserException) {
+    if ($e instanceof DingProviderEnduserException) {
       // Rethrow user exceptions.
       throw $e;
     }
@@ -379,7 +407,7 @@ function ding_provider_ajax_form_callback() {
         return array(
           '#type' => 'ajax',
           '#commands' => array(
-            ajax_command_ding_user_authenticate(array('dp_form_id' => $form_id)),
+            ajax_command_ding_user_authenticate(array('dp_form_id' => $form_id), current_path()),
           ),
         );
       }
@@ -588,16 +616,21 @@ function ding_provider_get_pseudo_entity($ding_entity_id) {
   $ting_entity->ding_entity_id = $ding_entity_id;
   $ting_entity->provider_id = $local_id;
   $ting_entity->ding_entity_type = 'ding_entity';
-  $ting_entity->reply = new TingClientObject();
-  $ting_entity->reply->id = $ding_entity_id;
-  $ting_entity->reply->localId = $local_id;
-  $ting_entity->reply->relations = array();
-  $ting_entity->reply->ownerId = drupal_substr($ding_entity_id, 0, strpos($ding_entity_id, '-'));
+
+  // Construct a Ting object that represents the data we would normally get
+  // from the search provider.
+  $ting_object = new TingObject();
+
+  $ting_object->setId($ding_entity_id);
+  $ting_object->setSourceId($local_id);
+  $ting_object->setOwnerId(drupal_substr($ding_entity_id, 0, strpos($ding_entity_id, '-')));
 
   // See if the provider have any information about the entity.
   if (ding_provider_implements('loan', 'populate_pseudo_entity')) {
-    $ting_entity = ding_provider_invoke('loan', 'populate_pseudo_entity', $ting_entity);
+    $ting_entity = ding_provider_invoke('loan', 'populate_pseudo_entity', $ting_entity, $ting_object);
   }
+
+  $ting_entity->setTingObject($ting_object);
 
   // Mark this object as pseudo, so formatters can take action.
   $ting_entity->is_available = FALSE;
@@ -618,60 +651,9 @@ function ding_provider_get_pseudo_entity($ding_entity_id) {
  * @return mixed
  *   Single faust: A string with data well PID.
  *   Array of fausts: An array with data well PIDs keyed be the original faust.
- *   In both cases, if a faust couldn't be translated, the PID will be the
- *   original faust with the standard DBC namespace "870970-basis:".
  */
 function ding_provider_build_entity_id($ids) {
-  if (is_array($ids) && !empty($ids)) {
-    $translated_ids = array();
-
-    // Open search is limited to 50 results per call, so split up in chunks to
-    // ensure we get PIDs for all passed local IDs.
-    foreach (array_chunk($ids, 50) as $chunk) {
-      $query = 'rec.id any "' . implode(" ", $chunk) . '" AND facet.acSource=bibliotekskatalog';
-      // Ensure that the work match in opensearch doesn't hide ids for us.
-      $options['collectionType'] = 'manifestation';
-      $res = ting_do_search($query, 1, count($chunk), $options);
-
-      // Sometimes the well will be unreachable or not even one of the ids in
-      // chunk was searchable. In any case, this protects against a notice.
-      if (empty($res)) {
-        continue;
-      }
-
-      foreach ($res->collections as $pid => $collection) {
-        $faust = explode(':', $pid)[1];
-        if ($key = array_search($faust, $ids)) {
-          $translated_ids[$faust] = $pid;
-          unset($ids[$key]);
-        }
-      }
-    }
-
-    // The faust left in ids array where not searchable and we could therefore
-    // not determine the proper namespace. Since it's possible to load objects
-    // separately, that are not searchable with the library's agencyid, the best
-    // we can do here is to use the standard DBC agency id, which is used for
-    // basis-records. The providers can then try ting_get_object with this PID,
-    // which may work (if it's not an inter-library loan of a local post).
-    // TODO: We should provide a separate mechanism for translating faust
-    // without holdingsitem.agencyid filter. This way the providers will know
-    // which materials can be searched with the current agency id and generate
-    // a link to them.
-    //
-    foreach ($ids as $faust) {
-      $translated_ids[$faust] = '870970-basis:' . $faust;
-    }
-
-    return $translated_ids;
-  }
-  elseif (is_numeric($ids)) {
-    $obj = ting_do_search('rec.id=' . $ids . ' AND facet.acSource=bibliotekskatalog');
-    $entity_id = ($obj) ? key($obj->collections) : '870970-basis:' . $ids;
-
-    return $entity_id;
-  }
-  return FALSE;
+  return ding_provider_invoke('search', 'object_ids', $ids);
 }
 
 /**
@@ -692,7 +674,7 @@ function ding_provider_entity_info_alter(&$entity_info) {
 function ding_provider_cron() {
   $last_cron_time = variable_get('ding_provider_last_cron', 0);
 
-  // Run daily.
+  // Remove inactive provider users (runs daily).
   if ($last_cron_time < REQUEST_TIME - 86400) {
     // Remove inactive users.
     $inactivity_threshold = variable_get('ding_provider_users_wipe_threshold', 0);
@@ -703,6 +685,10 @@ function ding_provider_cron() {
       $query
         ->fields('u', array('uid'))
         ->condition('u.access', REQUEST_TIME - $inactivity_threshold, '<')
+        // Ensure that we don't delete these important users.
+        ->condition('u.uid', array(0, 1), 'NOT IN')
+        // Ensure we only delete provider users created by ding_user.
+        ->condition('a.module', 'ding_user', '=')
         ->range(0, 500);
 
       $result = $query
@@ -716,5 +702,56 @@ function ding_provider_cron() {
     }
 
     variable_set('ding_provider_last_cron', REQUEST_TIME);
+  }
+
+  // Expire inactive provider sessions.
+  ding_provider_expire_sessions();
+}
+
+/**
+ * Access callback for expires sessions cron endpoint.
+ */
+function ding_provider_expire_sessions_cron_access($cron_key) {
+  return variable_get('cron_key') === $cron_key;
+}
+
+/**
+ * Page callback for expires sessions lightweight cron endpoint.
+ */
+function ding_provider_expire_sessions_cron() {
+  ding_provider_expire_sessions();
+  drupal_exit();
+}
+
+/**
+ * Deletes inactive provider sessions in the database.
+ */
+function ding_provider_expire_sessions() {
+  if (!$limit = variable_get('ding_provider_session_expire', 900)) {
+    // Return now if the session expire functionality is disabled.
+    return;
+  }
+
+  // Delete sessions with no activity since $limit seconds.
+  $timestamp = REQUEST_TIME - $limit;
+
+  // Construct subquery with uids for provider users.
+  $roles = user_roles(TRUE);
+  $rid = array_search('provider', $roles);
+  $subquery = db_select('users_roles', 'ur')
+    ->fields('ur', array('uid'))
+    ->condition('rid', $rid);
+
+  $query = db_delete('sessions')
+    ->condition('timestamp', $timestamp, '<')
+    ->condition('uid', $subquery, 'IN');
+
+  $num_updated = $query->execute();
+
+  // Log a notice if we succesfully deleted any inacitve provider sessions.
+  if ($num_updated) {
+    watchdog('ding_provider', 'Deleted %num_updated inactive provider sessions', array(
+      '%num_updated' => $num_updated,
+    ));
   }
 }

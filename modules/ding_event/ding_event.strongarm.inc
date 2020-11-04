@@ -106,6 +106,9 @@ function ding_event_strongarm() {
       'alternative_layout_full' => array(
         'custom_settings' => TRUE,
       ),
+      'teaser_no_overlay' => array(
+        'custom_settings' => TRUE,
+      ),
     ),
     'extra_fields' => array(
       'form' => array(
@@ -140,20 +143,17 @@ function ding_event_strongarm() {
             'visible' => FALSE,
           ),
         ),
-        'ding_serendipity_info' => array(
-          'default' => array(
-            'weight' => '0',
-            'visible' => TRUE,
-          ),
-          'teaser' => array(
-            'weight' => '0',
-            'visible' => TRUE,
-          ),
-        ),
       ),
     ),
   );
   $export['field_bundle_settings_node__ding_event'] = $strongarm;
+
+  $strongarm = new stdClass();
+  $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
+  $strongarm->api_version = 1;
+  $strongarm->name = 'flag_mobile_app_default_ding_event';
+  $strongarm->value = 1;
+  $export['flag_mobile_app_default_ding_event'] = $strongarm;
 
   $strongarm = new stdClass();
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
@@ -166,7 +166,7 @@ function ding_event_strongarm() {
   $strongarm->disabled = FALSE; /* Edit this to true to make a default strongarm disabled initially */
   $strongarm->api_version = 1;
   $strongarm->name = 'language_content_type_ding_event';
-  $strongarm->value = '0';
+  $strongarm->value = '1';
   $export['language_content_type_ding_event'] = $strongarm;
 
   $strongarm = new stdClass();
