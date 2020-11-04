@@ -247,8 +247,8 @@ function ding_event_field_default_field_instances() {
         'label' => 'hidden',
         'module' => 'date',
         'settings' => array(
-          'format_type' => 'ding_event_lists_date',
-          'fromto' => 'value',
+          'format_type' => 'ding_date_only_version2',
+          'fromto' => 'both',
           'multiple_from' => '',
           'multiple_number' => '',
           'multiple_to' => '',
@@ -1136,7 +1136,7 @@ function ding_event_field_default_field_instances() {
         'label' => 'above',
         'settings' => array(),
         'type' => 'hidden',
-        'weight' => 8,
+        'weight' => 4,
       ),
       'search_result' => array(
         'label' => 'above',

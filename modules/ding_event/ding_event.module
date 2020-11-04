@@ -94,18 +94,6 @@ function ding_event_theme() {
       ),
       'template' => 'templates/views-exposed-form-widget',
     ),
-    'views_exposed_form_widgets_title' => array(
-      'variables' => array(
-        'element' => NULL,
-      ),
-      'template' => 'templates/views-exposed-form-widget--title',
-    ),
-    'views_exposed_form_widgets_date_inputs' => array(
-      'variables' => array(
-        'element' => NULL,
-      ),
-      'template' => 'templates/views-exposed-form-widget--date-inputs',
-    ),
   );
 }
 
@@ -348,7 +336,6 @@ function ding_event_form_views_exposed_form_alter(&$form, &$form_state) {
     if (!empty($form['title'])) {
       $form['title']['#attributes']['placeholder'] = t('Search for an event');
     }
-    $form['title']['#autocomplete_path'] = 'culture_events/date/autocomplete';
 
     // Hide reset button if there's nothing to reset.
     foreach ($form_state['view']->exposed_input as $exposed_input) {
@@ -356,24 +343,6 @@ function ding_event_form_views_exposed_form_alter(&$form, &$form_state) {
     }
     if (empty($input)) {
       $form['reset']['#access'] = FALSE;
-    }
-
-    if (!empty($form['#info']['filter-term_node_tid_depth'])) {
-      $label = $form['#info']['filter-term_node_tid_depth']['label'];
-      unset($form['#info']['filter-term_node_tid_depth']['label']);
-      $form['event_category_term_node_tid_depth']['#title'] = '<h2 class="list-title sub-menu-title">' . $label . '</h2>';
-    }
-
-    if (!empty($form['#info']['filter-og_group_ref_target_id_entityreference_filter'])) {
-      $label = $form['#info']['filter-og_group_ref_target_id_entityreference_filter']['label'];
-      unset($form['#info']['filter-og_group_ref_target_id_entityreference_filter']['label']);
-      $form['og_group_ref_target_id_entityreference_filter']['#title'] = '<h2 class="list-title sub-menu-title">' . $label . '</h2>';
-    }
-
-    if (!empty($form['#info']['filter-field_ding_event_target_tid'])) {
-      $label = $form['#info']['filter-field_ding_event_target_tid']['label'];
-      unset($form['#info']['filter-field_ding_event_target_tid']['label']);
-      $form['field_ding_event_target_tid']['#title'] = '<h2 class="list-title sub-menu-title">' . $label . '</h2>';
     }
   }
 }
@@ -412,48 +381,6 @@ function ding_event_preprocess_views_exposed_form(&$variables) {
 
         $variables['widgets'][$widget]->widget = $render;
       }
-    }
-
-    if ($form['#info']['filter-combine']) {
-      $widget = $form['#info']['filter-combine']['value'];
-      $item = $form[$widget];
-      $render = theme('views_exposed_form_widgets_title', [
-          'element' => [
-            'label' => $variables['widgets']['filter-combine']->label,
-            'field' => $item,
-          ],
-        ]
-      );
-      unset($variables['widgets']['filter-combine']->label);
-      $variables['widgets']['filter-combine']->widget = $render;
-    }
-
-    if ($form['#info']['filter-field_ding_event_date_value'] && $form['#info']['filter-field_ding_event_date_value_1']) {
-      $widget_from = $form['#info']['filter-field_ding_event_date_value']['value'];
-      $widget_to = $form['#info']['filter-field_ding_event_date_value_1']['value'];
-
-      $item_from = $form[$widget_from];
-      $item_to = $form[$widget_to];
-
-      $return = [
-        'from' => [
-          'label' => $variables['widgets']['filter-field_ding_event_date_value']->label,
-          'field' => $item_from,
-        ],
-        'to' => [
-          'label' => $variables['widgets']['filter-field_ding_event_date_value_1']->label,
-          'field' => $item_to,
-        ],
-      ];
-
-      $render = theme('views_exposed_form_widgets_date_inputs', [
-          'element' => $return,
-        ]
-      );
-
-      unset($variables['widgets']['filter-field_ding_event_date_value']->label);
-      $variables['widgets']['filter-field_ding_event_date_value']->widget = $render;
-      unset($variables['widgets']['filter-field_ding_event_date_value_1']);
     }
   }
 }
