@@ -190,7 +190,7 @@ function ding_campaign_get_campaigns($context, $limit, $offset) {
         AND n.status = 1
         AND r.cid = d.cid
         AND r.cid = n.nid
-      ORDER BY d.weight DESC', array(':nid' => (int) $nid))
+      ORDER BY d.weight ASC', array(':nid' => (int) $nid))
       ->fetchAll();
 
     foreach ($result as $key => $value) {
@@ -209,7 +209,7 @@ function ding_campaign_get_campaigns($context, $limit, $offset) {
         AND n.status = 1
         AND r.cid = d.cid
         AND r.cid = n.nid
-      ORDER BY d.weight DESC', array(':nid' => (int) $nid))
+      ORDER BY d.weight ASC', array(':nid' => (int) $nid))
       ->fetchAll();
 
     foreach ($result as $key => $value) {
@@ -228,7 +228,7 @@ function ding_campaign_get_campaigns($context, $limit, $offset) {
         AND n.status = 1
         AND r.cid = d.cid
         AND r.cid = n.nid
-      ORDER BY d.weight DESC', array(':nid' => (int) $nid))
+      ORDER BY d.weight ASC', array(':nid' => (int) $nid))
       ->fetchAll();
 
     foreach ($result as $key => $value) {
@@ -237,13 +237,13 @@ function ding_campaign_get_campaigns($context, $limit, $offset) {
   }
 
   // Process path-based campaigns.
-  $result = db_query('SELECT r.cid, r.rule
+  $result = db_query('SELECT r.cid, r.rule, d.weight
     FROM {ding_campaign_rules} r, {ding_campaign} d, {node} n
     WHERE r.type = \'rule_path\'
       AND n.status = 1
       AND r.cid = d.cid
       AND r.cid = n.nid
-    ORDER BY d.weight DESC')
+    ORDER BY d.weight ASC')
     ->fetchAll();
 
   $path = drupal_get_path_alias($_GET['q']);
@@ -289,7 +289,7 @@ function ding_campaign_get_campaigns($context, $limit, $offset) {
         AND r.cid = d.cid
         AND r.cid = n.nid
         AND r.rule ' . $condition . '
-      ORDER BY d.weight DESC')
+      ORDER BY d.weight ASC')
       ->fetchAll();
 
     foreach ($result as $key => $value) {
@@ -308,7 +308,7 @@ function ding_campaign_get_campaigns($context, $limit, $offset) {
         AND n.status = 1
         AND r.cid = d.cid
         AND r.cid = n.nid
-      ORDER BY d.weight DESC', array(':nid' => (int) $nid))
+      ORDER BY d.weight ASC', array(':nid' => (int) $nid))
       ->fetchAll();
 
     foreach ($result as $key => $value) {
@@ -327,7 +327,7 @@ function ding_campaign_get_campaigns($context, $limit, $offset) {
         AND n.status = 1
         AND r.cid = d.cid
         AND r.cid = n.nid
-      ORDER BY d.weight DESC', array(':tid' => (int) $tid))
+      ORDER BY d.weight ASC', array(':tid' => (int) $tid))
       ->fetchAll();
 
     foreach ($result as $key => $value) {
@@ -342,14 +342,12 @@ function ding_campaign_get_campaigns($context, $limit, $offset) {
       AND n.status = 1
       AND r.cid = d.cid
       AND r.cid = n.nid
-    ORDER BY d.weight DESC')
+    ORDER BY d.weight ASC')
     ->fetchAll();
 
   foreach ($result as $key => $value) {
     @$campaigns[$value->cid] += 0.5;
   }
-
-  arsort($campaigns);
 
   return array_slice(array_keys($campaigns), $offset, $limit);
 }

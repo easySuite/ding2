@@ -538,3 +538,54 @@ function ding_event_preprocess_node(&$variables) {
     }
   }
 }
+
+/**
+ * Implements hook_views_post_execute().
+ */
+function ding_event_views_post_execute(&$view) {
+  if ($view->name == 'ding_event' && $view->current_display != 'event_libraries_list') {
+    $nids = array_map(function ($node) {
+      return $node->nid;
+    }, $view->result);
+    $nodes = node_load_multiple($nids);
+    $view->result = array_slice(_ding_event_group($nodes), 0, $view->items_per_page);
+  }
+}
+
+/**
+ * Get events in different groups.
+ */
+function _ding_event_group(array $nodes) {
+  $events[] = reset($nodes);
+  foreach ($nodes as $node) {
+    if (!_ding_event_same_group($events, $node)) {
+      $events[] = $node;
+    }
+  }
+
+  return $events;
+}
+
+/**
+ * Check if events are in the same group.
+ *
+ * Same group means they have the same title, date and library.
+ */
+function _ding_event_same_group($nodes, $event) {
+  $group = FALSE;
+  foreach ($nodes as $node) {
+    $event_date = $event->field_ding_event_date[LANGUAGE_NONE][0]['value'] ? $event->field_ding_event_date[LANGUAGE_NONE][0]['value'] : '';
+    $event_date = new DateTime($event_date);
+    $node_date = $node->field_ding_event_date[LANGUAGE_NONE][0]['value'] ? $node->field_ding_event_date[LANGUAGE_NONE][0]['value'] : '';
+    $node_date = new DateTime($node_date);
+
+    if ($event->title == $node->title &&
+      $event_date->diff($node_date)->d <= 1 &&
+      $event->og_group_ref[LANGUAGE_NONE][0]['target_id'] == $node->og_group_ref[LANGUAGE_NONE][0]['target_id']) {
+      $group = TRUE;
+      break;
+    }
+  }
+
+  return $group;
+}

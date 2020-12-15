@@ -409,11 +409,20 @@
         margin: 0;
         padding-left: 40px;
         list-style-position: initial;
-      
+
         li p {
           margin: 5px 0;
         }
       }
+    }
+  }
+
+  .separator {
+    &:after {
+      content: '|';
+      margin: 0 5px;
+      font-size: 0.8em;
+      vertical-align: text-top;
     }
   }
 }
