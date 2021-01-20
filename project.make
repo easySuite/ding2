@@ -690,7 +690,7 @@ projects[ding_spt_statistics][download][url]    = "https://github.com/easySuite/
 projects[ding_spt_statistics][download][branch] = "development"
 
 projects[domain][subdir]                    = "contrib"
-projects[domain][version]                   = "3.12"
+projects[domain][version]                   = "3.17"
 
 projects[domain_ctools][subdir]             = "contrib"
 projects[domain_ctools][version]            = "1.3"
