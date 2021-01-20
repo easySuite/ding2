@@ -43,8 +43,12 @@ function ddbasic_preprocess_node(&$variables, $hook) {
   // Opening hours on library list. but not on the search page.
   $path = drupal_get_path_alias();
   if (!(strpos($path, 'search', 0) === 0)) {
-    $hooks = theme_get_registry(FALSE);
-    if (isset($hooks['opening_hours_week']) && $variables['type'] == 'ding_library') {
+    $hide_empty_oh = variable_get('opening_hours_hide_on_empty_ding_library', 0);
+    $node_have_active_oh = opening_hours_present_on_node($variables['node']->nid);
+    if ($variables['type'] == 'ding_library') {
+      if (empty($node_have_active_oh) && $hide_empty_oh == 1) {
+        return;
+      }
       $variables['opening_hours'] = theme('ding_ddbasic_opening_hours_week', array('node' => $variables['node']));
     }
   }
@@ -173,6 +177,23 @@ function ddbasic_preprocess__node__ding_news(&$variables) {
 function ddbasic_preprocess__node__ding_event(&$variables) {
   $date = field_get_items('node', $variables['node'], 'field_ding_event_date');
 
+  // Search same event times.
+  $event_time = [];
+  $title = html_entity_decode($variables['title']);
+  $date_object = new DateTime($date[0]['value'], new DateTimeZone($date[0]['timezone_db']));
+
+  $query = db_select('node', 'n');
+  $query->fields('n', ['nid']);
+  $query->join('field_data_field_ding_event_date', 'fed', 'n.nid=fed.entity_id');
+  $query->where(
+    "DATE_FORMAT(fed.field_ding_event_date_value, '%Y-%m-%d') = :date",
+    array(
+      ':date' => $date_object->format('Y-m-d')
+    )
+  );
+  $query->condition('n.title', $title);
+  $results = $query->execute()->fetchCol();
+
   $location = field_get_items('node', $variables['node'], 'field_ding_event_location');
   $variables['alt_location_is_set'] = !empty($location[0]['name_line']) || !empty($location[0]['thoroughfare']);
 
@@ -235,8 +256,13 @@ function ddbasic_preprocess__node__ding_event(&$variables) {
           $event_time_view_settings['settings']['fromto'] = 'both';
         }
 
-        $event_time_ra = field_view_field('node', $variables['node'], 'field_ding_event_date', $event_time_view_settings);
-        $variables['event_time'] = $event_time_ra[0]['#markup'];
+        // Search for same event.
+        foreach ($results as $nid) {
+          // Add event time to variables. A render array is created based on the
+          // date format "time_only".
+          $separate_event_time = field_view_field('node', node_load($nid), 'field_ding_event_date', $event_time_view_settings);
+          $event_time[] = $separate_event_time[0]['#markup'];
+        }
       }
 
       // Place, Library, Organizer markup alterations.
@@ -264,17 +290,19 @@ function ddbasic_preprocess__node__ding_event(&$variables) {
     case 'full':
       array_push($variables['classes_array'], 'node-full');
       if (!empty($date)) {
-        // Add event time to variables. A render array is created based on the
-        // date format "time_only".
-        $event_time_ra = field_view_field('node', $variables['node'], 'field_ding_event_date', array(
-          'label' => 'hidden',
-          'type' => 'date_default',
-          'settings' => array(
-            'format_type' => 'ding_time_only',
-            'fromto' => 'both',
-          ),
-        ));
-        $variables['event_time'] = $event_time_ra[0]['#markup'];
+        foreach ($results as $nid) {
+          // Add event time to variables. A render array is created based on the
+          // date format "time_only".
+          $separate_event_time = field_view_field('node', node_load($nid), 'field_ding_event_date', array(
+            'label' => 'hidden',
+            'type' => 'date_default',
+            'settings' => array(
+              'format_type' => 'ding_time_only',
+              'fromto' => 'both',
+            ),
+          ));
+          $event_time[] = $separate_event_time[0]['#markup'];
+        }
 
         $book_button_text = t('Participate in the event');
         // If the event has a numeric price show an alternative text. If the
@@ -329,6 +357,8 @@ function ddbasic_preprocess__node__ding_event(&$variables) {
       }
       break;
   }
+
+  $variables['event_time'] = implode('<span class="separator"></span>', $event_time);
 }
 
 /**
