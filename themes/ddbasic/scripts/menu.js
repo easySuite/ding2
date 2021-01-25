@@ -67,12 +67,12 @@
       var thisScope = this;
 
       // We need to check these initially.
-      thisScope.checkMainSecondaryMenusOffset(context);
+      thisScope.checkMainSecondaryMenusOffset();
       thisScope.checkMainLinksOffset(context);
 
       // We also need to check it everytime we resize the screen.
       $(window).resize(function() {
-        thisScope.checkMainSecondaryMenusOffset(context);
+        thisScope.checkMainSecondaryMenusOffset();
         thisScope.checkMainLinksOffset(context);
       });
 
@@ -145,16 +145,16 @@
 
     // If there are too many links in either the main or secondary menu,
     // we need to tell the CSS so it can adjust the fixed header elements.
-    checkMainSecondaryMenusOffset: function(context) {
-      var main_menu_wrapper = $('.main-menu-wrapper', context),
-          secondary_menu_wrapper = $('.secondary-menu-wrapper', context);
+    checkMainSecondaryMenusOffset: function() {
+      var main_menu_wrapper = $('.main-menu-wrapper'),
+          secondary_menu_wrapper = $('.secondary-menu-wrapper');
 
       // One is missing, so we'll skip out.
       if (!main_menu_wrapper.length || !secondary_menu_wrapper.length) {
         return;
       }
 
-      if (main_menu_wrapper[0].offsetTop != secondary_menu_wrapper[0].offsetTop) {
+      if (main_menu_wrapper[0].offsetTop !== secondary_menu_wrapper[0].offsetTop) {
         $('body').addClass('secondary-menu-below-main');
       } else {
         $('body').removeClass('secondary-menu-below-main');
