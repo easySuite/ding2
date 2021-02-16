@@ -1788,7 +1788,7 @@ function _ding_nodelist_trim($node, array $settings) {
 function _ding_nodelist_striptags($nodes) {
   foreach ($nodes as $n => $node) {
     if (!is_array($node)) {
-      if ($node->type != 'ding_news') {
+      if (!in_array($node->type, ['ding_news', 'ding_page'])) {
         $body_field = 'field_' . $node->type . '_body';
         foreach ($node->{$body_field} as $lng => $body) {
           $nodes[$n]->{$body_field}[$lng][0]['value'] = strip_tags($body[0]['value']);

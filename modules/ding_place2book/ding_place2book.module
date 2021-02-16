@@ -177,7 +177,7 @@ function ding_place2book_form_node_delete_confirm_alter(&$form, &$form_state, $f
   // This event is synchronized with p2b. Deleting it might have unexpected
   // consequences. Since this is a single node deletion we can afford to fetch
   // the p2b event and display a more detailed warning message.
-  list($event_id, $event_maker_id) = array_values($field_place2book);
+  [$event_id, $event_maker_id] = array_values($field_place2book);
 
   // The default behavior is to try to delete the p2b event, but it might not be
   // possible which is reflected in deletable paramater on the p2b-event.
@@ -306,7 +306,7 @@ function ding_place2book_node_presave($node) {
 
   // The event is p2b-synced but does not a p2b ticket URL. Fetch the event from
   // p2b API and update it.
-  list($event_id, $event_maker_id) = array_values($field_place2book);
+  [$event_id, $event_maker_id] = array_values($field_place2book);
   try {
     $p2b = ding_place2book_instance();
     $event = $p2b->getEvent($event_maker_id, $event_id);

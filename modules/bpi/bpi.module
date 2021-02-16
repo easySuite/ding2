@@ -413,9 +413,9 @@ function bpi_form_node_form_alter(&$form, &$form_state, $form_id) {
     $wid = $workflows_reversed['BPI'];
     $states = workflow_get_workflow_state_names($wid);
     $states_reversed = array_flip($states);
-    $push_sid = $states_reversed['Sent to BPI'];
-    $delete_sid = $states_reversed['Deleted from BPI'];
-    $created_sid = $states_reversed['Created from BPI'];
+    $push_sid = $states_reversed[t('Sent to BPI')];
+    $delete_sid = $states_reversed[t('Deleted from BPI')];
+    $created_sid = $states_reversed[t('Created from BPI')];
 
     // Remove 'Save and push' button if the current state is already 'Sent to
     // BPI'. We have to do this, because it's not possible to disallow workflow

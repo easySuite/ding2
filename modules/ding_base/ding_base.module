@@ -653,33 +653,39 @@ function ding_base_field_widget_form_alter(&$elements, &$form_state, $context) {
     }
 
     if (!empty($display)) {
-      // We will use functionality of image module.
-      $style = image_style_load($display['settings']['styles']['max_style']);
+      $style = [];
+      if (isset($display['settings']['styles'])) {
+        // We will use functionality of image module.
+        $style = image_style_load($display['settings']['styles']['max_style']);
+      }
       // Let's use sample file from image module, for applying all effects.
       $original_path = variable_get('image_style_preview_image', drupal_get_path('module', 'image') . '/sample.png');
       $original_sample = image_get_info($original_path);
 
-      // Apply style to sample image.
-      $preview_file = image_style_path($style['name'], $original_path);
-      if (!file_exists($preview_file)) {
-        image_style_create_derivative($style, $original_path, $preview_file);
-      }
+      if (!empty($style)) {
+        // Apply style to sample image.
+        $preview_file = image_style_path($style['name'], $original_path);
+        if (!file_exists($preview_file)) {
+          image_style_create_derivative($style, $original_path, $preview_file);
+        }
 
-      $preview_image = image_get_info($preview_file);
-      $dimensions = array(
-        'width' => $preview_image['width'],
-        'height' => $preview_image['height'],
-      );
+        $preview_image = image_get_info($preview_file);
 
-      // If after apllying effects dimensions wasn't changed, when we can't recommend.
-      if ($dimensions['height'] != $original_sample['height'] && $dimensions['width'] != $original_sample['width']) {
-        array_walk($dimensions, function (&$i, $k) {
-          $i =  "{$i}px {$k}";
-        });
+        $dimensions = [
+          'width' => $preview_image['width'],
+          'height' => $preview_image['height'],
+        ];
 
-        $description = t("The image will automatically be resized. The maximum dimensions are %dimensions (Original: {$original_sample['width']}x{$original_sample['height']}).", array(
-          '%dimensions' => implode(' and ', $dimensions),
-        ));
+        // If after apllying effects dimensions wasn't changed, when we can't recommend.
+        if ($dimensions['height'] != $original_sample['height'] && $dimensions['width'] != $original_sample['width']) {
+          array_walk($dimensions, function (&$i, $k) {
+            $i = "{$i}px {$k}";
+          });
+
+          $description = t("The image will automatically be resized. The maximum dimensions are %dimensions (Original: {$original_sample['width']}x{$original_sample['height']}).", [
+            '%dimensions' => implode(' and ', $dimensions),
+          ]);
+        }
       }
     }
   }
