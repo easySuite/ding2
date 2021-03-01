@@ -25,7 +25,7 @@ function ding_facetbrowser_content_type_render($subtype, $conf, $panel_args, $co
   // Invoke ding_facetbrowser() from executed search module.
   $executed_search = menu_get_item();
   if (!empty($executed_search['page_arguments'])) {
-    [$executed_search_module,] = $executed_search['page_arguments'];
+    [$executed_search_module] = $executed_search['page_arguments'];
   }
   if (is_string($executed_search_module)) {
     $results = module_invoke($executed_search_module, 'ding_facetbrowser');

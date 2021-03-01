@@ -7,13 +7,11 @@
  */
 $image_field = 'field_ding_blog_list_image';
 $image = _ding_nodelist_get_dams_image_info($item, $image_field);
-if (!empty($conf['image_field'])) {
-  if ($conf['image_field'] == 'staff_image') {
-    $user = user_load($item->uid);
-    $staff_data = profile2_load_by_user($user);
-    if (!empty($staff_data)) {
-      $image['path'] = $staff_data['ding_staff_profile']->field_ding_staff_image['und'][0]['uri'];
-    }
+if (!empty($conf['image_field']) && $conf['image_field'] == 'staff_image') {
+  $user = user_load($item->uid);
+  $staff_data = profile2_load_by_user($user);
+  if (!empty($staff_data)) {
+    $image['path'] = $staff_data['ding_staff_profile']->field_ding_staff_image['und'][0]['uri'];
   }
 }
 $img_url = FALSE;

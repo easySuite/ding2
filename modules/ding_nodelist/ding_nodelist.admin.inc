@@ -85,14 +85,13 @@ function ding_nodelist_templates_form($form, &$form_state) {
 
     $form['templates'][$template_name]['title'] = array(
       '#type' => 'textfield',
-      '#default_value' => isset($template['title']) ? $template['title'] : '',
+      '#default_value' => $template['title'] ?? '',
       '#size' => 40,
     );
 
     $ct = node_type_get_names();
     $form['templates'][$template_name]['content_type'] = array(
-      '#markup' => isset($ct[$template['content_type']]) ?
-      $ct[$template['content_type']] : t('Missing (@ctname)', array('@ctname' => $template['content_type'])),
+      '#markup' => $ct[$template['content_type']] ?? t('Missing (@ctname)', array('@ctname' => $template['content_type'])),
     );
 
     $widgets = _ding_nodelist_get_widget_types();
@@ -100,14 +99,14 @@ function ding_nodelist_templates_form($form, &$form_state) {
       '#type' => 'select',
       '#empty_value' => '',
       '#required' => FALSE,
-      '#default_value' => isset($template['widget']) ? $template['widget'] : '',
+      '#default_value' => $template['widget'] ?? '',
       '#options' => $widgets,
     );
 
     // Visible in list of templates?
     $form['templates'][$template_name]['visible'] = array(
       '#type' => 'checkbox',
-      '#default_value' => $template['status'] == DING_NODELIST_TPL_ACTIVE ? TRUE : FALSE,
+      '#default_value' => $template['status'] == DING_NODELIST_TPL_ACTIVE,
     );
   }
 

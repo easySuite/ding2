@@ -154,7 +154,7 @@ function _ding_nodelist_ipe_buttons_submit($form, &$form_state) {
 function ding_nodelist_form_node_form_alter(&$form, &$form_state) {
   $types = variable_get('ding_nodelist_node_types', array());
   $node_type = $form_state['node']->type;
-  if ($types[$node_type] === $node_type) {
+  if (in_array($node_type, $types, TRUE) && $types[$node_type] === $node_type) {
     $form['actions']['submit']['#submit'][] = '_ding_nodelist_clear_panel_cache_submit';
   }
 }
@@ -197,7 +197,7 @@ function _ding_nodelist_selected_node($key, array $types, $node, $weight = 0) {
 
   // Getting content type for which will be fetched results in autocomplete
   // field.
-  $types = urlencode(implode('|', array_filter($types, '_ding_nodelist_chosen_ct')));
+  $types_string = urlencode(implode('|', array_filter($types, '_ding_nodelist_chosen_ct')));
 
   // Set default value for 'node'.
   $node_default = (!is_null($node) && isset($node['node'])) ? $node['node'] : '';
@@ -207,7 +207,7 @@ function _ding_nodelist_selected_node($key, array $types, $node, $weight = 0) {
     '#type' => 'textfield',
     '#title' => t('Select new node to add to list'),
     '#title_display' => 'invisible',
-    '#autocomplete_path' => 'ding_nodelist/autocomplete/' . $types,
+    '#autocomplete_path' => 'ding_nodelist/autocomplete/' . $types_string,
     '#parents' => array('selected_nodes', $key, 'node'),
     '#default_value' => $node_default,
   );
@@ -234,7 +234,7 @@ function _ding_nodelist_selected_node($key, array $types, $node, $weight = 0) {
 
   $form['type'] = array(
     '#type' => 'value',
-    '#value' => $types,
+    '#value' => $types_string,
     '#parents' => array('selected_nodes', $key, 'type'),
   );
 
@@ -466,8 +466,7 @@ function ding_nodelist_add_filter_submit($form, &$form_state) {
 function ding_nodelist_filter_delete_submit($form, &$form_state) {
 
   $deleted_filter = $form_state['triggering_element']['#parents'][1];
-  unset($form_state['values']['taxonomy_filters'][$deleted_filter]);
-  unset($form_state['input']['taxonomy_filters'][$deleted_filter]);
+  unset($form_state['values']['taxonomy_filters'][$deleted_filter], $form_state['input']['taxonomy_filters'][$deleted_filter]);
 
   // Re-index after deletion and save.
   $form_state['input']['taxonomy_filters'] = array_values($form_state['input']['taxonomy_filters']);
@@ -480,8 +479,7 @@ function ding_nodelist_filter_delete_submit($form, &$form_state) {
  */
 function ding_nodelist_node_delete_submit($form, &$form_state) {
   $deleted_node = $form_state['triggering_element']['#parents'][1];
-  unset($form_state['values']['selected_nodes'][$deleted_node]);
-  unset($form_state['input']['selected_nodes'][$deleted_node]);
+  unset($form_state['values']['selected_nodes'][$deleted_node], $form_state['input']['selected_nodes'][$deleted_node]);
 
   // Re-index after deletion and save.
   $form_state['input']['selected_nodes'] = array_values($form_state['input']['selected_nodes']);
@@ -1083,11 +1081,9 @@ function _ding_nodelist_get_templates($include_hidden = TRUE, $content_type = NU
 
   foreach ($db_templates as $template_name => $template) {
     // Do not include hidden templates.
-    if (!$include_hidden) {
-      if ($template['status'] == DING_NODELIST_TPL_HIDDEN) {
-        unset($templates[$template_name]);
-        continue;
-      }
+    if (!$include_hidden && $template['status'] == DING_NODELIST_TPL_HIDDEN) {
+      unset($templates[$template_name]);
+      continue;
     }
 
     if (isset($templates[$template_name])) {
@@ -1202,9 +1198,7 @@ function _ding_nodelist_get_dynamic_list_nodes(array $conf) {
 
   drupal_alter('ding_nodelist_get_dynamic_list_query', $query);
 
-  $nodes = $query->execute()->fetchCol();
-
-  return $nodes;
+  return $query->execute()->fetchCol();
 }
 
 /**
@@ -1241,18 +1235,16 @@ function _ding_nodelist_sort_query(&$query, array $conf) {
       $query->orderBy('fed.field_ding_event_date_value', 'DESC');
     }
   }
+  else if ($conf['sort_field'] == 'event_date') {
+    $query->join('field_data_field_ding_event_date', 'fed', 'fed.entity_id = n.nid');
+    $query->orderBy('fed.field_ding_event_date_value', $conf['sort_order']);
+  }
+  elseif ($conf['sort_field'] == 'sticky') {
+    // Force descending order for sticky field.
+    $query->orderBy('n.' . $conf['sort_field'], 'DESC');
+  }
   else {
-    if ($conf['sort_field'] == 'event_date') {
-      $query->join('field_data_field_ding_event_date', 'fed', 'fed.entity_id = n.nid');
-      $query->orderBy('fed.field_ding_event_date_value', $conf['sort_order']);
-    }
-    elseif ($conf['sort_field'] == 'sticky') {
-      // Force descending order for sticky field.
-      $query->orderBy('n.' . $conf['sort_field'], 'DESC');
-    }
-    else {
-      $query->orderBy('n.' . $conf['sort_field'], $conf['sort_order']);
-    }
+    $query->orderBy('n.' . $conf['sort_field'], $conf['sort_order']);
   }
 }
 
@@ -1304,19 +1296,16 @@ function _ding_nodelist_sort_nodes(array $nodes, array $conf) {
       return ding_nodelist_event_date_sort($sorted_nodes, $conf['sort_order']);
     }
     // And common sorting for other cases.
+    else if ($conf['sort_order'] == DING_NODELIST_SORT_ASCENDING) {
+      ksort($sorted_nodes);
+    }
     else {
-      if ($conf['sort_order'] == DING_NODELIST_SORT_ASCENDING) {
-        ksort($sorted_nodes);
-      }
-      else {
-        krsort($sorted_nodes);
-      }
+      krsort($sorted_nodes);
     }
     return array_values($sorted_nodes);
   }
-  else {
-    return $nodes;
-  }
+
+  return $nodes;
 }
 
 /**
@@ -1693,8 +1682,8 @@ function _ding_nodelist_get_dams_image_info($node, $image_field) {
         $path = $file->uri;
       }
 
-      $title = $image['title'] ? $image['title'] : $image['filename'];
-      $alt = $image['alt'] ? $image['alt'] : $title;
+      $title = $image['title'] ?: $image['filename'];
+      $alt = $image['alt'] ?: $title;
     }
 
     return array(

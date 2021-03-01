@@ -39,7 +39,7 @@
             <?php
             if ($id >= "1") {
               print " ui-tabs-hide";
-            };
+            }
             ?>
             ">
               <?php print theme($row->item_template, array(
