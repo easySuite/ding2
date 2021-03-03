@@ -341,6 +341,7 @@ projects[panels_breadcrumbs][patch][] = "https://www.drupal.org/files/issues/pan
 projects[panels_everywhere][subdir] = "contrib"
 projects[panels_everywhere][version] = "1.0-rc1"
 projects[panels_everywhere][type] = "module"
+projects[panels_everywhere][patch][] = "https://www.drupal.org/files/issues/panels_everywhere-n2948040-2.patch"
 
 projects[pathauto][subdir] = "contrib"
 projects[pathauto][version] = "1.2"
@@ -448,6 +449,8 @@ projects[virtual_field][version] = "1.2"
 
 projects[views][subdir] = "contrib"
 projects[views][version] = "3.23"
+projects[views][patch][] = "https://www.drupal.org/files/issues/2021-01-04/views-php74-3153312-23.patch"
+projects[views][patch][] = "https://www.drupal.org/files/issues/2020-03-04/views-curly-braces.patch"
 
 projects[views_bulk_operations][subdir] = "contrib"
 projects[views_bulk_operations][version] = "3.3"
@@ -503,7 +506,7 @@ projects[ask_vopros][download][url] = "https://github.com/vopros-dk/ask_vopros.g
 projects[ask_vopros][download][tag] = "1.5"
 
 projects[xautoload][subdir] = "contrib"
-projects[xautoload][version] = "5.7"
+projects[xautoload][version] = "5.8"
 
 ; Libraries
 ; For ding_libs.

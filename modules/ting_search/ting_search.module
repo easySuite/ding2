@@ -225,7 +225,7 @@ function ting_search_form_search_block_form_alter(&$form, &$form_state, $form_id
   // executed twice. See http://platform.dandigbib.org/issues/372 for more
   // information.
   $form['#action'] = url('search-blank');
-  
+
   // Adding content search option into ting_field_search dropdown.
   if (!empty($form['ting_field_search'])) {
     $node_search = array('node' => t('Search Content'));
@@ -285,14 +285,16 @@ function ting_search_extract_indexes($matches, $set_keys = NULL) {
     $keys = array_flip($set_keys);
   }
   $return = array();
-  $subexps = preg_split('/\s+and\s+/i', $matches[2], NULL, PREG_SPLIT_NO_EMPTY);
-  $indexes = &drupal_static(__FUNCTION__, array());
-  foreach ($subexps as $subexp) {
-    if ((preg_match('/^([^=]+)\=([^"]*)$/', $subexp, $rx) || preg_match('/^([^=]+)\="([^"]*)"$/', $subexp, $rx)) && array_key_exists(trim($rx[1]), $keys)) {
-      $indexes[trim($rx[1])] = trim($rx[2]);
-    }
-    else {
-      $return[] = $subexp;
+  if (!empty($matches)) {
+    $subexps = preg_split('/\s+and\s+/i', $matches[2], NULL, PREG_SPLIT_NO_EMPTY);
+    $indexes = &drupal_static(__FUNCTION__, array());
+    foreach ($subexps as $subexp) {
+      if ((preg_match('/^([^=]+)\=([^"]*)$/', $subexp, $rx) || preg_match('/^([^=]+)\="([^"]*)"$/', $subexp, $rx)) && array_key_exists(trim($rx[1]), $keys)) {
+        $indexes[trim($rx[1])] = trim($rx[2]);
+      }
+      else {
+        $return[] = $subexp;
+      }
     }
   }
   // Re-append unknown stuff.

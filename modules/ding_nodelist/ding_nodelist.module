@@ -1762,7 +1762,9 @@ function _ding_nodelist_trim($node, array $settings) {
   foreach ($settings as $field_name => $setting) {
     if (isset($setting['column'])) {
       $field = field_get_items('node', $node, $field_name);
-      $node->{$field_name}[LANGUAGE_NONE][0][$setting['column']] = truncate_utf8($field[0][$setting['column']], $setting['length'], FALSE, TRUE);
+      if (!empty($field)) {
+        $node->{$field_name}[LANGUAGE_NONE][0][$setting['column']] = truncate_utf8($field[0][$setting['column']], $setting['length'], FALSE, TRUE);
+      }
     }
     else {
       $node->{$field_name} = truncate_utf8($node->{$field_name}, $setting['length'], FALSE, TRUE);
