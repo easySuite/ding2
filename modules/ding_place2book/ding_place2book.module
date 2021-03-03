@@ -306,7 +306,7 @@ function ding_place2book_node_presave($node) {
 
   // The event is p2b-synced but does not a p2b ticket URL. Fetch the event from
   // p2b API and update it.
-  [$event_id, $event_maker_id] = array_values($field_place2book);
+  list($event_id, $event_maker_id) = array_values($field_place2book);
   try {
     $p2b = ding_place2book_instance();
     $event = $p2b->getEvent($event_maker_id, $event_id);
