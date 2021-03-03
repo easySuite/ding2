@@ -376,12 +376,14 @@ workflows:
     - gulp
     - php_lint_56
     - php_lint_70
+    - php_lint_73
     - site_install:
         requires:
           - drush_make
           - gulp
           - php_lint_56
           - php_lint_70
+          - php_lint_73
     - unit_tests:
         requires:
           - site_install
