@@ -683,7 +683,8 @@ function ding_base_field_widget_form_alter(&$elements, &$form_state, $context) {
           'height' => $preview_image['height'],
         ];
 
-        // If after apllying effects dimensions wasn't changed, when we can't recommend.
+        // If after apllying effects dimensions wasn't changed, when we can't
+        // recommend.
         if ($dimensions['height'] != $original_sample['height'] && $dimensions['width'] != $original_sample['width']) {
           array_walk($dimensions, function (&$i, $k) {
             $i = "{$i}px {$k}";

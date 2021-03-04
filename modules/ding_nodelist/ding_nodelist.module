@@ -1209,7 +1209,7 @@ function _ding_nodelist_sort_query(&$query, array $conf) {
       $query->orderBy('fed.field_ding_event_date_value', 'DESC');
     }
   }
-  else if ($conf['sort_field'] == 'event_date') {
+  elseif ($conf['sort_field'] == 'event_date') {
     $query->join('field_data_field_ding_event_date', 'fed', 'fed.entity_id = n.nid');
     $query->orderBy('fed.field_ding_event_date_value', $conf['sort_order']);
   }
@@ -1270,7 +1270,7 @@ function _ding_nodelist_sort_nodes(array $nodes, array $conf) {
       return ding_nodelist_event_date_sort($sorted_nodes, $conf['sort_order']);
     }
     // And common sorting for other cases.
-    else if ($conf['sort_order'] == DING_NODELIST_SORT_ASCENDING) {
+    elseif ($conf['sort_order'] == DING_NODELIST_SORT_ASCENDING) {
       ksort($sorted_nodes);
     }
     else {
