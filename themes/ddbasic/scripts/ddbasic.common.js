@@ -157,7 +157,7 @@
   Drupal.behaviors.ding_submenu = {
     attach: function(context, settings) {
 
-      $('.sub-menu-title', context).unbind().click(function(evt) {
+      $('.sub-menu-title', context).click(function(evt) {
         if ($('.is-tablet').is(':visible')) {
           evt.preventDefault();
           $(this).parent().find('ul').slideToggle("fast");
