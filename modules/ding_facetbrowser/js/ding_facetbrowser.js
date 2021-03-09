@@ -179,7 +179,7 @@
         element.find('input').click();
 
         // Find the facets to be deselected and generate new URL.
-        var facetMatch = element.find('a').attr('href').match(/&facets%5B%5D=-facet.*/);
+        var facetMatch = element.find('a').attr('href').match(/&facets%5B%5D=-*.*/);
         checkedFacets += facetMatch[0];
         if (checkedFacets) {
           Drupal.TingSearchOverlay();
