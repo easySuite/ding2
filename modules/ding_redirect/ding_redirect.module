@@ -81,7 +81,6 @@ function ding_redirect_form_search_block_form_alter(&$form, &$form_state, $form_
  */
 function ding_redirect_page_build() {
   $login_url = variable_get('ding_redirect_settings_login_url', '');
-  $path = drupal_get_path('module', 'ding_redirect');
 
   if (!empty($login_url) && user_is_anonymous()) {
     drupal_add_js(array(
@@ -90,7 +89,10 @@ function ding_redirect_page_build() {
       ),
     ), 'setting');
 
-    drupal_add_js($path . '/js/ding_redirect_login.js');
+    drupal_add_js(drupal_get_path('module', 'ding_redirect') . '/js/ding_redirect_login.js', [
+      'type' =>'file',
+      'group' => JS_THEME,
+    ]);
   }
 }
 
