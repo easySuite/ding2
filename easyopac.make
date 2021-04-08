@@ -360,7 +360,7 @@ projects[easyopac_collection_links][subdir]           = ""
 projects[easyopac_collection_links][download][type]   = "git"
 projects[easyopac_collection_links][download][url]    = "git@github.com:easySuite/easyopac_collection_links.git"
 ;projects[easyopac_collection_links][download][tag]    = ""
-projects[easyopac_collection_links][download][branch] = "EASYOPAC-1275"
+projects[easyopac_collection_links][download][branch] = "development"
 
 projects[easyopac_external_videos][type]             = "module"
 projects[easyopac_external_videos][subdir]           = ""
