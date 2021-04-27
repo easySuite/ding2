@@ -75,13 +75,14 @@ function ding_ting_frontend_entity_info_alter(&$entity_info) {
  * Change formatter for group_holdings_available of a Ting Object.
  */
 function ding_ting_frontend_ding_entity_view($entity, $view_mode) {
-
   $modified_view_mode = variable_get('ding_ting_frontend_group_holdings_available', 'default');
   if ($modified_view_mode == 'default') {
     return;
   }
 
-  $entity->content['#groups']['group_holdings_available']->format_settings['formatter'] = $modified_view_mode;
+  if (isset($entity->content['#groups']['group_holdings_available'])) {
+    $entity->content['#groups']['group_holdings_available']->format_settings['formatter'] = $modified_view_mode;
+  }
 }
 
 /**

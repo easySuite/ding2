@@ -30,13 +30,16 @@ function ding_facetbrowser_content_type_render($subtype, $conf, $panel_args, $co
   if (is_string($executed_search_module)) {
     $results = module_invoke($executed_search_module, 'ding_facetbrowser');
     if (is_object($results)) {
+      if (empty($results->facets)) {
+        return;
+      }
       foreach ($results->facets as $facet) {
         if (count($facet->getTerms()) > 0) {
           $content_in_facet = TRUE;
           break;
         }
       }
-      if ($content_in_facet === TRUE || $results->show_empty == TRUE) {
+      if ($content_in_facet === TRUE || $results->show_empty === TRUE) {
         $block_content = theme('facetbrowser', array($results->facets, (!empty($results->searchkey) ? $results->searchkey : NULL)));
       }
     }

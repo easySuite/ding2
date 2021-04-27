@@ -296,8 +296,8 @@ function ding_nodelist_content_type_edit_form_validate($form, &$form_state) {
 
   $list_type = $form_state['values']['list_type'];
   if ($list_type === DING_NODELIST_LIST_TYPE_DYNAMIC) {
-    $node_switch = isset($form_state['values']['nodes_switch']) ? $form_state['values']['nodes_switch'] : 0;
-    $dynamic_switch = isset($form_state['values']['dynamic_switch']) ? $form_state['values']['dynamic_switch'] : 0;
+    $node_switch = $form_state['values']['nodes_switch'] ?? 0;
+    $dynamic_switch = $form_state['values']['dynamic_switch'] ?? 0;
 
     if (!$node_switch && !$dynamic_switch) {
       form_set_error('', t('Select at least one content pick rule (custom and/or dynamic).'));
@@ -420,7 +420,7 @@ function _ding_nodelist_content_type_form_save(&$form_state, $rebuild = FALSE) {
   // first assigned template.
   $item_templates = _ding_nodelist_get_templates(FALSE, $form_state['values']['content_types'], $form_state['conf']['widget_type']);
   $template = is_array($item_templates) ? reset($item_templates) : NULL;
-  $form_state['conf']['item_template'] = isset($template['filename']) ? $template['filename'] : '';
+  $form_state['conf']['item_template'] = $template['filename'] ?? '';
 
   // Not a final save yet.
   if ($rebuild) {
@@ -488,7 +488,7 @@ function _ding_nodelist_plugin_widget_section(&$form, $node_type, $conf, $defaul
   }
 
   $widget_types = _ding_nodelist_get_widget_types($node_type);
-  $widget_type = isset($conf['widget_type']) ? $conf['widget_type'] : $default_conf['widget_type'];
+  $widget_type = $conf['widget_type'] ?? $default_conf['widget_type'];
   $form['ding_nodelist_wrapper']['widget_type'] = array(
     '#type' => 'select',
     '#title' => t('List type'),
@@ -548,7 +548,7 @@ function _ding_nodelist_plugin_content_section(&$form, &$form_state, $node_type,
       DING_NODELIST_LIST_TYPE_DYNAMIC => t('Custom / Dynamic'),
       DING_NODELIST_LIST_TYPE_ALL => t('All content'),
     ),
-    '#default_value' => isset($conf['list_type']) ? $conf['list_type'] : DING_NODELIST_LIST_TYPE_ALL,
+    '#default_value' => $conf['list_type'] ?? DING_NODELIST_LIST_TYPE_ALL,
   );
 
   $form['ding_nodelist_wrapper']['nodelist_content']['nodelist_content_wrapper'] = array(
@@ -564,7 +564,7 @@ function _ding_nodelist_plugin_content_section(&$form, &$form_state, $node_type,
     '#type' => 'checkbox',
     '#title' => t('Custom content?'),
     '#prefix' => '<hr />',
-    '#default_value' => isset($conf['nodes_switch']) ? $conf['nodes_switch'] : 0,
+    '#default_value' => $conf['nodes_switch'] ?? 0,
   );
 
   $form['ding_nodelist_wrapper']['nodelist_content']['nodelist_content_wrapper']['ding_nodelist_nodes'] = array(
@@ -595,12 +595,7 @@ function _ding_nodelist_plugin_content_section(&$form, &$form_state, $node_type,
   $node_count = NULL;
   $filter_count = NULL;
 
-  if (isset($form_state['values']['selected_nodes_count'])) {
-    $node_count = $form_state['values']['selected_nodes_count'];
-  }
-  else {
-    $node_count = empty($form_state['values']['selected_nodes']) ? 1 : count($form_state['values']['selected_nodes']);
-  }
+  $node_count = $form_state['values']['selected_nodes_count'] ?? (empty($form_state['values']['selected_nodes']) ? 1 : count($form_state['values']['selected_nodes']));
 
   if (!empty($conf['selected_nodes'])) {
     $delta = count($conf['selected_nodes']);
@@ -640,7 +635,7 @@ function _ding_nodelist_plugin_content_section(&$form, &$form_state, $node_type,
     '#title' => t('Dynamic content?'),
     '#prefix' => '<div id="node_list-dynamic-content-switch">',
     '#suffix' => '</div>',
-    '#default_value' => isset($conf['dynamic_switch']) ? $conf['dynamic_switch'] : 0,
+    '#default_value' => $conf['dynamic_switch'] ?? 0,
     '#disabled' => (count(array_filter($node_type)) > 1),
   );
 
@@ -663,12 +658,7 @@ function _ding_nodelist_plugin_content_section(&$form, &$form_state, $node_type,
     '#tree' => TRUE,
   );
 
-  if (isset($form_state['values']['taxonomy_filters_count'])) {
-    $filter_count = $form_state['values']['taxonomy_filters_count'];
-  }
-  else {
-    $filter_count = empty($form_state['values']['taxonomy_filters']) ? 1 : count($form_state['values']['taxonomy_filters']);
-  }
+  $filter_count = $form_state['values']['taxonomy_filters_count'] ?? (empty($form_state['values']['taxonomy_filters']) ? 1 : count($form_state['values']['taxonomy_filters']));
 
   // Retrieve vocabularies current CT references.
   $allowed_fields = array();
@@ -772,7 +762,7 @@ function _ding_nodelist_plugin_content_section(&$form, &$form_state, $node_type,
 
     // Set default field value.
     $first_field = array_shift(array_keys($allowed_fields));
-    $filter = isset($field_settings[$first_field]) ? $field_settings[$first_field] : [];
+    $filter = $field_settings[$first_field] ?? [];
 
     $form['ding_nodelist_wrapper']['nodelist_content']['nodelist_content_wrapper']['ding_nodelist_dynamic']['taxonomy_filters'][$key]
       = _ding_nodelist_taxonomy_filter($allowed_fields, $filter, $key);

@@ -413,13 +413,12 @@ function _ding_campaign_plus_render_campaign(array $context_data, $style) {
         // Campaign found that matches style.
         break;
       }
-      else {
-        $campaign = FALSE;
-      }
+      $campaign = FALSE;
     }
 
     if ($campaign) {
-      return drupal_render(node_view($campaign, 'full'));
+      $elements = node_view($campaign, 'full');
+      return drupal_render($elements);
     }
   }
 

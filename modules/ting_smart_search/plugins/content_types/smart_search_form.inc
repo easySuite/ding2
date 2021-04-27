@@ -48,13 +48,15 @@ function ting_smart_search_form_content_type_render($subtype, $conf, $panel_args
 
   $result = $ssquery->execute();
 
-  $entity_id =current((array)$result['ting_type'])->id;
+  if (!empty($result)) {
+    $entity_id = current((array) $result['ting_type'])->id;
 
-  if ($entity_id) {
-    $block->content = eck__entity__edit($entity_type_name, $entity_bundle_name, $entity_id);
-  }
-  else {
+    if ($entity_id) {
+      $block->content = eck__entity__edit($entity_type_name, $entity_bundle_name, $entity_id);
+    }
+    else {
       $block->content = eck__entity__add($entity_type_name, $entity_bundle_name);
+    }
   }
 
   return $block;

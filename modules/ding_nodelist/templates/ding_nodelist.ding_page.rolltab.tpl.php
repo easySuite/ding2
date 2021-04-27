@@ -15,7 +15,7 @@
 $body = $item->teaser_lead;
 $p_body_wrapper = TRUE;
 
-if (!empty($body) && substr($body, 0, 2) === '<p') {
+if (!empty($body) && strpos($body, '<p') === 0) {
   $p_body_wrapper = FALSE;
 }
 
