@@ -12,6 +12,13 @@ projects[bibdk_subject_hierarchy][download][url]    = "git@github.com:easySuite/
 ;projects[bibdk_subject_hierarchy][download][tag]    = ""
 projects[bibdk_subject_hierarchy][download][branch] = "development"
 
+projects[bibliofil_common][type]             = "module"
+projects[bibliofil_common][subdir]           = ""
+projects[bibliofil_common][download][type]   = "git"
+projects[bibliofil_common][download][url]    = "git@github.com:easySuite/bibliofil_common.git"
+;projects[bibliofil_common][download][tag]    = ""
+projects[bibliofil_common][download][branch] = "development"
+
 projects[bibliofil_lists][type]             = "module"
 projects[bibliofil_lists][subdir]           = ""
 projects[bibliofil_lists][download][type]   = "git"
