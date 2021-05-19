@@ -19,6 +19,13 @@ projects[bibliofil_lists][download][url]    = "git@github.com:easySuite/bibliofi
 ;projects[bibliofil_lists][download][tag]    = ""
 projects[bibliofil_lists][download][branch] = "development"
 
+projects[bibliofil_common][type]             = "module"
+projects[bibliofil_common][subdir]           = ""
+projects[bibliofil_common][download][type]   = "git"
+projects[bibliofil_common][download][url]    = "git@github.com:easySuite/bibliofil_common.git"
+;projects[bibliofil_common][download][tag]    = ""
+projects[bibliofil_common][download][branch] = "development"
+
 projects[ding_billetexpressen_import][type]             = "module"
 projects[ding_billetexpressen_import][subdir]           = ""
 projects[ding_billetexpressen_import][download][type]   = "git"

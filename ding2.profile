@@ -9,6 +9,9 @@
 !function_exists('profiler_v2') ? require_once 'libraries/profiler/profiler.inc' : FALSE;
 profiler_v2('ding2');
 
+// Include ding2 alterations, related to Bibliofil.
+include 'ding2.bibliofil.inc';
+
 /**
  * Implements hook_form_FORM_ID_alter().
  *
