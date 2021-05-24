@@ -74,20 +74,34 @@ function ding2_ding_install_tasks() {
  * Implements hook_form_FORM_ID_alter().
  */
 function ding2_form_lms_admin_settings_alter(&$form, &$form_state, $form_id) {
-  unset($form['#validate']);
+  if (defined('MAINTENANCE_MODE') && MAINTENANCE_MODE == 'install') {
+    unset($form['#validate']);
+  }
 }
 
 /**
  * Implements hook_form_FORM_ID_alter().
  */
 function ding2_form_lms_covers_admin_settings_form_alter(&$form, &$form_state, $form_id) {
-  unset($form['#validate']);
+  if (defined('MAINTENANCE_MODE') && MAINTENANCE_MODE == 'install') {
+    unset($form['#validate']);
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ding2_form_ding_mobilesearch_plugin_settings_alter(&$form, &$form_state, $form_id) {
+  if (defined('MAINTENANCE_MODE') && MAINTENANCE_MODE == 'install') {
+    unset($form['#validate']);
+  }
 }
 
 /**
  * Miscellaneous configurations.
  *
  * @param array $install_state
+ *   An array of information about the current installation state.
  */
 function ding2_bibliofil_setup_ops(&$install_state) {
   $ops = [];
@@ -234,7 +248,7 @@ node/*/edit',
  * Enable modules.
  *
  * @param array $install_state
- *   Install state.
+ *   An array of information about the current installation state.
  *
  * @return array
  *   Batch operation.
@@ -278,7 +292,7 @@ function ding2_bibliofil_modules_enable(&$install_state) {
  * Disable and uninstall modules.
  *
  * @param array $install_state
- *   Install state.
+ *   An array of information about the current installation state.
  *
  * @return array
  *   Batch operation.
@@ -304,8 +318,8 @@ function ding2_bibliofil_modules_disable(&$install_state) {
   ];
 
   foreach ($modules as $module) {
-    module_disable([$module], TRUE);
-    drupal_uninstall_modules([$module], TRUE);
+    module_disable([$module]);
+    drupal_uninstall_modules([$module]);
   }
 
   return [
@@ -318,7 +332,7 @@ function ding2_bibliofil_modules_disable(&$install_state) {
  * Localize the bibliofil.
  *
  * @param array $install_state
- *   Install state.
+ *   An array of information about the current installation state.
  *
  * @return array
  *   Batch operation.
