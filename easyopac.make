@@ -591,3 +591,18 @@ projects[easyopac_redirect][download][type]   = "git"
 projects[easyopac_redirect][download][url]    = "git@github.com:easySuite/easyopac_redirect.git"
 ;projects[easyopac_redirect][download][tag]    = ""
 projects[easyopac_redirect][download][branch] = "development"
+
+; Krsbib
+projects[krsbib_articles_feed][type]             = "module"
+projects[krsbib_articles_feed][subdir]           = ""
+projects[krsbib_articles_feed][download][type]   = "git"
+projects[krsbib_articles_feed][download][url]    = "git@github.com:easySuite/krsbib_articles_feed.git"
+;projects[krsbib_articles_feed][download][tag]    = ""
+projects[krsbib_articles_feed][download][branch] = "development"
+
+projects[krsbib_soundcloud_feed][type]             = "module"
+projects[krsbib_soundcloud_feed][subdir]           = ""
+projects[krsbib_soundcloud_feed][download][type]   = "git"
+projects[krsbib_soundcloud_feed][download][url]    = "git@github.com:easySuite/krsbib_soundcloud_feed.git"
+;projects[krsbib_soundcloud_feed][download][tag]    = ""
+projects[krsbib_soundcloud_feed][download][branch] = "development"
