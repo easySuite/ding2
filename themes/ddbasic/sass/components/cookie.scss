@@ -13,6 +13,10 @@
         }
       }
 
+    .find-more-button{
+      color: $color-text-on-secondary;
+    }
+
       // Mobile
       @include media($mobile) {
         float: left;
@@ -20,14 +24,15 @@
       }
     }
 
+
     .popup-content {
       @include wrapper;
       position: relative;
     }
 
+
     #popup-buttons {
       .agree-button,
-      .find-more-button,
       .hide-popup-button,
       .decline-button,
       .eu-cookie-withdraw-button {
