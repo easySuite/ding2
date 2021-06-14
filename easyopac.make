@@ -568,7 +568,7 @@ projects[bibliofil-subtheme][type]             = "theme"
 projects[bibliofil-subtheme][subdir]           = ""
 projects[bibliofil-subtheme][download][type]   = "git"
 projects[bibliofil-subtheme][download][url]    = "git@github.com:easySuite/bibliofil-subtheme.git"
-projects[bibliofil-subtheme][download][tag]    = "7.x-6.2.2"
+projects[bibliofil-subtheme][download][tag]    = "7.x-6.2.3"
 ;projects[bibliofil-subtheme][download][branch] = "development"
 
 projects[lms][type]             = "module"
