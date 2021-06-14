@@ -126,7 +126,7 @@
       }
       // De-activate current tab.
       this.tabs.find('.active').removeClass('active');
-      this.select.find(':selected').prop('selected', false);
+      this.select.find('option').attr('selected', false);
 
       if (typeof this.beforeChange === 'function') {
         this.beforeChange(target, this.dingCarousel);
