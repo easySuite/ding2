@@ -51,7 +51,7 @@ function ting_covers_addi_ting_covers($entities) {
     $service = new AdditionalInformationService(variable_get('ting_covers_addi_wsdl_url'), variable_get('ting_covers_addi_username'), variable_get('ting_covers_addi_group'), variable_get('ting_covers_addi_password'), variable_get('ting_covers_addi_enforce_url', FALSE));
 
     // Retrieve covers by PID.
-    $retrieved = $service->getByPid(array_keys($entities));
+    $retrieved = $service->getByFaustNumber(array_keys($entities));
 
     foreach ($retrieved as $pid=> $cover) {
       // Try to extract the image url from the result.

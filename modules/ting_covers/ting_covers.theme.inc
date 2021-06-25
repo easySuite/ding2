@@ -22,7 +22,7 @@ function template_preprocess_ting_object_cover(&$variables) {
     'ting-cover',
   );
   $variables['data'] = array(
-    'ting-cover-object-id' => $object->id,
+    'ting-cover-object-id' => $object->provider_id,
     'ting-cover-style' => $variables['image_style'],
   );
   $variables['image'] = '';
