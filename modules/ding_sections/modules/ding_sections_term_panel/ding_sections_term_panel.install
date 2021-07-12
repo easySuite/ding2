@@ -29,6 +29,10 @@ function ding_sections_term_panel_uninstall() {
  * Create term panel checkbox field and instance.
  */
 function ding_sections_term_panel_create_fields() {
+  if (field_info_field('field_term_page') !== FALSE) {
+    return;
+  }
+
   $field = array(
     'active' => 1,
     'cardinality' => 1,
@@ -128,6 +132,19 @@ function ding_sections_term_panel_purge_variant() {
  * Restore base panel page to default settings.
  */
 function ding_sections_term_panel_update_7001(&$sandbox) {
+  $handler = page_manager_load_task_handler('term_view', '', 'term_section_panel_context');
+  if ($handler) {
+    page_manager_delete_task_handler($handler);
+  }
+
+  $handler = ding_sections_term_panel_get_handler();
+  page_manager_save_task_handler($handler);
+}
+
+/**
+ * Restore base panel page to default settings.
+ */
+function ding_sections_term_panel_update_7002(&$sandbox) {
   $handler = page_manager_load_task_handler('term_view', '', 'term_section_panel_context');
   if ($handler) {
     page_manager_delete_task_handler($handler);
